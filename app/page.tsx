@@ -582,7 +582,6 @@ export default function Store() {
             </button>
           </section>
           <section className="hp-categories hp-container">
-            <div className="hp-kicker">SHOP BY CATEGORY</div>
             <h1>Shop by Category</h1>
             <p className="hp-subtitle">
               Explore the essentials across our most-loved departments.
@@ -739,7 +738,6 @@ export default function Store() {
             </div>
           </section>
           <section className="hp-promotions hp-container">
-            <div className="hp-kicker">SHOP BY CATEGORY</div>
             <h2>Style, Care &amp; Tech for a Brighter You</h2>
             <p className="hp-subtitle">
               Discover top brands, exclusive offers and everything you need in
@@ -769,7 +767,6 @@ export default function Store() {
           <section className="hp-best hp-pattern">
             <div className="hp-container">
               <div className="hp-centered-heading">
-                <div className="hp-kicker hp-rule">CUSTOMER FAVORITES</div>
                 <h2>
                   Best Selling <em>Products</em>
                 </h2>
@@ -827,7 +824,6 @@ export default function Store() {
           <section id="brands" className="hp-brands hp-pattern">
             <div className="hp-container">
               <div className="hp-centered-heading">
-                <div className="hp-kicker hp-rule">TOP BRANDS</div>
                 <h2>
                   Shop by <em>Brand</em>
                 </h2>
@@ -871,7 +867,6 @@ export default function Store() {
           </section>
           <section id="confidence" className="hp-confidence hp-container">
             <div className="hp-centered-heading">
-              <div className="hp-kicker">WHY SHOP WITH US</div>
               <h2>Shop with Confidence</h2>
               <p>
                 A better shopping experience, from checkout to your doorstep.
@@ -916,7 +911,6 @@ export default function Store() {
           <section id="journal" className="hp-journal">
             <div className="hp-container">
               <div className="hp-centered-heading">
-                <div className="hp-kicker hp-rule">OUR JOURNAL</div>
                 <h2>Latest Blogs &amp; News</h2>
                 <p>
                   Stories, tips and inspiration from the world of modern beauty,
@@ -1229,7 +1223,6 @@ export default function Store() {
               </button>
               <img src={photo(selected.image, 800)} alt={selected.name} />
               <div>
-                <div className="eyebrow">{selected.category}</div>
                 <h2 id="product-title">{selected.name}</h2>
                 <strong>{money(selected.price)}</strong>
                 <p>{selected.description}</p>

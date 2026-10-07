@@ -55,7 +55,7 @@ node scripts/smoke.mjs
 
 Unit checks cover invalid quantities/duplicate items, integer totals, corrupted stored carts, and delivery validation. HTTP checks cover pages, local media, sample catalog, disabled checkout, and unauthorized admin endpoints.
 
-Before live operation, test using a real staging database and Stripe test mode: successful and declined cards, cancelled and expired sessions, delayed and duplicate webhook deliveries, tampered totals, concurrent final-stock purchases, identical request retries, COD order persistence, merchant status transitions, and newsletter persistence. Check the full layout at 320/375/390/768/1440 px and keyboard navigation. Browser rendering and real payment/database integration could not be verified in the creation environment; no zero-defect or production-ready claim is made.
+Before live operation, test using a real staging database and Stripe test mode: successful and declined cards, cancelled and expired sessions, delayed and duplicate webhook deliveries, tampered totals, concurrent final-stock purchases, identical request retries, COD order persistence, merchant status transitions, and newsletter persistence. Check the full layout at 320/375/390/768/1440 px and keyboard navigation. Responsive browser checks have passed at 320–1440 px. Real payment/database integration remains unverified; no zero-defect or production-ready claim is made.
 
 ## Design assets
 
@@ -72,3 +72,11 @@ Wishlist hearts work on catalog and design-preview cards and persist in this bro
 ## Heading style
 
 Use the main section heading directly. Do not add small orange subheadings, eyebrow labels, or kickers above headings on the homepage or future pages.
+
+## Shop page
+
+`/shop` uses the existing catalog API, original logo, clean photos, homepage fonts and orange/black palette. Search, category selection, price range, color, availability, wishlist filtering and sorting are reflected in URL parameters. The desktop sidebar becomes a keyboard-accessible filter drawer on smaller screens. Active filters can be removed individually; empty and failed-loading states offer recovery. Product cards remain compact and have no purchase buttons. Quick view provides product details and the existing cart flow while the dedicated product page is planned separately.
+
+Homepage Shop navigation, categories and View All Products links lead to the new shop. Wishlist and cart use the same browser storage as the homepage and checkout. All pricing comes from the catalog; demo inventory remains labeled as sample content.
+
+Shop validation includes production browser checks at 320/390/768/1024/1440 px, filters and URL restoration, wishlist persistence, quick view, cart quantities, mobile focus trapping and navigation. Larger catalog, stock filtering, load-more and failed-load recovery were exercised with mocked catalog responses.

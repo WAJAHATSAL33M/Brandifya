@@ -345,10 +345,7 @@ export default function Store() {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }
   function browse(c = "All finds") {
-    setCategory(c);
-    setSavedOnly(false);
-    setMenu(false);
-    document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
+    window.location.assign(c === "All finds" ? "/shop" : `/shop?category=${encodeURIComponent(c)}`);
   }
   const policies: Record<string, string> = {
     ...Object.fromEntries(
@@ -406,6 +403,8 @@ export default function Store() {
             </a>
             <nav className="hp-nav-links" aria-label="Main navigation">
               <button
+                className="hp-nav-active"
+                aria-current="page"
                 onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               >
                 HOME
@@ -420,11 +419,10 @@ export default function Store() {
                 ABOUT
               </button>
               <button
-                className="hp-nav-active"
                 onMouseEnter={() => setMega(true)}
                 aria-expanded={mega}
                 aria-controls="shop-mega"
-                onClick={() => setMega(!mega)}
+                onClick={() => window.location.assign("/shop")}
               >
                 SHOP
               </button>

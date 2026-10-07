@@ -2361,3 +2361,19 @@
 @media (prefers-reduced-motion: reduce) {
   .hp *, .hp *:after { transition: none !important; }
 }
+
+/* Reveal shopping actions without shifting the product-card layout. */
+.hp-card-actions {
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(5px);
+  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
+}
+.hp-product:hover .hp-card-actions,
+.hp-featured-card:hover .hp-card-actions,
+.hp-product:focus-within .hp-card-actions,
+.hp-featured-card:focus-within .hp-card-actions {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}

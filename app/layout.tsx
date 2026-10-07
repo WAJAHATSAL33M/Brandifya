@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import "./homepage.css";
+import StoreFooter from "./store-footer";
 export const metadata: Metadata = {
   title: "Brande | Brandifya Store",
   description:
@@ -10,7 +12,7 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>{children}<StoreFooter live={process.env.STORE_LIVE === "true"} /></body>
     </html>
   );
 }

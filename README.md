@@ -80,3 +80,7 @@ Use the main section heading directly. Do not add small orange subheadings, eyeb
 Homepage Shop navigation, categories and View All Products links lead to the new shop. Wishlist and cart use the same browser storage as the homepage and checkout. All pricing comes from the catalog; demo inventory remains labeled as sample content.
 
 Shop validation includes production browser checks at 320/390/768/1024/1440 px, filters and URL restoration, wishlist persistence, quick view, cart quantities, mobile focus trapping and navigation. Larger catalog, stock filtering, load-more and failed-load recovery were exercised with mocked catalog responses.
+
+## Shared footer
+
+`app/store-footer.tsx` is rendered once by the root layout on every route, including future pages. It preserves the homepage footer markup, original logo, payment artwork and responsive styles. Pages must not create their own footer or override the shared footer layout. Newsletter submission and information dialogs live in the shared component; footer shopping links work across routes.

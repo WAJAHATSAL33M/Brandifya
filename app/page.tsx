@@ -143,9 +143,6 @@ export default function Store() {
     [notice, setNotice] = useState(""),
     [addedId, setAddedId] = useState<number | null>(null),
     [info, setInfo] = useState<string | null>(null),
-    [email, setEmail] = useState(""),
-    [consent, setConsent] = useState(false),
-    [subscribing, setSubscribing] = useState(false),
     [catalogError, setCatalogError] = useState(false);
   const [bestPage, setBestPage] = useState(0),
     [brandPage, setBrandPage] = useState(0);
@@ -320,26 +317,6 @@ export default function Store() {
     });
     setAddedId(p.id);
     setNotice(`${p.name} added to your bag`);
-  }
-  async function subscribe(e: React.FormEvent) {
-    e.preventDefault();
-    setSubscribing(true);
-    try {
-      const r = await fetch("/api/newsletter", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, consent: true }),
-      });
-      const data = await r.json();
-      if (!r.ok) throw new Error(data.error);
-      setNotice("You are subscribed. Thank you!");
-      setEmail("");
-      setConsent(false);
-    } catch (e) {
-      setNotice((e as Error).message);
-    } finally {
-      setSubscribing(false);
-    }
   }
   function favorite(id: number) {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
@@ -698,7 +675,7 @@ export default function Store() {
               </div>
             )}
           </section>
-          <section className="hp-deals">
+          <section id="deals" className="hp-deals">
             <div className="hp-container">
               <div className="hp-deal-heading">
                 <h2>Deal of the Week</h2>
@@ -936,140 +913,7 @@ export default function Store() {
             </div>
           </section>
         </main>
-        <footer id="contact" className="hp-footer hp-container">
-          <div className="hp-footer-grid">
-            <div className="hp-contact">
-              <a href="/" aria-label="Brande home">
-                <img src="/brande-original.png" alt="Brande — Buy Branded with Brande.pk" />
-              </a>
-              <button onClick={() => setInfo("Contact us")}>
-                <Mail />
-                <span>brandifya@gmail.com</span>
-              </button>
-              <button onClick={() => setInfo("Contact us")}>
-                <MapPin />
-                <span>
-                  29 SE 2nd Ave, Miami Florida
-                  <br />
-                  44041, United States
-                </span>
-              </button>
-              <button onClick={() => setInfo("Contact us")}>
-                <Phone />
-                <span>(+92) 413 90 762</span>
-              </button>
-            </div>
-            <div className="hp-footer-column">
-              <h3>Shopping</h3>
-              {[
-                "Wishlist",
-                "Shop by Brand",
-                "Offers",
-                "Track Order",
-                "Size Guide",
-              ].map((x) => (
-                <button
-                  key={x}
-                  onClick={() => {
-                    if (x === "Wishlist") {
-                      setSavedOnly(true);
-                      setCategory("All finds");
-                      document
-                        .getElementById("shop")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    } else if (x === "Shop by Brand")
-                      document
-                        .getElementById("brands")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    else if (x === "Offers")
-                      document
-                        .querySelector(".hp-deals")
-                        ?.scrollIntoView({ behavior: "smooth" });
-                    else setInfo(x);
-                  }}
-                >
-                  <ChevronRight size={15} />
-                  {x}
-                </button>
-              ))}
-            </div>
-            <div className="hp-footer-column">
-              <h3>Information</h3>
-              {[
-                "Track Order",
-                "Shipping & Returns",
-                "About Us",
-                "Help",
-                "Gift Cards",
-              ].map((x) => (
-                <button
-                  key={x}
-                  onClick={() =>
-                    setInfo(
-                      x === "Shipping & Returns"
-                        ? "Shipping & returns"
-                        : x === "About Us"
-                          ? "About Brandifya"
-                          : x === "Help"
-                            ? "Contact us"
-                            : x,
-                    )
-                  }
-                >
-                  <ChevronRight size={15} />
-                  {x}
-                </button>
-              ))}
-            </div>
-            <div className="hp-newsletter">
-              <h3>Subscribe.</h3>
-              <p>Our conversation is just getting started</p>
-              <form onSubmit={subscribe}>
-                <div>
-                  <input
-                    aria-label="Your email"
-                    type="email"
-                    placeholder="Enter Your Email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                  <button disabled={subscribing}>
-                    {subscribing ? "SENDING…" : "SUBSCRIBE"}
-                  </button>
-                </div>
-              </form>
-              <h4>Follow Us On</h4>
-              <div className="hp-socials">
-                {["f", "𝕏", "in", "v"].map((x) => (
-                  <button
-                    key={x}
-                    aria-label={`Social profile ${x}`}
-                    onClick={() => setInfo("Social profiles")}
-                  >
-                    {x}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="hp-footer-bottom">
-            <p>
-              All rights reserved — {new Date().getFullYear()} ©{" "}
-              <strong>Brandifya</strong>
-            </p>
-            <Art
-              name="payments"
-              alt="PayPal, Visa, Mastercard, Apple Pay, Shop Pay, American Express"
-            />
-          </div>
-          {!live && (
-            <p className="hp-demo-note">
-              Homepage design preview. Prices, ratings, promotions, contact
-              details and service terms shown are sample content.
-            </p>
-          )}
-        </footer>
+
       </div>
       <div className="toast hp-toast" role="status" aria-live="polite">
         {notice && (

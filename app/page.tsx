@@ -80,6 +80,7 @@ function ReferenceCard({
   onView,
   onSave,
   onAdd,
+  onBuy,
 }: {
   product: ReferenceProduct;
   artwork: string;
@@ -87,6 +88,7 @@ function ReferenceCard({
   onView: () => void;
   onSave: () => void;
   onAdd: () => void;
+  onBuy: () => void;
 }) {
   return (
     <article className={`hp-product ${deal ? "hp-product-deal" : ""}`}>
@@ -109,6 +111,10 @@ function ReferenceCard({
           </span>
         )}
       </div>
+        <div className="hp-card-actions" aria-label={`Shopping actions for ${p.name}`}>
+          <button className="hp-card-buy" onClick={onBuy}>Buy now <ArrowUpRight size={14} /></button>
+          <button className="hp-card-cart" onClick={onAdd}>Add to cart <ShoppingCart size={14} /></button>
+        </div>
       <div className="hp-product-body">
         <button className="hp-product-name" onClick={onView}>
           {p.name}
@@ -126,7 +132,7 @@ function ReferenceCard({
         </div>
         <button className="hp-add" onClick={onAdd}>
           <ShoppingBag size={16} />
-          {deal ? "ADD TO BAG" : "Add to Bag"}
+          Add to cart
         </button>
       </div>
     </article>
@@ -327,6 +333,19 @@ export default function Store() {
           : c;
     });
     setNotice(`${p.name} added to your bag`);
+  }
+  function buyNow(p: Product) {
+    if (p.stock <= 0) return;
+    const quantity = cart.find((item) => item.id === p.id)?.quantity || 0;
+    const nextCart = quantity > 0 ? cart : [...cart, { id: p.id, quantity: 1 }];
+    try {
+      localStorage.setItem("brandifya-cart", JSON.stringify(nextCart));
+    } catch {
+      setNotice("Please enable browser storage to continue to checkout.");
+      return;
+    }
+    setCart(nextCart);
+    window.location.assign("/checkout");
   }
   async function subscribe(e: React.FormEvent) {
     e.preventDefault();
@@ -670,6 +689,10 @@ export default function Store() {
                       <img src={photo(p.image)} alt={p.name} />
                     )}
                   </button>
+                  <div className="hp-card-actions" aria-label={`Shopping actions for ${live ? p.name : referenceNames[p.id - 1] || p.name}`}>
+                    <button className="hp-card-buy" disabled={p.stock <= 0} onClick={() => buyNow(p)}>Buy now <ArrowUpRight size={14} /></button>
+                    <button className="hp-card-cart" disabled={p.stock <= 0} onClick={() => add(p)}>Add to cart <ShoppingCart size={14} /></button>
+                  </div>
                   <div className="hp-featured-body">
                     <button
                       onClick={() => setSelected(p)}
@@ -738,6 +761,7 @@ export default function Store() {
                     onView={() => openReference(p)}
                     onSave={() => openReference(p)}
                     onAdd={() => openReference(p)}
+                    onBuy={() => openReference(p)}
                   />
                 ))}
               </div>
@@ -805,6 +829,7 @@ export default function Store() {
                       onView={() => openReference(p)}
                       onSave={() => openReference(p)}
                       onAdd={() => openReference(p)}
+                      onBuy={() => openReference(p)}
                     />
                   ))}
                 </div>

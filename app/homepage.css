@@ -2302,3 +2302,49 @@
     max-height: none;
   }
 }
+
+/* Shopping controls keep the reference card dimensions unchanged on desktop. */
+.hp-product, .hp-featured-card { position: relative; transition: box-shadow .22s ease; }
+.hp-card-actions {
+  position: absolute; left: 7px; right: 7px; bottom: 7px; z-index: 2;
+  display: grid; grid-template-columns: 1fr; gap: 6px;
+  padding: 8px; border-radius: 9px; background: #fffffff5;
+  box-shadow: 0 6px 20px #0002;
+  opacity: 0; visibility: hidden; transform: translateY(10px);
+  transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
+}
+.hp-card-actions > button {
+  display: flex; justify-content: center; align-items: center; gap: 7px;
+  min-height: 44px; padding: 10px 5px; border: 1px solid #101216;
+  border-radius: 7px; font-size: 12px; font-weight: 700;
+}
+.hp-card-buy { background: #101216; color: white; }
+.hp-card-cart { background: var(--hp-orange); color: white; border-color: var(--hp-orange) !important; }
+.hp :is(.hp-add, .hp-card-actions > button, .hp-countdown > button, .hp-newsletter form > div > button, .hp-socials > button, .hp-nav-actions > button) {
+  transition: background .2s ease, color .2s ease, border-radius .2s ease, box-shadow .2s ease, transform .2s ease;
+}
+.hp button:focus-visible { outline: 2px solid var(--hp-orange); outline-offset: 3px; }
+.hp button:disabled { opacity: .55; cursor: not-allowed; }
+.hp :is(.hp-product, .hp-featured-card):focus-within .hp-card-actions {
+  opacity: 1; visibility: visible; transform: translateY(0);
+}
+@media (hover: hover) and (pointer: fine) {
+  .hp :is(.hp-product, .hp-featured-card):hover { box-shadow: 0 12px 30px #00000020; }
+  .hp :is(.hp-product, .hp-featured-card):hover .hp-card-actions { opacity: 1; visibility: visible; transform: translateY(0); }
+  .hp :is(.hp-add, .hp-card-cart, .hp-newsletter form > div > button):hover:not(:disabled) {
+    background: #101216; border-color: #101216 !important; border-radius: 16px; box-shadow: 0 4px 12px #0002;
+  }
+  .hp .hp-card-buy:hover:not(:disabled) { background: var(--hp-orange); border-color: var(--hp-orange); border-radius: 16px; }
+  .hp-countdown > button:hover { background: var(--hp-orange); color: white; border-radius: 18px; }
+  .hp :is(.hp-socials > button, .hp-nav-actions > button):hover { background: #fff0e6; color: var(--hp-orange); border-radius: 50%; }
+  .hp :is(.hp-view-all, .hp-nav-links > button, .hp-footer-column > button):hover { color: var(--hp-orange); }
+  .hp-hero-shop:hover { background: #ffffff25; box-shadow: 0 0 18px #ff510066; }
+}
+@media (hover: none), (pointer: coarse), (max-width: 900px) {
+  .hp-card-actions { position: static; margin: 7px 0; opacity: 1; visibility: visible; transform: none; padding: 6px; box-shadow: none; background: #fff; }
+  .hp-featured-card .hp-card-actions { margin: 7px; }
+  .hp-product-body > .hp-add { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hp :is(.hp-product, .hp-featured-card, .hp-card-actions, button) { transition: none !important; }
+}

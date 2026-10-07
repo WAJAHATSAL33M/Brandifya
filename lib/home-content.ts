@@ -139,7 +139,7 @@ export type ReferenceProduct = {
   description: string;
   price: string;
   old: string;
-  badge: string;
+  badge?: string;
   rating: string;
   sold: string;
   hot?: string;
@@ -150,7 +150,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "Timeless style with all-day UV protection.",
     price: "$59.00",
     old: "$79.00",
-    badge: "25% OFF",
     rating: "4.8",
     sold: "2.1K sold",
     hot: "5.3K+ Sold",
@@ -160,7 +159,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "Rugged protection for work and adventure.",
     price: "$63.00",
     old: "$79.00",
-    badge: "20% OFF",
     rating: "4.7",
     sold: "1.8K sold",
     hot: "3.2K+ Sold",
@@ -170,7 +168,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "Effortless style for everyday moments.",
     price: "$49.00",
     old: "$59.00",
-    badge: "17% OFF",
     rating: "4.6",
     sold: "1.2K sold",
     hot: "2.6K+ Sold",
@@ -180,7 +177,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "Keep your shoes organised wherever you go.",
     price: "$34.00",
     old: "$49.00",
-    badge: "30% OFF",
     rating: "4.8",
     sold: "2.4K sold",
     hot: "4.1K+ Sold",
@@ -190,7 +186,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "Everything you need for fresh, clean kicks.",
     price: "$29.00",
     old: "$39.00",
-    badge: "25% OFF",
     rating: "4.7",
     sold: "1.9K sold",
     hot: "3.9K+ Sold",
@@ -200,7 +195,6 @@ export const dealProducts: ReferenceProduct[] = [
     description: "A simple, elegant solution for everyday ease.",
     price: "$27.00",
     old: "$35.00",
-    badge: "22% OFF",
     rating: "4.6",
     sold: "1.1K sold",
     hot: "1.8K+ Sold",
@@ -209,10 +203,10 @@ export const dealProducts: ReferenceProduct[] = [
 export const bestProducts: ReferenceProduct[] = [
   {
     name: "Wireless Noise Cancelling Headphones",
+    badge: "Best Seller",
     description: "",
     price: "$79.00",
     old: "$129.00",
-    badge: "Best Seller",
     rating: "4.8",
     sold: "2.1K sold",
   },
@@ -221,7 +215,6 @@ export const bestProducts: ReferenceProduct[] = [
     description: "",
     price: "$59.00",
     old: "$89.00",
-    badge: "−20%",
     rating: "4.7",
     sold: "1.8K sold",
   },
@@ -230,16 +223,15 @@ export const bestProducts: ReferenceProduct[] = [
     description: "",
     price: "$49.00",
     old: "$69.00",
-    badge: "−30%",
     rating: "4.8",
     sold: "3.2K sold",
   },
   {
     name: "Casual Sneakers for Daily Comfort",
+    badge: "Trending",
     description: "",
     price: "$39.00",
     old: "$59.00",
-    badge: "Trending",
     rating: "4.6",
     sold: "2.9K sold",
   },
@@ -248,7 +240,6 @@ export const bestProducts: ReferenceProduct[] = [
     description: "",
     price: "$29.00",
     old: "$39.00",
-    badge: "−25%",
     rating: "4.7",
     sold: "1.4K sold",
   },
@@ -257,7 +248,6 @@ export const bestProducts: ReferenceProduct[] = [
     description: "",
     price: "$34.00",
     old: "$49.00",
-    badge: "−15%",
     rating: "4.6",
     sold: "2.0K sold",
   },

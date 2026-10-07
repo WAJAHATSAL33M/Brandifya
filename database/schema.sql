@@ -9,3 +9,5 @@ CREATE TABLE IF NOT EXISTS order_items (
 );
 CREATE INDEX IF NOT EXISTS orders_created_idx ON orders(created_at DESC);
 CREATE TABLE IF NOT EXISTS newsletter (email text PRIMARY KEY, subscribed_at timestamptz NOT NULL DEFAULT now());
+
+ALTER TABLE products ADD COLUMN IF NOT EXISTS badge text NOT NULL DEFAULT '';

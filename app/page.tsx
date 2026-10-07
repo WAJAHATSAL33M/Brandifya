@@ -79,37 +79,30 @@ function ReferenceCard({
   deal = false,
   onView,
   onSave,
-  onAdd,
-  onBuy,
+  saved,
 }: {
   product: ReferenceProduct;
   artwork: string;
   deal?: boolean;
   onView: () => void;
   onSave: () => void;
-  onAdd: () => void;
-  onBuy: () => void;
+  saved: boolean;
 }) {
   return (
     <article className={`hp-product ${deal ? "hp-product-deal" : ""}`}>
       <div className="hp-product-image">
         <button onClick={onView} aria-label={`View ${p.name}`}>
-          <Art name={artwork} alt={p.name} />
+          <img src={`/products/${artwork}.webp`} alt={p.name} loading="lazy" />
         </button>
-        <span className="hp-badge">{p.badge}</span>
+        {p.badge && <span className="hp-badge">{p.badge}</span>}
         <button
           className="hp-heart"
-          aria-label={`Save ${p.name}`}
+          aria-label={`${saved ? "Remove" : "Save"} ${p.name}${saved ? " from wishlist" : " to wishlist"}`}
+          aria-pressed={saved}
           onClick={onSave}
         >
-          <Heart size={17} />
+          <Heart size={17} fill={saved ? "currentColor" : "none"} />
         </button>
-        {p.hot && (
-          <span className="hp-hot">
-            <Flame size={14} />
-            {p.hot}
-          </span>
-        )}
       </div>
       <div className="hp-product-body">
         <button className="hp-product-name" onClick={onView}>
@@ -125,10 +118,6 @@ function ReferenceCard({
         <div className="hp-product-price">
           <strong>{p.price}</strong>
           <del>{p.old}</del>
-        </div>
-        <div className="hp-card-actions" aria-label={`Shopping actions for ${p.name}`}>
-          <button className="hp-card-buy" onClick={onBuy}>Buy now <ArrowUpRight size={14} /></button>
-          <button className="hp-card-cart" onClick={onAdd}>Add to cart <ShoppingCart size={14} /></button>
         </div>
       </div>
     </article>
@@ -206,7 +195,7 @@ export default function Store() {
         Array.isArray(s)
           ? s.filter(
               (id: unknown) =>
-                typeof id === "number" && products.some((p) => p.id === id),
+                typeof id === "number" && Number.isSafeInteger(id) && (id > 0 || (id >= -12 && id < 0)),
             )
           : [],
       );
@@ -332,19 +321,6 @@ export default function Store() {
     setAddedId(p.id);
     setNotice(`${p.name} added to your bag`);
   }
-  function buyNow(p: Product) {
-    if (p.stock <= 0) return;
-    const quantity = cart.find((item) => item.id === p.id)?.quantity || 0;
-    const nextCart = quantity > 0 ? cart : [...cart, { id: p.id, quantity: 1 }];
-    try {
-      localStorage.setItem("brandifya-cart", JSON.stringify(nextCart));
-    } catch {
-      setNotice("Please enable browser storage to continue to checkout.");
-      return;
-    }
-    setCart(nextCart);
-    window.location.assign("/checkout");
-  }
   async function subscribe(e: React.FormEvent) {
     e.preventDefault();
     setSubscribing(true);
@@ -424,7 +400,7 @@ export default function Store() {
           <div className="hp-nav hp-container">
             <a className="hp-logo" href="/" aria-label="Brande home">
               <img
-                src="/brande-logo.png"
+                src="/brande-original.png"
                 alt="Brande — Buy Branded with Brande.pk"
               />
             </a>
@@ -472,6 +448,7 @@ export default function Store() {
               </button>
             </nav>
             <div className="hp-nav-actions">
+              <button aria-label={`Open wishlist, ${saved.length} items`} aria-pressed={savedOnly} onClick={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }}><Heart size={25} /><span>{saved.length}</span></button>
               <button
                 aria-label="Search products"
                 onClick={() => {
@@ -681,12 +658,10 @@ export default function Store() {
                     onClick={() => setSelected(p)}
                     aria-label={`View ${p.name}`}
                   >
-                    {!live && p.id <= 8 ? (
-                      <Art name={`featured${p.id - 1}`} alt={p.name} />
-                    ) : (
-                      <img src={photo(p.image)} alt={p.name} />
-                    )}
+                    <img src={photo(p.image)} alt={p.name} loading="lazy" />
                   </button>
+                  {p.badge && <span className="hp-badge">{p.badge}</span>}
+                  <button className="hp-heart" onClick={() => favorite(p.id)} aria-pressed={saved.includes(p.id)} aria-label={`${saved.includes(p.id) ? "Remove" : "Save"} ${p.name}${saved.includes(p.id) ? " from wishlist" : " to wishlist"}`}><Heart size={17} fill={saved.includes(p.id) ? "currentColor" : "none"} /></button>
                   <div className="hp-featured-body">
                     <button
                       onClick={() => setSelected(p)}
@@ -703,15 +678,14 @@ export default function Store() {
                     <strong>
                       {live ? money(p.price) : referencePrices[i % 8]}
                     </strong>
-                  <div className="hp-card-actions" aria-label={`Shopping actions for ${live ? p.name : referenceNames[p.id - 1] || p.name}`}>
-                    <button className="hp-card-buy" disabled={p.stock <= 0} onClick={() => buyNow(p)}>Buy now <ArrowUpRight size={14} /></button>
-                    <button className="hp-card-cart" disabled={p.stock <= 0} onClick={() => add(p)}>{addedId === p.id ? "Added to cart" : p.stock <= 0 ? "Sold out" : "Add to cart"} {addedId === p.id ? <Check size={14} /> : <ShoppingCart size={14} />}</button>
-                  </div>
                   </div>
                 </article>
               ))}
             </div>
-            {!visible.length && !catalogError && (
+            {savedOnly && <div className="hp-featured-grid hp-reference-wishlist">
+              {[...dealProducts, ...bestProducts].map((p, i) => saved.includes(-1-i) && <ReferenceCard key={p.name} product={p} artwork={i < 6 ? `deal${i}` : `best${i-6}`} saved onView={() => openReference(p)} onSave={() => favorite(-1-i)} />)}
+            </div>}
+            {!visible.length && !(savedOnly && saved.some(id => id < 0)) && !catalogError && (
               <div className="empty">
                 <Search size={30} />
                 <h3>No products found</h3>
@@ -757,9 +731,8 @@ export default function Store() {
                     artwork={`deal${i}`}
                     deal
                     onView={() => openReference(p)}
-                    onSave={() => openReference(p)}
-                    onAdd={() => openReference(p)}
-                    onBuy={() => openReference(p)}
+                    onSave={() => favorite(-1 - dealProducts.indexOf(p))}
+                    saved={saved.includes(-1 - dealProducts.indexOf(p))}
                   />
                 ))}
               </div>
@@ -825,9 +798,8 @@ export default function Store() {
                       product={p}
                       artwork={`best${bestProducts.indexOf(p)}`}
                       onView={() => openReference(p)}
-                      onSave={() => openReference(p)}
-                      onAdd={() => openReference(p)}
-                      onBuy={() => openReference(p)}
+                      onSave={() => favorite(-7 - bestProducts.indexOf(p))}
+                      saved={saved.includes(-7 - bestProducts.indexOf(p))}
                     />
                   ))}
                 </div>
@@ -976,10 +948,7 @@ export default function Store() {
           <div className="hp-footer-grid">
             <div className="hp-contact">
               <a href="/" aria-label="Brande home">
-                <Art
-                  name="footerLogo"
-                  alt="Brande — Buy Branded with Brande.pk"
-                />
+                <img src="/brande-original.png" alt="Brande — Buy Branded with Brande.pk" />
               </a>
               <button onClick={() => setInfo("Contact us")}>
                 <Mail />

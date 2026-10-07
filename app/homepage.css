@@ -2309,17 +2309,6 @@
   border: 1px solid #eee; position: relative;
   transition: border-color .2s ease, box-shadow .2s ease;
 }
-.hp-card-actions {
-  display: flex; flex-direction: column; gap: 4px; margin-top: 14px;
-}
-.hp-card-actions > button {
-  display: flex; justify-content: center; align-items: center; gap: 7px;
-  width: 100%; min-height: 44px; padding: 10px 5px;
-  border-radius: 7px; font-size: 12px; font-weight: 700;
-  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
-}
-.hp-card-cart { order: -1; background: #ff5100; color: white; border: 1px solid #ff5100; }
-.hp-card-buy { background: transparent; color: #45464a; border: 1px solid transparent; }
 .hp button:focus-visible { outline: 2px solid #101216; outline-offset: 3px; }
 .hp button:disabled { opacity: .5; cursor: not-allowed; }
 .hp-nav-actions > button, .hp-heart, .hp-socials > button { transition: background .18s ease, color .18s ease; }
@@ -2330,8 +2319,43 @@
 .hp-product-body { display: flex; flex-direction: column; flex: 1; }
 .hp-product { display: flex; flex-direction: column; }
 .hp-product-price { margin-top: auto; padding-top: 12px; }
-.hp-product-body .hp-card-actions { margin-top: 4px; }
 .hp-product-name { min-height: 60px; }
+.hp-nav.hp-container { width: min(calc(100% - 48px), 1320px); padding: 0; gap: 22px; }
+.hp-nav-links { gap: clamp(18px, 2.4vw, 36px); }
+/* Display the original PNG; hide only its transparent outer padding. */
+.hp-logo, .hp-contact > a { display: block; aspect-ratio: 1964 / 596; overflow: hidden; }
+.hp-logo img, .hp-contact > a > img { display: block; width: 104.277%; max-width: none; height: auto; margin-left: -2.342%; margin-top: -15.275%; }
+.hp-product-image > button:first-child > img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+.hp-featured-image > img { display: block; width: 100%; aspect-ratio: 1.2; object-fit: contain; background: #faf6ef; }
+.hp-featured-card > .hp-heart { top: 10px; right: 10px; }
+.hp-heart { width: 36px; height: 36px; box-shadow: 0 2px 8px #0000000a; }
+.hp-heart[aria-pressed="true"] { color: var(--hp-orange); }
+.hp-badge { max-width: calc(100% - 62px); font-size: 10px; border-radius: 4px; padding: 6px 8px; line-height: 1.25; overflow-wrap: anywhere; }
+.hp-product-body { padding: 10px 7px 7px; gap: 7px; }
+.hp-featured-body { padding: 12px 14px 14px; gap: 7px; }
+.hp-product-name, .hp-featured-name { min-height: 0; line-height: 1.35; }
+.hp-product-body > p { min-height: 0; margin: 0; font-size: 12px; line-height: 1.4; }
+.hp-rating, .hp-featured-rating { margin: 0; gap: 5px; }
+.hp-product-price { margin: 0; padding: 0; gap: 6px; }
+.hp-featured-body > strong { margin: 0; line-height: 1.3; }
+.hp-product-price strong { line-height: 1.3; }
+.hp-reference-wishlist { margin-top: 18px; }
+@media (max-width: 1000px) { .hp-nav.hp-container { width: calc(100% - 32px); gap: 14px; } .hp-nav-links { gap: 16px; } .hp-nav-actions { gap: 4px; } .hp-logo { width: 155px; } }
+@media (max-width: 600px) {
+  .hp-nav.hp-container { width: calc(100% - 24px); height: 84px; gap: 8px; }
+  .hp-logo { width: 130px; }
+  .hp-nav-actions { gap: 0; }
+  .hp-nav-actions > button { padding: 6px; }
+  .hp-nav-actions svg { width: 22px; }
+  .hp-nav-actions > button > span { width: 18px; height: 18px; font-size: 10px; right: -2px; }
+  .hp-product-body, .hp-featured-body { padding: 10px 8px; gap: 6px; }
+  .hp-product-name, .hp-featured-name { line-height: 1.35; }
+  .hp-product-body > p { font-size: 10px; line-height: 1.4; }
+  .hp-product-price { flex-wrap: wrap; row-gap: 2px; }
+  .hp-product-price strong { font-size: 18px; }
+  .hp-badge { font-size: 9px; max-width: calc(100% - 58px); padding: 5px 6px; }
+  .hp-heart { width: 34px; height: 34px; }
+}
 .hp-featured-image, .hp-product-image { position: relative; }
 .hp-featured-image:after, .hp-product-image > button:first-child:after {
   content: "Quick view"; position: absolute; left: 50%; bottom: 12px;
@@ -2345,8 +2369,6 @@
 .hp-toast > button { display: flex; align-items: center; gap: 5px; white-space: nowrap; color: #fff; padding: 8px 10px; border-radius: 6px; background: #ffffff20; }
 @media (hover: hover) and (pointer: fine) {
   .hp :is(.hp-product, .hp-featured-card):hover { border-color: #ddd; box-shadow: 0 8px 24px #0000000d; }
-  .hp .hp-card-cart:hover:not(:disabled) { background: #e74800; box-shadow: 0 3px 9px #ff510026; }
-  .hp .hp-card-buy:hover:not(:disabled) { color: #ff5100; background: #fff4ee; }
   .hp :is(.hp-featured-image, .hp-product-image > button:first-child):hover:after,
   .hp :is(.hp-featured-image, .hp-product-image > button:first-child):focus-visible:after { opacity: 1; transform: translate(-50%, 0); }
   .hp :is(.hp-nav-actions > button, .hp-heart, .hp-socials > button):hover { background: #fff0e6; color: #ff5100; }
@@ -2355,25 +2377,9 @@
 }
 @media (max-width: 600px) {
   .hp-featured-body { padding: 12px 10px; }
-  .hp-card-actions > button { font-size: 11px; }
   .hp-toast { bottom: 16px; padding: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .hp *, .hp *:after { transition: none !important; }
 }
 
-/* Reveal shopping actions without shifting the product-card layout. */
-.hp-card-actions {
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(5px);
-  transition: opacity .18s ease, transform .18s ease, visibility .18s ease;
-}
-.hp-product:hover .hp-card-actions,
-.hp-featured-card:hover .hp-card-actions,
-.hp-product:focus-within .hp-card-actions,
-.hp-featured-card:focus-within .hp-card-actions {
-  opacity: 1;
-  visibility: visible;
-  transform: none;
-}

@@ -18,6 +18,7 @@ export async function GET() {
           image: p.image,
           color: p.color,
           description: p.description,
+          badge: p.badge || undefined,
         })),
       },
       { headers: { "Cache-Control": "no-store" } },

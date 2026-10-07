@@ -68,3 +68,7 @@ Catalog card photos are generated product concepts in `public/products/`; they c
 Run `npm run db:setup` to apply the idempotent `badge` column migration. Merchant `/admin` → Product badges supports editing or clearing a badge on any database product. Authenticated `GET /api/admin/products` lists badge fields; `PATCH /api/admin/products` takes `{id,badge}`. Labels are at most 24 characters and exclude percentages. Catalog API exposes the saved badge. Demo labels are stored separately from the images; percentage labels are rejected. Design-preview cards use optional labels in `lib/home-content.ts`. Live catalog badges come from the database.
 
 Wishlist hearts work on catalog and design-preview cards and persist in this browser. Product cards have no Buy now or Add to cart controls. Catalog shopping remains available in the product detail dialog. Card typography and spacing adapt across mobile, tablet, and desktop.
+
+## Heading style
+
+Use the main section heading directly. Do not add small orange subheadings, eyebrow labels, or kickers above headings on the homepage or future pages.

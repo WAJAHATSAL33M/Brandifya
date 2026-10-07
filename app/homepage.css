@@ -2303,48 +2303,61 @@
   }
 }
 
-/* Shopping controls keep the reference card dimensions unchanged on desktop. */
-.hp-product, .hp-featured-card { position: relative; transition: box-shadow .22s ease; }
+
+/* Consistent shopping controls: readable details, stable layout, quiet motion. */
+.hp-product, .hp-featured-card {
+  border: 1px solid #eee; position: relative;
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
 .hp-card-actions {
-  position: absolute; left: 7px; right: 7px; bottom: 7px; z-index: 2;
-  display: grid; grid-template-columns: 1fr; gap: 6px;
-  padding: 8px; border-radius: 9px; background: #fffffff5;
-  box-shadow: 0 6px 20px #0002;
-  opacity: 0; visibility: hidden; transform: translateY(10px);
-  transition: opacity .22s ease, transform .22s ease, visibility .22s ease;
+  display: flex; flex-direction: column; gap: 4px; margin-top: 14px;
 }
 .hp-card-actions > button {
   display: flex; justify-content: center; align-items: center; gap: 7px;
-  min-height: 44px; padding: 10px 5px; border: 1px solid #101216;
+  width: 100%; min-height: 44px; padding: 10px 5px;
   border-radius: 7px; font-size: 12px; font-weight: 700;
+  transition: background .18s ease, color .18s ease, box-shadow .18s ease;
 }
-.hp-card-buy { background: #101216; color: white; }
-.hp-card-cart { background: var(--hp-orange); color: white; border-color: var(--hp-orange) !important; }
-.hp :is(.hp-add, .hp-card-actions > button, .hp-countdown > button, .hp-newsletter form > div > button, .hp-socials > button, .hp-nav-actions > button) {
-  transition: background .2s ease, color .2s ease, border-radius .2s ease, box-shadow .2s ease, transform .2s ease;
+.hp-card-cart { order: -1; background: #ff5100; color: white; border: 1px solid #ff5100; }
+.hp-card-buy { background: transparent; color: #45464a; border: 1px solid transparent; }
+.hp button:focus-visible { outline: 2px solid #101216; outline-offset: 3px; }
+.hp button:disabled { opacity: .5; cursor: not-allowed; }
+.hp-nav-actions > button, .hp-heart, .hp-socials > button { transition: background .18s ease, color .18s ease; }
+.hp-featured-body { display: flex; flex-direction: column; flex: 1; }
+.hp-featured-body > strong { margin-top: auto; }
+.hp-featured-card { display: flex; flex-direction: column; }
+.hp-featured-name { min-height: 40px; }
+.hp-product-body { display: flex; flex-direction: column; flex: 1; }
+.hp-product { display: flex; flex-direction: column; }
+.hp-product-price { margin-top: auto; padding-top: 12px; }
+.hp-product-body .hp-card-actions { margin-top: 4px; }
+.hp-product-name { min-height: 60px; }
+.hp-featured-image, .hp-product-image { position: relative; }
+.hp-featured-image:after, .hp-product-image > button:first-child:after {
+  content: "Quick view"; position: absolute; left: 50%; bottom: 12px;
+  transform: translate(-50%, 4px); padding: 7px 13px; border-radius: 20px;
+  background: #fffffff5; color: #222; box-shadow: 0 2px 10px #0001;
+  white-space: nowrap; font-size: 11px; font-weight: 600;
+  opacity: 0; transition: opacity .18s ease, transform .18s ease; pointer-events: none;
 }
-.hp button:focus-visible { outline: 2px solid var(--hp-orange); outline-offset: 3px; }
-.hp button:disabled { opacity: .55; cursor: not-allowed; }
-.hp :is(.hp-product, .hp-featured-card):focus-within .hp-card-actions {
-  opacity: 1; visibility: visible; transform: translateY(0);
-}
+.hp-toast { max-width: calc(100vw - 24px); gap: 10px; border-radius: 12px; }
+.hp-toast > span { flex: 1; font-size: 13px; }
+.hp-toast > button { display: flex; align-items: center; gap: 5px; white-space: nowrap; color: #fff; padding: 8px 10px; border-radius: 6px; background: #ffffff20; }
 @media (hover: hover) and (pointer: fine) {
-  .hp :is(.hp-product, .hp-featured-card):hover { box-shadow: 0 12px 30px #00000020; }
-  .hp :is(.hp-product, .hp-featured-card):hover .hp-card-actions { opacity: 1; visibility: visible; transform: translateY(0); }
-  .hp :is(.hp-add, .hp-card-cart, .hp-newsletter form > div > button):hover:not(:disabled) {
-    background: #101216; border-color: #101216 !important; border-radius: 16px; box-shadow: 0 4px 12px #0002;
-  }
-  .hp .hp-card-buy:hover:not(:disabled) { background: var(--hp-orange); border-color: var(--hp-orange); border-radius: 16px; }
-  .hp-countdown > button:hover { background: var(--hp-orange); color: white; border-radius: 18px; }
-  .hp :is(.hp-socials > button, .hp-nav-actions > button):hover { background: #fff0e6; color: var(--hp-orange); border-radius: 50%; }
-  .hp :is(.hp-view-all, .hp-nav-links > button, .hp-footer-column > button):hover { color: var(--hp-orange); }
-  .hp-hero-shop:hover { background: #ffffff25; box-shadow: 0 0 18px #ff510066; }
+  .hp :is(.hp-product, .hp-featured-card):hover { border-color: #ddd; box-shadow: 0 8px 24px #0000000d; }
+  .hp .hp-card-cart:hover:not(:disabled) { background: #e74800; box-shadow: 0 3px 9px #ff510026; }
+  .hp .hp-card-buy:hover:not(:disabled) { color: #ff5100; background: #fff4ee; }
+  .hp :is(.hp-featured-image, .hp-product-image > button:first-child):hover:after,
+  .hp :is(.hp-featured-image, .hp-product-image > button:first-child):focus-visible:after { opacity: 1; transform: translate(-50%, 0); }
+  .hp :is(.hp-nav-actions > button, .hp-heart, .hp-socials > button):hover { background: #fff0e6; color: #ff5100; }
+  .hp :is(.hp-view-all, .hp-nav-links > button, .hp-footer-column > button):hover { color: #ff5100; }
+  .hp-countdown > button:hover { background: #fff0e6; }
 }
-@media (hover: none), (pointer: coarse), (max-width: 900px) {
-  .hp-card-actions { position: static; margin: 7px 0; opacity: 1; visibility: visible; transform: none; padding: 6px; box-shadow: none; background: #fff; }
-  .hp-featured-card .hp-card-actions { margin: 7px; }
-  .hp-product-body > .hp-add { display: none; }
+@media (max-width: 600px) {
+  .hp-featured-body { padding: 12px 10px; }
+  .hp-card-actions > button { font-size: 11px; }
+  .hp-toast { bottom: 16px; padding: 12px; }
 }
 @media (prefers-reduced-motion: reduce) {
-  .hp :is(.hp-product, .hp-featured-card, .hp-card-actions, button) { transition: none !important; }
+  .hp *, .hp *:after { transition: none !important; }
 }

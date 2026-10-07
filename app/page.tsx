@@ -111,10 +111,6 @@ function ReferenceCard({
           </span>
         )}
       </div>
-        <div className="hp-card-actions" aria-label={`Shopping actions for ${p.name}`}>
-          <button className="hp-card-buy" onClick={onBuy}>Buy now <ArrowUpRight size={14} /></button>
-          <button className="hp-card-cart" onClick={onAdd}>Add to cart <ShoppingCart size={14} /></button>
-        </div>
       <div className="hp-product-body">
         <button className="hp-product-name" onClick={onView}>
           {p.name}
@@ -130,10 +126,10 @@ function ReferenceCard({
           <strong>{p.price}</strong>
           <del>{p.old}</del>
         </div>
-        <button className="hp-add" onClick={onAdd}>
-          <ShoppingBag size={16} />
-          Add to cart
-        </button>
+        <div className="hp-card-actions" aria-label={`Shopping actions for ${p.name}`}>
+          <button className="hp-card-buy" onClick={onBuy}>Buy now <ArrowUpRight size={14} /></button>
+          <button className="hp-card-cart" onClick={onAdd}>Add to cart <ShoppingCart size={14} /></button>
+        </div>
       </div>
     </article>
   );
@@ -156,6 +152,7 @@ export default function Store() {
     [menu, setMenu] = useState(false),
     [savedOnly, setSavedOnly] = useState(false),
     [notice, setNotice] = useState(""),
+    [addedId, setAddedId] = useState<number | null>(null),
     [info, setInfo] = useState<string | null>(null),
     [email, setEmail] = useState(""),
     [consent, setConsent] = useState(false),
@@ -251,7 +248,7 @@ export default function Store() {
   }, [cart, saved, ready]);
   useEffect(() => {
     if (!notice) return;
-    const t = setTimeout(() => setNotice(""), 3000);
+    const t = setTimeout(() => { setNotice(""); setAddedId(null); }, 5000);
     return () => clearTimeout(t);
   }, [notice]);
   useEffect(() => {
@@ -332,6 +329,7 @@ export default function Store() {
           ? [...c, { id: p.id, quantity: 1 }]
           : c;
     });
+    setAddedId(p.id);
     setNotice(`${p.name} added to your bag`);
   }
   function buyNow(p: Product) {
@@ -689,10 +687,6 @@ export default function Store() {
                       <img src={photo(p.image)} alt={p.name} />
                     )}
                   </button>
-                  <div className="hp-card-actions" aria-label={`Shopping actions for ${live ? p.name : referenceNames[p.id - 1] || p.name}`}>
-                    <button className="hp-card-buy" disabled={p.stock <= 0} onClick={() => buyNow(p)}>Buy now <ArrowUpRight size={14} /></button>
-                    <button className="hp-card-cart" disabled={p.stock <= 0} onClick={() => add(p)}>Add to cart <ShoppingCart size={14} /></button>
-                  </div>
                   <div className="hp-featured-body">
                     <button
                       onClick={() => setSelected(p)}
@@ -709,6 +703,10 @@ export default function Store() {
                     <strong>
                       {live ? money(p.price) : referencePrices[i % 8]}
                     </strong>
+                  <div className="hp-card-actions" aria-label={`Shopping actions for ${live ? p.name : referenceNames[p.id - 1] || p.name}`}>
+                    <button className="hp-card-buy" disabled={p.stock <= 0} onClick={() => buyNow(p)}>Buy now <ArrowUpRight size={14} /></button>
+                    <button className="hp-card-cart" disabled={p.stock <= 0} onClick={() => add(p)}>{addedId === p.id ? "Added to cart" : p.stock <= 0 ? "Sold out" : "Add to cart"} {addedId === p.id ? <Check size={14} /> : <ShoppingCart size={14} />}</button>
+                  </div>
                   </div>
                 </article>
               ))}
@@ -1112,11 +1110,12 @@ export default function Store() {
           )}
         </footer>
       </div>
-      <div className="toast" role="status" aria-live="polite">
+      <div className="toast hp-toast" role="status" aria-live="polite">
         {notice && (
           <>
             <Check size={18} />
-            {notice}
+            <span>{notice}</span>
+            {addedId !== null && <button onClick={() => { setDrawer(true); setNotice(""); }}>View cart <ArrowRight size={14} /></button>}
           </>
         )}
       </div>

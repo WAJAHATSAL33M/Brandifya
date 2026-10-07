@@ -16,6 +16,14 @@ import {
   ShieldCheck,
   Check,
   ChevronDown,
+  ShoppingCart,
+  ChevronRight,
+  ChevronLeft,
+  Headphones,
+  Mail,
+  MapPin,
+  Phone,
+  Flame,
 } from "lucide-react";
 import {
   products,
@@ -26,6 +34,104 @@ import {
   type Product,
   type CartItem,
 } from "../lib/catalog";
+import "./homepage.css";
+import art from "../lib/home-art.json";
+import {
+  departments,
+  categoryTiles,
+  referencePrices,
+  referenceNames,
+  dealProducts,
+  bestProducts,
+  journalPosts,
+  type ReferenceProduct,
+} from "../lib/home-content";
+function Art({
+  name,
+  alt,
+  eager = false,
+}: {
+  name: string;
+  alt: string;
+  eager?: boolean;
+}) {
+  const a = art.assets[name as keyof typeof art.assets];
+  return (
+    <span className="hp-art" style={{ aspectRatio: `${a.w}/${a.h}` }}>
+      <img
+        src="/homepage-design.webp"
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        fetchPriority={eager ? "high" : "auto"}
+        style={{
+          width: `${(art.width / a.w) * 100}%`,
+          left: 0,
+          top: 0,
+          transform: `translate(${(-a.x / art.width) * 100}%, ${(-a.y / art.height) * 100}%)`,
+        }}
+      />
+    </span>
+  );
+}
+function ReferenceCard({
+  product: p,
+  artwork,
+  deal = false,
+  onView,
+  onSave,
+  onAdd,
+}: {
+  product: ReferenceProduct;
+  artwork: string;
+  deal?: boolean;
+  onView: () => void;
+  onSave: () => void;
+  onAdd: () => void;
+}) {
+  return (
+    <article className={`hp-product ${deal ? "hp-product-deal" : ""}`}>
+      <div className="hp-product-image">
+        <button onClick={onView} aria-label={`View ${p.name}`}>
+          <Art name={artwork} alt={p.name} />
+        </button>
+        <span className="hp-badge">{p.badge}</span>
+        <button
+          className="hp-heart"
+          aria-label={`Save ${p.name}`}
+          onClick={onSave}
+        >
+          <Heart size={17} />
+        </button>
+        {p.hot && (
+          <span className="hp-hot">
+            <Flame size={14} />
+            {p.hot}
+          </span>
+        )}
+      </div>
+      <div className="hp-product-body">
+        <button className="hp-product-name" onClick={onView}>
+          {p.name}
+        </button>
+        <div className="hp-rating">
+          <span aria-label={`Illustrative ${p.rating} star rating`}>★★★★★</span>
+          <small>
+            {p.rating} ({p.sold})
+          </small>
+        </div>
+        {deal && <p>{p.description}</p>}
+        <div className="hp-product-price">
+          <strong>{p.price}</strong>
+          <del>{p.old}</del>
+        </div>
+        <button className="hp-add" onClick={onAdd}>
+          <ShoppingBag size={16} />
+          {deal ? "ADD TO BAG" : "Add to Bag"}
+        </button>
+      </div>
+    </article>
+  );
+}
 const photo = (id: string, w = 800) =>
   id.startsWith("/")
     ? id
@@ -49,6 +155,39 @@ export default function Store() {
     [consent, setConsent] = useState(false),
     [subscribing, setSubscribing] = useState(false),
     [catalogError, setCatalogError] = useState(false);
+  const [bestPage, setBestPage] = useState(0),
+    [brandPage, setBrandPage] = useState(0);
+  const [mega, setMega] = useState(false),
+    [searchOpen, setSearchOpen] = useState(false);
+  const brandNames = [
+    "Apple",
+    "Samsung",
+    "Nike",
+    "Adidas",
+    "Sony",
+    "Canon",
+    "Lenovo",
+    "Philips",
+  ];
+  function slideBest(direction: number) {
+    if (window.innerWidth > 900)
+      setBestPage((page) => (page + direction + 5) % 5);
+    else
+      document
+        .getElementById("best-products")
+        ?.scrollBy({ left: direction * 250, behavior: "smooth" });
+  }
+  function slideBrands(direction: number) {
+    if (window.innerWidth > 900)
+      setBrandPage((page) => (page + direction + 8) % 8);
+    else
+      document
+        .getElementById("brand-list")
+        ?.scrollBy({ left: direction * 200, behavior: "smooth" });
+  }
+  function openReference(p: ReferenceProduct) {
+    setInfo(p.name);
+  }
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
   const modalOpen = drawer || !!selected || !!info;
@@ -196,7 +335,7 @@ export default function Store() {
       const r = await fetch("/api/newsletter", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, consent }),
+        body: JSON.stringify({ email, consent: true }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error);
@@ -219,6 +358,25 @@ export default function Store() {
     document.getElementById("shop")?.scrollIntoView({ behavior: "smooth" });
   }
   const policies: Record<string, string> = {
+    ...Object.fromEntries(
+      [...dealProducts, ...bestProducts].map((p) => [
+        p.name,
+        `${p.description} This product is shown as part of the supplied homepage design. Catalog availability is not configured yet.`,
+      ]),
+    ),
+    ...Object.fromEntries(
+      journalPosts.map((p) => [
+        p.title,
+        "A preview article from the homepage design. The complete journal content will be added here.",
+      ]),
+    ),
+    "Track Order":
+      "Your order reference is available on the order confirmation page. Customer order tracking is being configured.",
+    "Size Guide":
+      "Product-specific measurements and fit guidance will be supplied with the final catalog.",
+    "Gift Cards": "Gift cards are not currently available.",
+    "Social profiles": "The store’s social profiles will be connected here.",
+
     "A calmer home, one corner at a time":
       "Start with a single corner: a comfortable seat, a useful light, and a place for the things you reach for daily. Choose textures and colors you enjoy, leave room to move, and add objects slowly as you discover what your space needs.",
     "The everyday bag checklist":
@@ -244,220 +402,235 @@ export default function Store() {
       <a className="skip" href="#shop">
         Skip to products
       </a>
-      <div className="announcement">
-        A little discovery. A lot to love.{" "}
-        <span>
-          Meet your new everyday favorites <ArrowRight size={13} />
-        </span>
-      </div>
-      <header>
-        <div className="nav wrap">
-          <a className="brand" href="/" aria-label="Brandifya home">
-            <img
-              src="/brande-logo.png"
-              alt="Brande — Buy branded with Brande"
-            />
-          </a>
-          <nav aria-label="Main navigation">
-            <button onClick={() => browse()}>Shop all</button>
-            <button onClick={() => browse("Home & Living")}>
-              Home & living
-            </button>
-            <button onClick={() => browse("Fashion")}>Fashion</button>
-            <button onClick={() => browse("Tech")}>Tech</button>
-            <button onClick={() => setInfo("About Brandifya")}>
-              Our story
-            </button>
-          </nav>
-          <div className="nav-actions">
-            <button
-              aria-label="Search products"
-              onClick={() => {
-                browse();
-                document.getElementById("search")?.focus();
-              }}
-            >
-              <Search />
-            </button>
-            <button
-              aria-label="View saved items"
-              onClick={() => {
-                setSavedOnly((v) => !v);
-                setCategory("All finds");
-                document
-                  .getElementById("shop")
-                  ?.scrollIntoView({ behavior: "smooth" });
-              }}
-            >
-              <Heart fill={savedOnly ? "currentColor" : "none"} />
-            </button>
-            <button
-              aria-label={`Open shopping bag, ${count} items`}
-              onClick={() => setDrawer(true)}
-            >
-              <ShoppingBag />
-              <span className="count">{count}</span>
-            </button>
-            <button
-              className="mobile-menu"
-              aria-label="Toggle navigation"
-              aria-expanded={menu}
-              onClick={() => setMenu(!menu)}
-            >
-              <Menu />
-            </button>
-          </div>
-        </div>
-        {menu && (
-          <nav className="menu-panel" aria-label="Mobile navigation">
-            {categories.map((c) => (
-              <button key={c} onClick={() => browse(c)}>
-                {c}
-                <ArrowRight size={16} />
-              </button>
-            ))}
-          </nav>
-        )}
-      </header>
-      <main>
-        {catalogError && (
-          <p className="load-error" role="alert">
-            Inventory is unavailable. Please refresh to try again.
-          </p>
-        )}
-        <section className="reference-hero wrap">
-          <button onClick={() => browse()} aria-label="Shop the collection">
-            <img
-              src="/home-banner.jpg"
-              alt="Brande Blessed Friday promotional design — explore the sample collection"
-              fetchPriority="high"
-            />
-          </button>
-          <p className="hero-disclaimer">
-            Promotional artwork from the supplied design. Offers shown are
-            illustrative and are not currently active.
-          </p>
-        </section>
-        <div className="values wrap">
-          <span>
-            <Package />
-            Considered everyday essentials
-          </span>
-          <span>
-            <ShieldCheck />
-            Clear product information
-          </span>
-          <span>
-            <Heart />
-            Finds you’ll love coming back to
-          </span>
-        </div>
-        <section className="category-section wrap">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">SHOP BY CATEGORY</div>
-              <h2>Shop by Category</h2>
-            </div>
-            <button className="text-link" onClick={() => browse()}>
-              Explore all categories <ArrowUpRight size={17} />
-            </button>
-          </div>
-          <div className="category-grid">
-            {[
-              {
-                name: "Tech",
-                image: "/category-1.jpg",
-                label: "Electronics for everyday",
-              },
-              {
-                name: "Fashion",
-                image: "/category-2.jpg",
-                label: "Your everyday, styled",
-              },
-              {
-                name: "Grocery",
-                image: "/category-3.jpg",
-                label: "Food and everyday essentials",
-              },
-              {
-                name: "Home & Living",
-                image: "/category-4.jpg",
-                label: "For a home you love",
-              },
-              {
-                name: "Sports & Fitness",
-                image: "/category-5.jpg",
-                label: "Make your next move",
-              },
-              {
-                name: "All finds",
-                image: "/category-6.jpg",
-                label: "Discover more favorites",
-              },
-            ].map((c) => (
+      <div className="hp">
+        <header className="hp-header" onMouseLeave={() => setMega(false)}>
+          <div className="hp-nav hp-container">
+            <a className="hp-logo" href="/" aria-label="Brande home">
+              <img
+                src="/brande-logo.png"
+                alt="Brande — Buy Branded with Brande.pk"
+              />
+            </a>
+            <nav className="hp-nav-links" aria-label="Main navigation">
               <button
-                key={c.name}
-                className="category-card"
-                onClick={() => browse(c.name)}
+                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               >
-                <div>
-                  <img src={photo(c.image, 600)} alt="" loading="lazy" />
-                  <span>
-                    <ArrowUpRight size={20} />
-                  </span>
-                </div>
-                <h3>{c.name}</h3>
-                <p>{c.label}</p>
+                HOME
               </button>
-            ))}
-          </div>
-        </section>
-        <section id="shop" className="shop-section wrap">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">CURATED FOR YOUR EVERYDAY</div>
-              <h2>{savedOnly ? "Your saved finds." : "Featured Products"}</h2>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("confidence")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                ABOUT
+              </button>
+              <button
+                className="hp-nav-active"
+                onMouseEnter={() => setMega(true)}
+                aria-expanded={mega}
+                aria-controls="shop-mega"
+                onClick={() => setMega(!mega)}
+              >
+                SHOP
+              </button>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("journal")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                BLOG
+              </button>
+              <button
+                onClick={() =>
+                  document
+                    .getElementById("contact")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
+              >
+                CONTACT
+              </button>
+            </nav>
+            <div className="hp-nav-actions">
+              <button
+                aria-label="Search products"
+                onClick={() => {
+                  setSearchOpen(!searchOpen);
+                  setTimeout(
+                    () => document.getElementById("search")?.focus(),
+                    50,
+                  );
+                }}
+              >
+                <Search size={27} />
+              </button>
+              <button
+                aria-label={`Open shopping bag, ${count} items`}
+                onClick={() => setDrawer(true)}
+              >
+                <ShoppingCart size={28} />
+                <span>{count}</span>
+              </button>
+              <button
+                className="hp-mobile-toggle"
+                aria-label="Toggle navigation"
+                aria-expanded={menu}
+                onClick={() => setMenu(!menu)}
+              >
+                <Menu size={25} />
+              </button>
             </div>
-            <span className="sample-tag">
-              {live ? "Live collection" : "Sample collection · not live offers"}
-            </span>
           </div>
-          <div className="shop-tools">
-            <div className="tabs" aria-label="Product categories">
-              {categories.map((c) => (
+          {menu && (
+            <nav className="hp-mobile-nav" aria-label="Mobile navigation">
+              {["HOME", "ABOUT", "SHOP", "BLOG", "CONTACT"].map((x) => (
                 <button
-                  key={c}
-                  className={category === c ? "active" : ""}
+                  key={x}
                   onClick={() => {
-                    setCategory(c);
-                    setSavedOnly(false);
+                    setMenu(false);
+                    if (x === "SHOP") browse();
+                    else if (x === "HOME")
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    else
+                      document
+                        .getElementById(
+                          x === "BLOG"
+                            ? "journal"
+                            : x === "ABOUT"
+                              ? "confidence"
+                              : "contact",
+                        )
+                        ?.scrollIntoView({ behavior: "smooth" });
                   }}
                 >
-                  {c}
+                  {x}
+                  <ArrowRight size={16} />
+                </button>
+              ))}
+            </nav>
+          )}
+          {mega && (
+            <div id="shop-mega" className="hp-mega">
+              <div className="hp-mega-groups">
+                {departments.map((d) => (
+                  <div className="hp-department" key={d.name}>
+                    <button
+                      className="hp-department-title"
+                      onClick={() => {
+                        setMega(false);
+                        browse(d.category);
+                      }}
+                    >
+                      <d.icon size={33} />
+                      <strong>{d.name}</strong>
+                      <ChevronRight size={16} />
+                    </button>
+                    <ul>
+                      {d.links.map((label) => (
+                        <li key={label}>
+                          <button
+                            onClick={() => {
+                              setMega(false);
+                              browse(d.category);
+                              setQuery("");
+                            }}
+                          >
+                            {label}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                    <button
+                      className="hp-department-all"
+                      onClick={() => {
+                        setMega(false);
+                        browse(d.category);
+                      }}
+                    >
+                      View All {d.short || d.name}
+                      <ArrowRight size={15} />
+                    </button>
+                  </div>
+                ))}
+              </div>
+              <button
+                className="hp-mega-promo"
+                onClick={() => {
+                  setMega(false);
+                  browse();
+                }}
+                aria-label="Shop Blessed Friday collection"
+              >
+                <Art name="menuPromo" alt="Special offer Blessed Friday" />
+              </button>
+            </div>
+          )}
+        </header>
+        <main>
+          <section className="hp-hero" aria-label="Blessed Friday collection">
+            <Art
+              name="hero"
+              alt="Special Offer — Blessed Friday. Big brands, bigger savings. Up to 50% off on all items."
+              eager
+            />
+            <button
+              className="hp-hero-shop"
+              aria-label="Shop now"
+              onClick={() => browse()}
+            >
+              SHOP NOW{" "}
+              <span>
+                <ArrowRight size={18} />
+              </span>
+            </button>
+          </section>
+          <section className="hp-categories hp-container">
+            <div className="hp-kicker">SHOP BY CATEGORY</div>
+            <h1>Shop by Category</h1>
+            <p className="hp-subtitle">
+              Explore the essentials across our most-loved departments.
+            </p>
+            <div className="hp-category-grid">
+              {categoryTiles.map((c, i) => (
+                <button
+                  key={c.name}
+                  className="hp-category"
+                  onClick={() => browse(c.category)}
+                >
+                  <Art name={`category${i}`} alt={c.name} />
+                  <span>
+                    {c.name}
+                    <i>
+                      <ArrowRight size={16} />
+                    </i>
+                  </span>
                 </button>
               ))}
             </div>
-            <div className="filter-row">
-              <label className="search-box">
-                <Search size={17} />
-                <input
-                  id="search"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="Search your next find…"
-                  aria-label="Search products"
-                />
-                {query && (
-                  <button
-                    onClick={() => setQuery("")}
-                    aria-label="Clear search"
-                  >
-                    <X size={15} />
-                  </button>
-                )}
-              </label>
-              <label className="sort">
-                <SlidersHorizontal size={15} />
+          </section>
+          <section id="shop" className="hp-featured hp-container">
+            <h2>
+              {savedOnly
+                ? "Wishlist"
+                : category === "All finds"
+                  ? "Featured Products"
+                  : category}
+            </h2>
+            {(searchOpen || query || category !== "All finds" || savedOnly) && (
+              <div className="hp-search">
+                <label>
+                  <Search size={17} />
+                  <input
+                    id="search"
+                    aria-label="Search products"
+                    placeholder="Search products…"
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                  />
+                </label>
                 <select
                   aria-label="Sort products"
                   value={sort}
@@ -466,351 +639,454 @@ export default function Store() {
                   <option value="featured">Featured</option>
                   <option value="low">Price: low to high</option>
                   <option value="high">Price: high to low</option>
-                  <option value="name">Name: A–Z</option>
                 </select>
-                <ChevronDown size={14} />
-              </label>
-            </div>
-          </div>
-          <div className="results-line">
-            {visible.length} thoughtful finds{" "}
-            {savedOnly && (
-              <button onClick={() => setSavedOnly(false)}>
-                Show all products
-              </button>
+                <button
+                  onClick={() => {
+                    setSearchOpen(false);
+                    setQuery("");
+                    setCategory("All finds");
+                    setSavedOnly(false);
+                  }}
+                  aria-label="Clear filters"
+                >
+                  <X size={20} />
+                </button>
+              </div>
             )}
-          </div>
-          <div className="product-grid">
-            {visible.map((p) => (
-              <article className="product-card" key={p.id}>
-                <div className="product-image">
+            {catalogError && (
+              <p role="alert">Products could not be loaded. Please refresh.</p>
+            )}
+            <div className="hp-featured-grid">
+              {visible.map((p, i) => (
+                <article className="hp-featured-card" key={p.id}>
                   <button
-                    className="product-open"
+                    className="hp-featured-image"
                     onClick={() => setSelected(p)}
                     aria-label={`View ${p.name}`}
                   >
-                    <img
-                      src={photo(p.image, 600)}
-                      alt={p.name}
-                      loading="lazy"
-                    />
+                    {!live && p.id <= 8 ? (
+                      <Art name={`featured${p.id - 1}`} alt={p.name} />
+                    ) : (
+                      <img src={photo(p.image)} alt={p.name} />
+                    )}
                   </button>
-                  {p.badge && <span className="badge">{p.badge}</span>}
-                  <button
-                    className="favorite"
-                    aria-label={`${saved.includes(p.id) ? "Unsave" : "Save"} ${p.name}`}
-                    aria-pressed={saved.includes(p.id)}
-                    onClick={() => favorite(p.id)}
-                  >
-                    <Heart
-                      size={18}
-                      fill={saved.includes(p.id) ? "currentColor" : "none"}
-                    />
-                  </button>
-                  <button
-                    className="quick-add"
-                    disabled={p.stock < 1}
-                    onClick={() => add(p)}
-                  >
-                    <Plus size={16} /> {p.stock < 1 ? "Sold out" : "Add to bag"}
-                  </button>
-                </div>
-                <p className="product-category">{p.category}</p>
-                <button className="product-name" onClick={() => setSelected(p)}>
-                  {p.name}
-                </button>
-                <div className="product-bottom">
-                  <span>{money(p.price)}</span>
-                  <span className="color-dot" title={p.color} />
-                </div>
-              </article>
-            ))}
-          </div>
-          {!visible.length && (
-            <div className="empty">
-              <Search size={32} />
-              <h3>No finds just yet.</h3>
-              <p>Try another search or category.</p>
-              <button
-                className="primary"
-                onClick={() => {
-                  setQuery("");
-                  setCategory("All finds");
-                  setSavedOnly(false);
-                }}
-              >
-                See all finds <ArrowRight size={17} />
-              </button>
+                  <div className="hp-featured-body">
+                    <button
+                      onClick={() => setSelected(p)}
+                      className="hp-featured-name"
+                    >
+                      {live ? p.name : referenceNames[p.id - 1] || p.name}
+                    </button>
+                    <div className="hp-featured-rating">
+                      <span aria-label="Illustrative 4.4 star rating">
+                        ★★★★★ <b>4.4</b>
+                      </span>
+                      <small>{i % 3 === 1 ? "Few Left" : "5.3K+ Sold"}</small>
+                    </div>
+                    <strong>
+                      {live ? money(p.price) : referencePrices[i % 8]}
+                    </strong>
+                  </div>
+                </article>
+              ))}
             </div>
-          )}
-        </section>
-        <section className="deal-section wrap">
-          <div className="section-heading">
-            <div>
-              <div className="eyebrow">MORE TO DISCOVER</div>
-              <h2>Everyday favorites</h2>
-            </div>
-            <button className="text-link" onClick={() => browse()}>
-              View all products <ArrowRight size={16} />
-            </button>
-          </div>
-          <div className="deal-grid">
-            {catalog.slice(4, 8).map((p) => (
-              <article className="deal-card" key={p.id}>
-                <button
-                  style={{ padding: 0, width: "100%" }}
-                  onClick={() => setSelected(p)}
-                  aria-label={`View ${p.name}`}
-                >
-                  <img src={photo(p.image, 400)} alt={p.name} loading="lazy" />
-                </button>
-                <h3>{p.name}</h3>
-                <strong>{money(p.price)}</strong>
+            {!visible.length && !catalogError && (
+              <div className="empty">
+                <Search size={30} />
+                <h3>No products found</h3>
                 <button
                   className="primary"
-                  disabled={!p.stock}
-                  onClick={() => add(p)}
+                  onClick={() => {
+                    setQuery("");
+                    browse();
+                  }}
                 >
-                  <ShoppingBag size={14} />
-                  {p.stock ? "Add to bag" : "Sold out"}
+                  View all products
                 </button>
-              </article>
-            ))}
-          </div>
-        </section>
-        <section className="deal-section wrap">
-          <div className="eyebrow">SHOP BY CATEGORY</div>
-          <h2>Style, Care & Tech for a Brighter You</h2>
-          <div className="promo-grid">
-            {[
-              {
-                category: "Fashion",
-                title: "Everyday style, your way",
-                image: "/product-7.jpg",
-              },
-              {
-                category: "Beauty",
-                title: "A moment for yourself",
-                image: "/product-6.jpg",
-              },
-              {
-                category: "Tech",
-                title: "Smarter everyday essentials",
-                image: "/product-8.jpg",
-              },
-            ].map((x) => (
-              <button
-                className="promo-card"
-                key={x.category}
-                onClick={() => browse(x.category)}
-              >
-                <div>
-                  <div className="eyebrow">{x.category}</div>
-                  <h3>{x.title}</h3>
-                  <span>Shop now →</span>
+              </div>
+            )}
+          </section>
+          <section className="hp-deals">
+            <div className="hp-container">
+              <div className="hp-deal-heading">
+                <h2>Deal of the Week</h2>
+                <div className="hp-countdown">
+                  <span>Ends in</span>
+                  {[
+                    { v: "02", l: "Days" },
+                    { v: "14", l: "Hours" },
+                    { v: "36", l: "Minutes" },
+                    { v: "21", l: "Seconds" },
+                  ].map((x) => (
+                    <div key={x.l}>
+                      <b>{x.v}</b>
+                      <small>{x.l}</small>
+                    </div>
+                  ))}
+                  <button onClick={() => browse()}>
+                    See all <ArrowRight size={17} />
+                  </button>
                 </div>
-                <img src={photo(x.image, 400)} alt="" loading="lazy" />
+              </div>
+              <div className="hp-six-grid">
+                {dealProducts.map((p, i) => (
+                  <ReferenceCard
+                    key={p.name}
+                    product={p}
+                    artwork={`deal${i}`}
+                    deal
+                    onView={() => openReference(p)}
+                    onSave={() => openReference(p)}
+                    onAdd={() => openReference(p)}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+          <section className="hp-promotions hp-container">
+            <div className="hp-kicker">SHOP BY CATEGORY</div>
+            <h2>Style, Care &amp; Tech for a Brighter You</h2>
+            <p className="hp-subtitle">
+              Discover top brands, exclusive offers and everything you need in
+              one place.
+            </p>
+            <div className="hp-promo-grid">
+              {["Fashion", "Beauty", "Tech"].map((c, i) => (
+                <button
+                  key={c}
+                  onClick={() => browse(c)}
+                  aria-label={`Shop ${c}`}
+                >
+                  <Art
+                    name={`promo${i}`}
+                    alt={
+                      i === 0
+                        ? "Casual Leather Fashion for Men — up to 20% off"
+                        : i === 1
+                          ? "Glow Brighter Everyday — up to 30% off"
+                          : "Smarter Tech for a Better Day — up to 25% off"
+                    }
+                  />
+                </button>
+              ))}
+            </div>
+          </section>
+          <section className="hp-best hp-pattern">
+            <div className="hp-container">
+              <div className="hp-centered-heading">
+                <div className="hp-kicker hp-rule">CUSTOMER FAVORITES</div>
+                <h2>
+                  Best Selling <em>Products</em>
+                </h2>
+                <p>
+                  Discover our most loved items, chosen by customers like you.
+                </p>
+                <button className="hp-view-all" onClick={() => browse()}>
+                  View All Products <ArrowRight size={16} />
+                </button>
+              </div>
+              <div className="hp-carousel">
+                <button
+                  className="hp-carousel-arrow hp-arrow-left"
+                  aria-label="Previous best selling products"
+                  onClick={() => slideBest(-1)}
+                >
+                  <ChevronLeft />
+                </button>
+                <div className="hp-six-grid hp-scroll" id="best-products">
+                  {[
+                    ...bestProducts.slice(bestPage),
+                    ...bestProducts.slice(0, bestPage),
+                  ].map((p) => (
+                    <ReferenceCard
+                      key={p.name}
+                      product={p}
+                      artwork={`best${bestProducts.indexOf(p)}`}
+                      onView={() => openReference(p)}
+                      onSave={() => openReference(p)}
+                      onAdd={() => openReference(p)}
+                    />
+                  ))}
+                </div>
+                <button
+                  className="hp-carousel-arrow hp-arrow-right"
+                  aria-label="Next best selling products"
+                  onClick={() => slideBest(1)}
+                >
+                  <ChevronRight />
+                </button>
+              </div>
+              <div className="hp-dots" aria-label="Best seller carousel pages">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <button
+                    key={i}
+                    aria-label={`Show best seller page ${i + 1}`}
+                    aria-pressed={bestPage === i}
+                    className={bestPage === i ? "active" : ""}
+                    onClick={() => setBestPage(i)}
+                  />
+                ))}
+              </div>
+            </div>
+          </section>
+          <section id="brands" className="hp-brands hp-pattern">
+            <div className="hp-container">
+              <div className="hp-centered-heading">
+                <div className="hp-kicker hp-rule">TOP BRANDS</div>
+                <h2>
+                  Shop by <em>Brand</em>
+                </h2>
+                <p>Discover your favorite brands, all in one place.</p>
+              </div>
+              <div className="hp-carousel">
+                <button
+                  className="hp-carousel-arrow hp-arrow-left"
+                  aria-label="Previous brands"
+                  onClick={() => slideBrands(-1)}
+                >
+                  <ChevronLeft />
+                </button>
+                <div className="hp-brand-grid" id="brand-list">
+                  {[
+                    ...brandNames.slice(brandPage),
+                    ...brandNames.slice(0, brandPage),
+                  ].map((name) => (
+                    <button
+                      className="hp-brand-tile"
+                      key={name}
+                      onClick={() => setInfo("Brands")}
+                    >
+                      <Art
+                        name={`brand${brandNames.indexOf(name)}`}
+                        alt={`${name} logo`}
+                      />
+                      <span>{name}</span>
+                    </button>
+                  ))}
+                </div>
+                <button
+                  className="hp-carousel-arrow hp-arrow-right"
+                  aria-label="Next brands"
+                  onClick={() => slideBrands(1)}
+                >
+                  <ChevronRight />
+                </button>
+              </div>
+            </div>
+          </section>
+          <section id="confidence" className="hp-confidence hp-container">
+            <div className="hp-centered-heading">
+              <div className="hp-kicker">WHY SHOP WITH US</div>
+              <h2>Shop with Confidence</h2>
+              <p>
+                A better shopping experience, from checkout to your doorstep.
+              </p>
+            </div>
+            <div className="hp-benefit-grid">
+              {[
+                { icon: Truck, title: "Free Shipping", copy: "On all orders" },
+                {
+                  icon: ShieldCheck,
+                  title: "Secure Payments",
+                  copy: "Protected checkout",
+                },
+                { icon: Package, title: "Easy Returns", copy: "7-day returns" },
+                {
+                  icon: Headphones,
+                  title: "24/7 Support",
+                  copy: "Always here to help",
+                },
+              ].map((x) => (
+                <button
+                  key={x.title}
+                  onClick={() =>
+                    setInfo(
+                      x.title === "Secure Payments"
+                        ? "Checkout"
+                        : x.title === "24/7 Support"
+                          ? "Contact us"
+                          : "Shipping & returns",
+                    )
+                  }
+                >
+                  <span>
+                    <x.icon size={27} />
+                  </span>
+                  <h3>{x.title}</h3>
+                  <p>{x.copy}</p>
+                </button>
+              ))}
+            </div>
+          </section>
+          <section id="journal" className="hp-journal">
+            <div className="hp-container">
+              <div className="hp-centered-heading">
+                <div className="hp-kicker hp-rule">OUR JOURNAL</div>
+                <h2>Latest Blogs &amp; News</h2>
+                <p>
+                  Stories, tips and inspiration from the world of modern beauty,
+                  <br className="hp-desktop" /> wellness and everyday living.
+                </p>
+              </div>
+              <div className="hp-blog-grid">
+                {journalPosts.map((p, i) => (
+                  <button
+                    className="hp-blog-card"
+                    key={p.title}
+                    onClick={() => setInfo(p.title)}
+                  >
+                    <Art name={`blog${i}`} alt={p.title} />
+                    <div>
+                      <small>{p.tag}</small>
+                      <h3>{p.title}</h3>
+                      <span>
+                        <ArrowRight size={17} />
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </section>
+        </main>
+        <footer id="contact" className="hp-footer hp-container">
+          <div className="hp-footer-grid">
+            <div className="hp-contact">
+              <a href="/" aria-label="Brande home">
+                <Art
+                  name="footerLogo"
+                  alt="Brande — Buy Branded with Brande.pk"
+                />
+              </a>
+              <button onClick={() => setInfo("Contact us")}>
+                <Mail />
+                <span>brandifya@gmail.com</span>
               </button>
-            ))}
+              <button onClick={() => setInfo("Contact us")}>
+                <MapPin />
+                <span>
+                  29 SE 2nd Ave, Miami Florida
+                  <br />
+                  44041, United States
+                </span>
+              </button>
+              <button onClick={() => setInfo("Contact us")}>
+                <Phone />
+                <span>(+92) 413 90 762</span>
+              </button>
+            </div>
+            <div className="hp-footer-column">
+              <h3>Shopping</h3>
+              {[
+                "Wishlist",
+                "Shop by Brand",
+                "Offers",
+                "Track Order",
+                "Size Guide",
+              ].map((x) => (
+                <button
+                  key={x}
+                  onClick={() => {
+                    if (x === "Wishlist") {
+                      setSavedOnly(true);
+                      setCategory("All finds");
+                      document
+                        .getElementById("shop")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    } else if (x === "Shop by Brand")
+                      document
+                        .getElementById("brands")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    else if (x === "Offers")
+                      document
+                        .querySelector(".hp-deals")
+                        ?.scrollIntoView({ behavior: "smooth" });
+                    else setInfo(x);
+                  }}
+                >
+                  <ChevronRight size={15} />
+                  {x}
+                </button>
+              ))}
+            </div>
+            <div className="hp-footer-column">
+              <h3>Information</h3>
+              {[
+                "Track Order",
+                "Shipping & Returns",
+                "About Us",
+                "Help",
+                "Gift Cards",
+              ].map((x) => (
+                <button
+                  key={x}
+                  onClick={() =>
+                    setInfo(
+                      x === "Shipping & Returns"
+                        ? "Shipping & returns"
+                        : x === "About Us"
+                          ? "About Brandifya"
+                          : x === "Help"
+                            ? "Contact us"
+                            : x,
+                    )
+                  }
+                >
+                  <ChevronRight size={15} />
+                  {x}
+                </button>
+              ))}
+            </div>
+            <div className="hp-newsletter">
+              <h3>Subscribe.</h3>
+              <p>Our conversation is just getting started</p>
+              <form onSubmit={subscribe}>
+                <div>
+                  <input
+                    aria-label="Your email"
+                    type="email"
+                    placeholder="Enter Your Email"
+                    required
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
+                  <button disabled={subscribing}>
+                    {subscribing ? "SENDING…" : "SUBSCRIBE"}
+                  </button>
+                </div>
+              </form>
+              <h4>Follow Us On</h4>
+              <div className="hp-socials">
+                {["f", "𝕏", "in", "v"].map((x) => (
+                  <button
+                    key={x}
+                    aria-label={`Social profile ${x}`}
+                    onClick={() => setInfo("Social profiles")}
+                  >
+                    {x}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
-        </section>
-        <section className="editorial wrap">
-          <div className="editorial-image">
-            <img
-              src={photo("/category-4.jpg", 1000)}
-              alt="Inviting living space with natural textures"
-              loading="lazy"
+          <div className="hp-footer-bottom">
+            <p>
+              All rights reserved — {new Date().getFullYear()} ©{" "}
+              <strong>Brandifya</strong>
+            </p>
+            <Art
+              name="payments"
+              alt="PayPal, Visa, Mastercard, Apple Pay, Shop Pay, American Express"
             />
           </div>
-          <div className="editorial-copy">
-            <div className="eyebrow">LESS ORDINARY. MORE YOU.</div>
-            <h2>
-              It’s the little things
-              <br />
-              that make a <em>life.</em>
-            </h2>
-            <p>
-              The perfect corner. Your go-to accessory. That small upgrade that
-              makes every day feel better. We’re here to help you find them.
+          {!live && (
+            <p className="hp-demo-note">
+              Homepage design preview. Prices, ratings, promotions, contact
+              details and service terms shown are sample content.
             </p>
-            <button className="primary" onClick={() => browse("Home & Living")}>
-              Make yourself at home <ArrowUpRight size={18} />
-            </button>
-          </div>
-        </section>
-        <section className="brands-section wrap">
-          <div className="eyebrow">TOP BRANDS</div>
-          <h2>
-            Shop by <em>Brand</em>
-          </h2>
-          <p>Discover your favorites, all in one place.</p>
-          <div className="brands-grid">
-            {[
-              "Apple",
-              "Samsung",
-              "Nike",
-              "Adidas",
-              "Sony",
-              "Canon",
-              "Lenovo",
-              "Philips",
-            ].map((name) => (
-              <button key={name} onClick={() => setInfo("Brands")}>
-                {name}
-              </button>
-            ))}
-          </div>
-        </section>
-        <section className="confidence wrap">
-          <div className="eyebrow">WHY SHOP WITH US</div>
-          <h2>Shop with Confidence</h2>
-          <p>A clear shopping experience, from discovery to your bag.</p>
-          <div className="confidence-grid">
-            {[
-              {
-                icon: Truck,
-                title: "Delivery information",
-                text: "Confirmed at checkout",
-              },
-              {
-                icon: ShieldCheck,
-                title: "Secure card checkout",
-                text: "Stripe hosted payment",
-              },
-              {
-                icon: Package,
-                title: "Clear return terms",
-                text: "Merchant policy required",
-              },
-              {
-                icon: Heart,
-                title: "Here to help",
-                text: "Support setup in progress",
-              },
-            ].map((x) => (
-              <div key={x.title}>
-                <x.icon />
-                <h3>{x.title}</h3>
-                <p>{x.text}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className="closing wrap">
-          <span>✳</span>
-          <div>
-            <h2>A good find is just the beginning.</h2>
-            <p>
-              Explore, save your favorites, and make everyday a little more you.
-            </p>
-          </div>
-          <button className="text-link" onClick={() => browse()}>
-            Discover Brandifya <ArrowUpRight size={19} />
-          </button>
-        </section>
-      </main>
-      <section className="journal wrap">
-        <div className="eyebrow">OUR JOURNAL</div>
-        <h2>Latest Ideas & Inspiration</h2>
-        <div className="journal-grid">
-          {[
-            {
-              title: "A calmer home, one corner at a time",
-              tag: "HOME · LIVING",
-              image: "/category-4.jpg",
-            },
-            {
-              title: "The everyday bag checklist",
-              tag: "STYLE · EVERYDAY",
-              image: "/product-1.jpg",
-            },
-            {
-              title: "Make room for a simpler routine",
-              tag: "BEAUTY · LIFESTYLE",
-              image: "/product-6.jpg",
-            },
-          ].map((x) => (
-            <button
-              className="journal-card"
-              key={x.title}
-              onClick={() => setInfo(x.title)}
-            >
-              <img src={photo(x.image, 600)} alt="" loading="lazy" />
-              <div>
-                <small>{x.tag}</small>
-                <h3>
-                  {x.title} <ArrowUpRight size={13} />
-                </h3>
-              </div>
-            </button>
-          ))}
-        </div>
-      </section>
-      <footer>
-        <div className="footer-main wrap">
-          <div>
-            <a className="brand" href="/">
-              <img
-                src="/brande-logo.png"
-                alt="Brande — Buy branded with Brande"
-              />
-            </a>
-            <p>Buy branded with Brande.</p>
-            <span className="footer-demo">
-              {live ? "Storefront" : "Demo storefront"} · Prices in{" "}
-              {process.env.NEXT_PUBLIC_STORE_CURRENCY || "PKR"}
-            </span>
-          </div>
-          <div>
-            <h3>Discover</h3>
-            {["All finds", "Home & Living", "Fashion", "Tech"].map((c) => (
-              <button key={c} onClick={() => browse(c)}>
-                {c === "All finds" ? "Shop all" : c}
-              </button>
-            ))}
-          </div>
-          <div>
-            <h3>Here to help</h3>
-            {["Shipping & returns", "Contact us", "Privacy"].map((s) => (
-              <button key={s} onClick={() => setInfo(s)}>
-                {s}
-              </button>
-            ))}
-          </div>
-          <div>
-            <h3>Subscribe.</h3>
-            <p>Our conversation is just getting started.</p>
-            <form className="newsletter" onSubmit={subscribe}>
-              <input
-                type="email"
-                aria-label="Newsletter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                required
-                maxLength={254}
-              />
-              <label>
-                <input
-                  type="checkbox"
-                  checked={consent}
-                  onChange={(e) => setConsent(e.target.checked)}
-                  required
-                />
-                I agree to receive store updates by email.
-              </label>
-              <button className="primary" disabled={subscribing}>
-                {subscribing ? "Subscribing…" : "Subscribe"}{" "}
-                <ArrowRight size={14} />
-              </button>
-            </form>
-          </div>
-        </div>
-        <div className="footer-bottom wrap">
-          <span>© {new Date().getFullYear()} Brandifya.</span>
-          <span>Made for your everyday.</span>
-        </div>
-      </footer>
+          )}
+        </footer>
+      </div>
       <div className="toast" role="status" aria-live="polite">
         {notice && (
           <>

@@ -84,3 +84,7 @@ Shop validation includes production browser checks at 320/390/768/1024/1440 px, 
 ## Shared footer
 
 `app/store-footer.tsx` is rendered once by the root layout on every route, including future pages. It preserves the homepage footer markup, original logo, payment artwork and responsive styles. Pages must not create their own footer or override the shared footer layout. Newsletter submission and information dialogs live in the shared component; footer shopping links work across routes.
+
+## Homepage hero
+
+The full-width hero uses three manually controlled category banners with existing product photos and real HTML text/links. Desktop and tablet use a text/image composition; mobile stacks centered text above the products. Arrows, dots, keyboard arrow keys and horizontal touch swipes change banners. There is no autoplay. Animation respects reduced-motion preferences. No unconfirmed discount claims or small orange heading labels are added.

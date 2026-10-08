@@ -35,6 +35,7 @@ import {
   type CartItem,
 } from "../lib/catalog";
 import "./homepage.css";
+import HeroSlider from "./hero-slider";
 import art from "../lib/home-art.json";
 import {
   departments,
@@ -539,25 +540,9 @@ export default function Store() {
           )}
         </header>
         <main>
-          <section className="hp-hero" aria-label="Blessed Friday collection">
-            <Art
-              name="hero"
-              alt="Special Offer — Blessed Friday. Big brands, bigger savings. Up to 50% off on all items."
-              eager
-            />
-            <button
-              className="hp-hero-shop"
-              aria-label="Shop now"
-              onClick={() => browse()}
-            >
-              SHOP NOW{" "}
-              <span>
-                <ArrowRight size={18} />
-              </span>
-            </button>
-          </section>
+          <HeroSlider />
           <section className="hp-categories hp-container">
-            <h1>Shop by Category</h1>
+            <h2>Shop by Category</h2>
             <p className="hp-subtitle">
               Explore the essentials across our most-loved departments.
             </p>

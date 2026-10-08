@@ -87,4 +87,6 @@ Shop validation includes production browser checks at 320/390/768/1024/1440 px, 
 
 ## Homepage hero
 
-The full-width hero uses three manually controlled category banners with existing product photos and real HTML text/links. Desktop and tablet use a text/image composition; mobile stacks centered text above the products. Arrows, dots, keyboard arrow keys and horizontal touch swipes change banners. There is no autoplay. Animation respects reduced-motion preferences. No unconfirmed discount claims or small orange heading labels are added.
+The full-width hero uses three original photographic banner assets in `public/heroes`, with real HTML headings and shop links. Desktop banners are 560–680px tall; mobile places centered copy above the banner artwork. There are no visible arrows or pagination below the banner. Slides rotate every six seconds, pause on hover, keyboard focus or a hidden browser tab, and respect reduced-motion preferences. Keyboard arrows and horizontal touch swipes remain available; a keyboard-focusable pause control is visually hidden until focused.
+
+Banner artwork was generated for everyday essentials (charcoal studio), fashion/accessories (cream studio), and home/tech (neutral home scene), with products composed on the right and negative space on the left. Images contain no embedded text, logos, discounts, badges or buttons. Existing fonts, palette and shared footer are preserved.

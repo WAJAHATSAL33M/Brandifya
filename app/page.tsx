@@ -36,9 +36,9 @@ import {
 } from "../lib/catalog";
 import "./homepage.css";
 import HeroSlider from "./hero-slider";
+import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
 import {
-  departments,
   categoryTiles,
   referencePrices,
   referenceNames,
@@ -139,7 +139,6 @@ export default function Store() {
     [ready, setReady] = useState(false),
     [drawer, setDrawer] = useState(false),
     [selected, setSelected] = useState<Product | null>(null),
-    [menu, setMenu] = useState(false),
     [savedOnly, setSavedOnly] = useState(false),
     [notice, setNotice] = useState(""),
     [addedId, setAddedId] = useState<number | null>(null),
@@ -147,8 +146,7 @@ export default function Store() {
     [catalogError, setCatalogError] = useState(false);
   const [bestPage, setBestPage] = useState(0),
     [brandPage, setBrandPage] = useState(0);
-  const [mega, setMega] = useState(false),
-    [searchOpen, setSearchOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const brandNames = [
     "Apple",
     "Samsung",
@@ -371,174 +369,8 @@ export default function Store() {
         Skip to products
       </a>
       <div className="hp">
-        <header className="hp-header" onMouseLeave={() => setMega(false)}>
-          <div className="hp-nav hp-container">
-            <a className="hp-logo" href="/" aria-label="Brande home">
-              <img
-                src="/brande-original.png"
-                alt="Brande — Buy Branded with Brande.pk"
-              />
-            </a>
-            <nav className="hp-nav-links" aria-label="Main navigation">
-              <button
-                className="hp-nav-active"
-                aria-current="page"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-              >
-                HOME
-              </button>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("confidence")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                ABOUT
-              </button>
-              <button
-                onMouseEnter={() => setMega(true)}
-                aria-expanded={mega}
-                aria-controls="shop-mega"
-                onClick={() => window.location.assign("/shop")}
-              >
-                SHOP
-              </button>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("journal")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                BLOG
-              </button>
-              <button
-                onClick={() =>
-                  document
-                    .getElementById("contact")
-                    ?.scrollIntoView({ behavior: "smooth" })
-                }
-              >
-                CONTACT
-              </button>
-            </nav>
-            <div className="hp-nav-actions">
-              <button aria-label={`Open wishlist, ${saved.length} items`} aria-pressed={savedOnly} onClick={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }}><Heart size={25} /><span>{saved.length}</span></button>
-              <button
-                aria-label="Search products"
-                onClick={() => {
-                  setSearchOpen(!searchOpen);
-                  setTimeout(
-                    () => document.getElementById("search")?.focus(),
-                    50,
-                  );
-                }}
-              >
-                <Search size={27} />
-              </button>
-              <button
-                aria-label={`Open shopping bag, ${count} items`}
-                onClick={() => setDrawer(true)}
-              >
-                <ShoppingCart size={28} />
-                <span>{count}</span>
-              </button>
-              <button
-                className="hp-mobile-toggle"
-                aria-label="Toggle navigation"
-                aria-expanded={menu}
-                onClick={() => setMenu(!menu)}
-              >
-                <Menu size={25} />
-              </button>
-            </div>
-          </div>
-          {menu && (
-            <nav className="hp-mobile-nav" aria-label="Mobile navigation">
-              {["HOME", "ABOUT", "SHOP", "BLOG", "CONTACT"].map((x) => (
-                <button
-                  key={x}
-                  onClick={() => {
-                    setMenu(false);
-                    if (x === "SHOP") browse();
-                    else if (x === "HOME")
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    else
-                      document
-                        .getElementById(
-                          x === "BLOG"
-                            ? "journal"
-                            : x === "ABOUT"
-                              ? "confidence"
-                              : "contact",
-                        )
-                        ?.scrollIntoView({ behavior: "smooth" });
-                  }}
-                >
-                  {x}
-                  <ArrowRight size={16} />
-                </button>
-              ))}
-            </nav>
-          )}
-          {mega && (
-            <div id="shop-mega" className="hp-mega">
-              <div className="hp-mega-groups">
-                {departments.map((d) => (
-                  <div className="hp-department" key={d.name}>
-                    <button
-                      className="hp-department-title"
-                      onClick={() => {
-                        setMega(false);
-                        browse(d.category);
-                      }}
-                    >
-                      <d.icon size={33} />
-                      <strong>{d.name}</strong>
-                      <ChevronRight size={16} />
-                    </button>
-                    <ul>
-                      {d.links.map((label) => (
-                        <li key={label}>
-                          <button
-                            onClick={() => {
-                              setMega(false);
-                              browse(d.category);
-                              setQuery("");
-                            }}
-                          >
-                            {label}
-                          </button>
-                        </li>
-                      ))}
-                    </ul>
-                    <button
-                      className="hp-department-all"
-                      onClick={() => {
-                        setMega(false);
-                        browse(d.category);
-                      }}
-                    >
-                      View All {d.short || d.name}
-                      <ArrowRight size={15} />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                className="hp-mega-promo"
-                onClick={() => {
-                  setMega(false);
-                  browse();
-                }}
-                aria-label="Shop Blessed Friday collection"
-              >
-                <Art name="menuPromo" alt="Special offer Blessed Friday" />
-              </button>
-            </div>
-          )}
-        </header>
+        <StoreHeader active="home" wishlistCount={saved.length} bagCount={count} wishlistActive={savedOnly} onWishlist={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }} onBag={() => setDrawer(true)}/>
+
         <main>
           <HeroSlider />
           <section className="hp-categories hp-container">

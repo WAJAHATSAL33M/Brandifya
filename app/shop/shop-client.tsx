@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import StoreHeader from "../store-header";
+import ShopOpening from "./shop-opening";
 import { ArrowRight, ChevronRight, Heart, Search, ShoppingCart, Menu, X, SlidersHorizontal, Plus, Minus, Check } from "lucide-react";
 import { products, money, sanitizeCart, subtotal, type Product, type CartItem } from "../../lib/catalog";
 const image = (src: string) => src.startsWith("/") ? src : `https://images.unsplash.com/${src}?auto=format&fit=crop&w=800&q=85`;
@@ -17,9 +19,9 @@ export default function Shop() {
   const [catalog, setCatalog] = useState<Product[]>([]), [live, setLive] = useState(false), [loading, setLoading] = useState(true), [error, setError] = useState("");
   const [filters, setFilters] = useState<Filters>(initial), [initialized, setInitialized] = useState(false);
   const [saved, setSaved] = useState<number[]>([]), [cart, setCart] = useState<CartItem[]>([]), [storageReady, setStorageReady] = useState(false);
-  const [menu, setMenu] = useState(false), [filtersOpen, setFiltersOpen] = useState(false), [selected, setSelected] = useState<Product | null>(null), [bagOpen, setBagOpen] = useState(false);
+  const [filtersOpen, setFiltersOpen] = useState(false), [selected, setSelected] = useState<Product | null>(null), [bagOpen, setBagOpen] = useState(false);
   const [notice, setNotice] = useState("");
-  const searchRef = useRef<HTMLInputElement>(null), dialogRef = useRef<HTMLElement>(null);
+  const dialogRef = useRef<HTMLElement>(null);
   const modal = filtersOpen || !!selected || bagOpen;
   function update<K extends keyof Filters>(key: K, value: Filters[K]) { setFilters(f => ({...f, [key]: value})); }
   function updatePrice(key: "min" | "max", value: string) { if(value === "" || (Number.isFinite(Number(value)) && Number(value) >= 0)) update(key,value); }
@@ -64,17 +66,14 @@ export default function Shop() {
   const bagCount=cart.reduce((sum,item)=>sum+item.quantity,0);
   const wishlistCount=saved.filter(id=>catalog.some(p=>p.id===id)).length;
   function add(p:Product){const quantity=cart.find(item=>item.id===p.id)?.quantity||0;if(quantity>=p.stock){setNotice("Maximum available quantity reached");return;}setCart(items=>quantity?items.map(item=>item.id===p.id?{...item,quantity:item.quantity+1}:item):[...items,{id:p.id,quantity:1}]);setNotice(`${p.name} added to your bag`);}
+  function scrollResults() { document.getElementById("shop-results")?.scrollIntoView({behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}); }
+  function chooseCategory(category: string | null) { setFilters({...initial,categories:category?[category]:[]}); scrollResults(); }
   return <div className="hp shop-page">
     <a className="skip" href="#shop-results">Skip to products</a>
-    <header className="hp-header"><div className="hp-nav hp-container">
-      <Link className="hp-logo" href="/" aria-label="Brande home"><img src="/brande-original.png" alt="Brande — Buy Branded with Brande.pk" /></Link>
-      <nav className="hp-nav-links" aria-label="Main navigation"><Link href="/">HOME</Link><Link href="/#confidence">ABOUT</Link><Link href="/shop" className="hp-nav-active" aria-current="page">SHOP</Link><Link href="/#journal">BLOG</Link><Link href="/#contact">CONTACT</Link></nav>
-      <div className="hp-nav-actions"><button aria-label={`Open wishlist, ${wishlistCount} items`} aria-pressed={filters.saved} onClick={()=>{update("saved",!filters.saved);document.getElementById("shop-results")?.scrollIntoView({behavior:"smooth"});}}><Heart size={25}/><span>{wishlistCount}</span></button><button aria-label="Search products" onClick={()=>{searchRef.current?.scrollIntoView({behavior:"smooth",block:"center"});searchRef.current?.focus({preventScroll:true});}}><Search size={27}/></button><button aria-label={`Open shopping bag, ${bagCount} items`} onClick={()=>setBagOpen(true)}><ShoppingCart size={28}/><span>{bagCount}</span></button><button className="hp-mobile-toggle" aria-label="Toggle navigation" aria-expanded={menu} onClick={()=>setMenu(!menu)}><Menu size={25}/></button></div>
-    </div>{menu&&<nav className="hp-mobile-nav" aria-label="Mobile navigation"><Link href="/">HOME</Link><Link href="/#confidence">ABOUT</Link><Link href="/shop" onClick={()=>setMenu(false)}>SHOP</Link><Link href="/#journal">BLOG</Link><Link href="/#contact">CONTACT</Link></nav>}</header>
+    <StoreHeader active="shop" wishlistCount={wishlistCount} bagCount={bagCount} wishlistActive={filters.saved} onWishlist={() => { update("saved",!filters.saved); scrollResults(); }} onBag={() => setBagOpen(true)} query={filters.query} onQueryChange={value => update("query",value)} onSearch={() => scrollResults()}/>
     <main className="shop-container">
       <nav className="shop-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><ChevronRight size={14}/><span aria-current="page">Shop</span></nav>
-      <section className="shop-intro"><div><h1>Find your next <em>favorite.</em></h1><p>Explore home, style and everyday essentials. Find just what you’re looking for.</p></div><form className="shop-search" onSubmit={e=>e.preventDefault()} role="search"><Search size={21}/><input ref={searchRef} type="search" aria-label="Search products" placeholder="Search products, categories or colors" maxLength={200} value={filters.query} onChange={e=>update("query",e.target.value)}/>{filters.query&&<button type="button" aria-label="Clear search" onClick={()=>{update("query","");searchRef.current?.focus();}}><X size={18}/></button>}</form></section>
-      <nav className="shop-categories" aria-label="Browse categories"><button aria-pressed={!filters.categories.length} onClick={()=>update("categories",[])}>All products <span>{catalog.length}</span></button>{Object.entries(categoryCounts).map(([category,count])=><button key={category} aria-pressed={filters.categories.length===1&&filters.categories[0]===category} onClick={()=>update("categories",[category])}>{category}<span>{count}</span></button>)}</nav>
+      <ShopOpening categories={Object.entries(categoryCounts).map(([name,count]) => ({name,count,image:image(catalog.find(p => p.category === name)!.image)}))} selected={filters.categories} total={catalog.length} onCategory={chooseCategory} onFilters={() => { if (window.innerWidth <= 900) setFiltersOpen(true); else { document.getElementById("filter-title")?.scrollIntoView({behavior:"smooth",block:"center"}); document.querySelector<HTMLInputElement>(".shop-filters input")?.focus({preventScroll:true}); } }} onWishlist={() => { update("saved",true); scrollResults(); }} onBag={() => setBagOpen(true)}/>
       <div className="shop-layout">
         {filtersOpen&&<div className="shop-filter-backdrop" aria-hidden="true" onClick={()=>setFiltersOpen(false)}/>}
         <aside className={`shop-filters ${filtersOpen?"is-open":""}`} {...(filtersOpen?{role:"dialog","aria-modal":true,"aria-labelledby":"filter-title",ref:dialogRef}:{"aria-label":"Product filters"})}>

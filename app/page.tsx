@@ -174,7 +174,8 @@ export default function Store() {
         ?.scrollBy({ left: direction * 200, behavior: "smooth" });
   }
   function openReference(p: ReferenceProduct) {
-    setInfo(p.name);
+    const index=dealProducts.includes(p)?dealProducts.indexOf(p):6+bestProducts.indexOf(p);
+    window.location.assign(`/product/${-1-index}`);
   }
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
@@ -369,7 +370,7 @@ export default function Store() {
         Skip to products
       </a>
       <div className="hp">
-        <StoreHeader active="home" wishlistCount={saved.length} bagCount={count} wishlistActive={savedOnly} onWishlist={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }} onBag={() => setDrawer(true)}/>
+        <StoreHeader active="home" wishlistCount={saved.length} bagCount={count} wishlistActive={savedOnly} onWishlist={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }} onBag={() => window.location.assign("/cart")}/>
 
         <main>
           <HeroSlider />
@@ -446,7 +447,7 @@ export default function Store() {
                 <article className="hp-featured-card" key={p.id}>
                   <button
                     className="hp-featured-image"
-                    onClick={() => setSelected(p)}
+                    onClick={() => window.location.assign(`/product/${p.id}`)}
                     aria-label={`View ${p.name}`}
                   >
                     <img src={photo(p.image)} alt={p.name} loading="lazy" />
@@ -455,7 +456,7 @@ export default function Store() {
                   <button className="hp-heart" onClick={() => favorite(p.id)} aria-pressed={saved.includes(p.id)} aria-label={`${saved.includes(p.id) ? "Remove" : "Save"} ${p.name}${saved.includes(p.id) ? " from wishlist" : " to wishlist"}`}><Heart size={17} fill={saved.includes(p.id) ? "currentColor" : "none"} /></button>
                   <div className="hp-featured-body">
                     <button
-                      onClick={() => setSelected(p)}
+                      onClick={() => window.location.assign(`/product/${p.id}`)}
                       className="hp-featured-name"
                     >
                       {live ? p.name : referenceNames[p.id - 1] || p.name}
@@ -942,3 +943,4 @@ export default function Store() {
     </>
   );
 }
+

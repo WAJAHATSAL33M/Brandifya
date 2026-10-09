@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import "./homepage.css";
+import "./commerce.css";
+import "./heading-style.css";
 import StoreFooter from "./store-footer";
 export const metadata: Metadata = {
   title: "Brande | Brandifya Store",
@@ -16,3 +18,4 @@ export default function RootLayout({
     </html>
   );
 }
+

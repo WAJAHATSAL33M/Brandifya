@@ -62,3 +62,30 @@ test("delivery validation rejects missing details and malformed emails", () => {
   assert.throws(() => validateCustomer({ ...c, email: "invalid" }));
   assert.throws(() => validateCustomer({ ...c, name: "" }));
 });
+
+test("optional delivery details are retained and checked", () => {
+  const base = {
+    name: "Test User",
+    email: "test@example.com",
+    phone: "+92 300 1234567",
+    address: "123 Test Street",
+    city: "Lahore",
+    postalCode: "54000",
+    country: "PK",
+  };
+  const result = validateCustomer({
+    ...base,
+    region: " Punjab ",
+    addressLine2: "Floor 2",
+    alternatePhone: "+92 301 1234567",
+    landmark: "Near the park",
+    notes: "Ring the bell",
+    addressType: "Office",
+  });
+  assert.equal(result.region, "Punjab");
+  assert.equal(result.addressLine2, "Floor 2");
+  assert.equal(result.addressType, "Office");
+  assert.throws(() => validateCustomer({ ...base, alternatePhone: "invalid" }));
+  assert.throws(() => validateCustomer({ ...base, addressType: "Invalid" }));
+  assert.throws(() => validateCustomer({ ...base, notes: "x".repeat(501) }));
+});

@@ -43,6 +43,30 @@ export function validateCustomer(input: unknown) {
     throw new Error("Please enter a valid phone number.");
   if (!/^[A-Z]{2}$/.test(values.country))
     throw new Error("Invalid delivery country.");
+  for (const [key, max] of Object.entries({
+    region: 120,
+    addressLine2: 120,
+    alternatePhone: 30,
+    landmark: 160,
+    notes: 500,
+    addressType: 20,
+  })) {
+    const value = c[key];
+    if (value === undefined || value === "") continue;
+    if (typeof value !== "string" || value.trim().length > max)
+      throw new Error(`Please enter a valid ${key}.`);
+    values[key] = value.trim();
+  }
+  if (
+    values.alternatePhone &&
+    !/^[+\d\s()-]{7,30}$/.test(values.alternatePhone)
+  )
+    throw new Error("Please enter a valid alternate phone number.");
+  if (
+    values.addressType &&
+    !["Home", "Office", "Other"].includes(values.addressType)
+  )
+    throw new Error("Invalid address type.");
   return values;
 }
 export function calculateTotal(

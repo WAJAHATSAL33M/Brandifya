@@ -10,7 +10,7 @@ import {
   House,
   Menu,
   Search,
-  ShoppingBag,
+  ShoppingCart,
   X,
 } from "lucide-react";
 import { categoryHref } from "../lib/categories";
@@ -198,7 +198,7 @@ export default function StoreHeader(props: Props) {
         <div className="store-header-actions">
           <button
             className="store-header-wishlist"
-            aria-label={`Open wishlist, ${props.wishlistCount} items`}
+            aria-label={`Open favorites, ${props.wishlistCount} items`}
             aria-pressed={props.wishlistActive}
             onClick={() => {
               close();
@@ -220,13 +220,13 @@ export default function StoreHeader(props: Props) {
             <Search size={23} />
           </button>
           <button
-            aria-label={`Open shopping bag, ${props.bagCount} items`}
+            aria-label={`Open shopping cart, ${props.bagCount} items`}
             onClick={() => {
               close();
               props.onBag();
             }}
           >
-            <ShoppingBag size={24} />
+            <ShoppingCart size={24} />
             {props.bagCount > 0 && (
               <span className="store-header-count">{props.bagCount}</span>
             )}
@@ -294,7 +294,7 @@ export default function StoreHeader(props: Props) {
           <span>Search</span>
         </button>
         <button
-          aria-label={`Show wishlist, ${props.wishlistCount} items`}
+          aria-label={`Show favorites, ${props.wishlistCount} items`}
           aria-pressed={props.wishlistActive}
           onClick={() => {
             close();
@@ -302,7 +302,7 @@ export default function StoreHeader(props: Props) {
           }}
         >
           <Heart size={21} />
-          <span>Wishlist</span>
+          <span>Favorites</span>
         </button>
         <button
           aria-label={`View cart, ${props.bagCount} items`}
@@ -311,7 +311,7 @@ export default function StoreHeader(props: Props) {
             props.onBag();
           }}
         >
-          <ShoppingBag size={21} />
+          <ShoppingCart size={21} />
           <span>Cart</span>
           {props.bagCount > 0 && <b>{props.bagCount}</b>}
         </button>

@@ -55,7 +55,7 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
             <div className="hp-footer-column">
               <h3>Shopping</h3>
               {[
-                "Wishlist",
+                "Favorites",
                 "Shop by Brand",
                 "Offers",
                 "Track Order",
@@ -64,7 +64,7 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
                 <button
                   key={x}
                   onClick={() => {
-                    if (x === "Wishlist") window.location.assign("/shop?saved=1");
+                    if (x === "Favorites") window.location.assign("/shop?saved=1");
                     else if (x === "Shop by Brand") window.location.assign("/#brands");
                     else if (x === "Offers") window.location.assign("/#deals");
                     else if (x === "Track Order") window.location.assign("/order");

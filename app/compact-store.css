@@ -1131,3 +1131,23 @@
   .category-carousel-track { animation: none; }
   .hp .category-carousel-track > .category-carousel-copy { display: none !important; }
 }
+
+/* Product-page-only favorite and purchase controls. */
+.hp .commerce-product-cart {
+  display: grid;
+  place-items: center;
+  flex: 0 0 46px;
+  width: 46px;
+  min-height: 46px;
+  padding: 0;
+  border: 1px solid #ff5100;
+  border-radius: 5px;
+  background: #fff5ef;
+  color: #ff5100;
+}
+.hp .commerce-product-cart:disabled { opacity: .45; cursor: not-allowed; }
+.hp .commerce-product-cart:focus-visible { outline: 2px solid #ff5100; outline-offset: 3px; }
+@media (max-width: 360px) {
+  .hp .commerce-product-purchase { gap: 8px; flex-wrap: wrap; }
+  .hp .commerce-product-purchase .commerce-quantity { flex-basis: 100%; }
+}

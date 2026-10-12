@@ -39,7 +39,7 @@ export default function Checkout() {
   useEffect(() => {
     if (new URLSearchParams(location.search).has("cancelled"))
       setError(
-        "Payment was cancelled. Your bag is saved; no confirmed payment has been recorded.",
+        "Payment was cancelled. Your cart is saved; no confirmed payment has been recorded.",
       );
   }, []);
   async function submit(e: React.FormEvent<HTMLFormElement>) {

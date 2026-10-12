@@ -191,7 +191,7 @@ export function BagItems({
             <button
               className="commerce-remove"
               type="button"
-              aria-label={`Remove ${p.name} from bag`}
+              aria-label={`Remove ${p.name} from cart`}
               onClick={() => store.quantity(p.id, 0)}
             >
               <Trash2 size={17} />
@@ -235,7 +235,7 @@ export function EmptyBag() {
       <ShoppingBag size={36} />
       <h2>Your next favorite awaits.</h2>
       <p>
-        Your shopping bag is empty. Explore the collection and add something you
+        Your shopping cart is empty. Explore the collection and add something you
         love.
       </p>
       <Link className="commerce-primary" href="/shop">

@@ -312,7 +312,7 @@ export default function Shop({ category }: { category?: string } = {}) {
           )
         : [...items, { id: p.id, quantity: 1 }],
     );
-    setNotice(`${p.name} added to your bag`);
+    setNotice(`${p.name} added to your cart`);
   }
   function scrollResults() {
     document.getElementById("shop-results")?.scrollIntoView({
@@ -532,7 +532,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                   checked={filters.saved}
                   onChange={(e) => update("saved", e.target.checked)}
                 />
-                <span>My wishlist</span>
+                <span>My favorites</span>
                 <Heart size={15} />
               </label>
             </fieldset>
@@ -619,7 +619,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                 )}
                 {filters.saved && (
                   <button onClick={() => update("saved", false)}>
-                    Wishlist
+                    Favorites
                     <X size={13} />
                   </button>
                 )}
@@ -770,7 +770,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                   disabled={selected.stock <= 0}
                   onClick={() => add(selected)}
                 >
-                  Add to bag
+                  Add to Cart
                   <Plus size={17} />
                 </button>
                 <button
@@ -797,9 +797,9 @@ export default function Shop({ category }: { category?: string } = {}) {
               ref={dialogRef}
             >
               <div className="cart-header">
-                <h2 id="bag-title">Your shopping bag</h2>
+                <h2 id="bag-title">Your shopping cart</h2>
                 <button
-                  aria-label="Close shopping bag"
+                  aria-label="Close shopping cart"
                   onClick={() => setBagOpen(false)}
                 >
                   <X />
@@ -808,10 +808,10 @@ export default function Shop({ category }: { category?: string } = {}) {
               {!cart.length ? (
                 <div className="shop-empty">
                   <ShoppingCart size={32} />
-                  <h3>Your bag is empty</h3>
+                  <h3>Your cart is empty</h3>
                   <p>
                     Open a product to explore its details and add it to your
-                    bag.
+                    cart.
                   </p>
                   <button className="primary" onClick={() => setBagOpen(false)}>
                     Continue shopping

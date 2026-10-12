@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { Heart, Star } from "lucide-react";
+import { Star } from "lucide-react";
 import { money, type Product } from "../lib/catalog";
 export function ProductBadge({ label }: { label: string }) {
   const kind = /sold out|out of stock/i.test(label)
@@ -61,15 +61,6 @@ export default function ProductCard({
         <img src={src} alt={p.name} loading="lazy" width={600} height={450} />
       </Link>
       {badge && <ProductBadge label={badge} />}
-      <button
-        className="store-card-heart hp-heart"
-        type="button"
-        aria-label={`${saved ? "Remove" : "Save"} ${p.name}${saved ? " from wishlist" : " to wishlist"}`}
-        aria-pressed={saved}
-        onClick={onSave}
-      >
-        <Heart size={16} fill={saved ? "currentColor" : "none"} />
-      </button>
       <div className="store-card-body hp-featured-body">
         <Link
           className="store-card-name hp-featured-name"

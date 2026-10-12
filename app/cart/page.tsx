@@ -26,7 +26,7 @@ export default function Cart() {
         <StoreStatus store={store} />
         {store.loading ? (
           <p className="commerce-loading" role="status">
-            Loading your shopping bag…
+            Loading your shopping cart…
           </p>
         ) : !store.error && !store.cart.length ? (
           <EmptyBag />

@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { ProductBadge } from "../../product-card";
 import { categoryHref } from "../../../lib/categories";
-import { ArrowRight, Heart, Maximize2, ShoppingBag, X } from "lucide-react";
+import { ArrowRight, Heart, Maximize2, ShoppingCart, X } from "lucide-react";
 import { money, type Product } from "../../../lib/catalog";
 import { useStore } from "../../use-store";
 import {
@@ -133,11 +133,21 @@ export default function ProductPage({ product }: { product: Product }) {
                 className="commerce-primary"
                 disabled={store.loading || !!store.error || max < 1 || p.id < 1}
                 onClick={() => {
+                  if (store.add(p, amount)) window.location.assign("/cart");
+                }}
+              >
+                Buy Now
+              </button>
+              <button
+                className="commerce-product-cart"
+                aria-label="Add to Cart"
+                title="Add to Cart"
+                disabled={store.loading || !!store.error || max < 1 || p.id < 1}
+                onClick={() => {
                   if (store.add(p, amount)) setAdded(true);
                 }}
               >
-                <ShoppingBag size={17} />
-                {max < 1 ? "Unavailable" : "Add to Bag"}
+                <ShoppingCart size={20} aria-hidden="true" />
               </button>
             </div>
             <button
@@ -150,14 +160,14 @@ export default function ProductPage({ product }: { product: Product }) {
                 fill={store.saved.includes(p.id) ? "currentColor" : "none"}
               />
               {store.saved.includes(p.id)
-                ? "Saved to your wishlist"
-                : "Save to your wishlist"}
+                ? "Added to Favorites"
+                : "Add to Favorite"}
             </button>
             {added && (
               <div className="commerce-added" role="status">
-                Added to your bag.
+                Added to your cart.
                 <Link href="/cart">
-                  View bag
+                  Go to Cart
                   <ArrowRight size={15} />
                 </Link>
               </div>

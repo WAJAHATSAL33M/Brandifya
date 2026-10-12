@@ -297,7 +297,7 @@ export default function Store() {
           : c;
     });
     setAddedId(p.id);
-    setNotice(`${p.name} added to your bag`);
+    setNotice(`${p.name} added to your cart`);
   }
   function favorite(id: number) {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
@@ -341,7 +341,7 @@ export default function Store() {
       ? `Contact our team at ${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}.`
       : "Customer support details are being set up. This demo does not collect contact requests.",
     Privacy:
-      "Your bag and saved items are stored in this browser. When live checkout is enabled, delivery details are stored in the merchant database and card details are handled by Stripe. Newsletter signup stores your email with your consent. The merchant must publish a complete privacy policy and data retention terms before launch.",
+      "Your cart and saved items are stored in this browser. When live checkout is enabled, delivery details are stored in the merchant database and card details are handled by Stripe. Newsletter signup stores your email with your consent. The merchant must publish a complete privacy policy and data retention terms before launch.",
     Checkout:
       "Checkout is not yet available. This is a sample catalog: no order has been placed and no payment has been collected. Live checkout requires verified products, shipping rules, and a payment provider.",
   };
@@ -424,7 +424,7 @@ export default function Store() {
           <section id="shop" className="hp-featured hp-container">
             <h2>
               {savedOnly
-                ? "Wishlist"
+                ? "Favorites"
                 : category === "All finds"
                   ? "Featured Products"
                   : category}
@@ -802,11 +802,11 @@ export default function Store() {
             >
               <div className="modal-heading">
                 <h2 id="bag-title">
-                  Your bag <span>({count})</span>
+                  Your cart <span>({count})</span>
                 </h2>
                 <button
                   ref={closeRef}
-                  aria-label="Close bag"
+                  aria-label="Close cart"
                   onClick={() => setDrawer(false)}
                 >
                   <X />
@@ -816,7 +816,7 @@ export default function Store() {
                 <div className="empty">
                   <ShoppingBag size={40} />
                   <h3>Your next good find awaits.</h3>
-                  <p>Add something you love to your bag.</p>
+                  <p>Add something you love to your cart.</p>
                   <button
                     className="primary"
                     onClick={() => {
@@ -934,7 +934,7 @@ export default function Store() {
                   <b>{selected.stock} units</b>
                 </div>
                 <button className="primary" onClick={() => add(selected)}>
-                  Add to bag <Plus size={18} />
+                  Add to Cart <Plus size={18} />
                 </button>
                 <button
                   className="save-detail"

@@ -46,7 +46,7 @@ export function useStore() {
         setCart(next);
         localStorage.setItem("brandifya-cart", JSON.stringify(next));
         if (JSON.stringify(original) !== JSON.stringify(next))
-          setNotice("Your bag was updated to match current availability.");
+          setNotice("Your cart was updated to match current availability.");
       } catch {
         setCart([]);
       }
@@ -73,7 +73,7 @@ export function useStore() {
       }
     } else
       setError(
-        "We couldn’t load the products. Your saved bag has been kept. Please try again.",
+        "We couldn’t load the products. Your saved cart has been kept. Please try again.",
       );
     if (settings.status === "fulfilled") setConfig(settings.value);
     else setConfigError(true);
@@ -93,7 +93,7 @@ export function useStore() {
       localStorage.setItem("brandifya-cart", JSON.stringify(next));
     } catch {
       setNotice(
-        "Your browser couldn’t save your bag. Please allow browser storage before checkout.",
+        "Your browser couldn’t save your cart. Please allow browser storage before checkout.",
       );
     }
   }
@@ -126,7 +126,7 @@ export function useStore() {
           )
         : [...cart, { id: p.id, quantity: value }],
     );
-    setNotice(`${p.name} added to your bag.`);
+    setNotice(`${p.name} added to your cart.`);
     return true;
   }
   function favorite(id: number) {

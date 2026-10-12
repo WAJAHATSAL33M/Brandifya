@@ -20,12 +20,16 @@ export default function ProductPage({ product }: { product: Product }) {
   const store = useStore(),
     [amount, setAmount] = useState(1),
     [zoom, setZoom] = useState(false),
+    [galleryImage, setGalleryImage] = useState(""),
     [added, setAdded] = useState(false);
   const close = useRef<HTMLButtonElement>(null),
     trigger = useRef<HTMLButtonElement>(null);
   const current = store.catalog.find((p) => p.id === product.id),
     p = current || product;
-  const { badge, lowStock, promotion, minutesLeft } = useMerchandising(p, !!store.config?.live);
+  const { badge, lowStock, promotion, minutesLeft } = useMerchandising(
+    p,
+    !!store.config?.live,
+  );
   const max = current
     ? Math.max(
         0,
@@ -64,7 +68,7 @@ export default function ProductPage({ product }: { product: Product }) {
         <section className="commerce-product-detail">
           <div className="commerce-product-visual">
             <img
-              src={productImage(p.image)}
+              src={productImage(galleryImage || p.image)}
               alt={p.name}
               width={900}
               height={900}
@@ -79,6 +83,50 @@ export default function ProductPage({ product }: { product: Product }) {
               <Maximize2 size={20} />
             </button>
             {badge && <ProductBadge label={badge} />}
+            {!!p.media?.length && (
+              <div className="product-media-gallery">
+                <button
+                  type="button"
+                  className="product-gallery-image"
+                  onClick={() => setGalleryImage("")}
+                  aria-label="Show main product image"
+                >
+                  <img
+                    src={productImage(p.image)}
+                    alt=""
+                    width={100}
+                    height={100}
+                  />
+                </button>
+                {p.media.map((media, i) =>
+                  media.type === "image" ? (
+                    <button
+                      type="button"
+                      className="product-gallery-image"
+                      key={i}
+                      onClick={() => setGalleryImage(media.url)}
+                      aria-label={media.alt || `Show product image ${i + 1}`}
+                    >
+                      <img
+                        src={media.url}
+                        alt=""
+                        width={100}
+                        height={100}
+                        loading="lazy"
+                      />
+                    </button>
+                  ) : (
+                    <video
+                      key={i}
+                      src={media.url}
+                      controls
+                      preload="metadata"
+                      aria-label={media.alt || "Product video"}
+                    />
+                  ),
+                )}
+              </div>
+            )}
           </div>
           <div className="commerce-product-copy">
             <Link
@@ -89,9 +137,21 @@ export default function ProductPage({ product }: { product: Product }) {
               <ArrowRight size={14} />
             </Link>
             <h1>{p.name}</h1>
-            <ProductPrice className="commerce-product-price" price={p.price} originalPrice={p.originalPrice} />
-            {lowStock && <p className="product-stock-status">Only {p.stock} left in stock</p>}
-            {promotion && <p className="product-promotion-status">Offer ends in {minutesLeft} min</p>}
+            <ProductPrice
+              className="commerce-product-price"
+              price={p.price}
+              originalPrice={p.originalPrice}
+            />
+            {lowStock && (
+              <p className="product-stock-status">
+                Only {p.stock} left in stock
+              </p>
+            )}
+            {promotion && (
+              <p className="product-promotion-status">
+                Offer ends in {minutesLeft} min
+              </p>
+            )}
             <p className="commerce-availability">
               {store.loading
                 ? "Checking availability…"
@@ -167,6 +227,19 @@ export default function ProductPage({ product }: { product: Product }) {
               <summary>Product details</summary>
               <p>{p.description}</p>
             </details>
+            {!!Object.keys(p.attributes || {}).length && (
+              <details open>
+                <summary>Specifications</summary>
+                <dl className="commerce-product-facts">
+                  {Object.entries(p.attributes || {}).map(([label, value]) => (
+                    <div key={label}>
+                      <dt>{label}</dt>
+                      <dd>{value}</dd>
+                    </div>
+                  ))}
+                </dl>
+              </details>
+            )}
             <details>
               <summary>Delivery &amp; payment</summary>
               <p>
@@ -213,7 +286,7 @@ export default function ProductPage({ product }: { product: Product }) {
           >
             <X />
           </button>
-          <img src={productImage(p.image)} alt={p.name} />
+          <img src={productImage(galleryImage || p.image)} alt={p.name} />
         </div>
       )}
     </div>

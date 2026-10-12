@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
+import AccountLink from "./account-link";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -193,9 +194,11 @@ export default function StoreHeader(props: Props) {
             <Link href="/contact" onClick={close}>
               Contact
             </Link>
+            <AccountLink />
           </nav>
         </div>
         <div className="store-header-actions">
+          <AccountLink />
           <button
             className="store-header-wishlist"
             aria-label={`Open favorites, ${props.wishlistCount} items`}

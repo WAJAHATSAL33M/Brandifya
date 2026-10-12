@@ -15,7 +15,7 @@ import type { Store } from "./use-store";
 import ProductCard from "./product-card";
 import StoreHeader from "./store-header";
 export const productImage = (src: string) =>
-  src.startsWith("/")
+  src.startsWith("/") || src.startsWith("https://")
     ? src
     : `https://images.unsplash.com/${src}?auto=format&fit=crop&w=1000&q=85`;
 export function CommerceHeader({ store }: { store: Store }) {
@@ -235,8 +235,8 @@ export function EmptyBag() {
       <ShoppingBag size={36} />
       <h2>Your next favorite awaits.</h2>
       <p>
-        Your shopping cart is empty. Explore the collection and add something you
-        love.
+        Your shopping cart is empty. Explore the collection and add something
+        you love.
       </p>
       <Link className="commerce-primary" href="/shop">
         Explore the shop

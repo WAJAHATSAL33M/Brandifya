@@ -29,7 +29,20 @@ export default function Checkout() {
     [method, setMethod] = useState("cod"),
     [addressType, setAddressType] = useState("Home"),
     [busy, setBusy] = useState(false),
-    [error, setError] = useState("");
+    [error, setError] = useState(""),
+    [profile, setProfile] = useState<Record<string, string> | null>(null);
+  useEffect(() => {
+    let active = true;
+    fetch("/api/account", { cache: "no-store" })
+      .then((r) => r.json())
+      .then((d) => {
+        if (active) setProfile(d.user || null);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
   useEffect(() => {
     if (store.config)
       setMethod(
@@ -53,7 +66,12 @@ export default function Checkout() {
     );
     customer.country = store.config.country;
     customer.addressType = addressType;
-    const fingerprint = JSON.stringify({ cart: store.cart, customer, method });
+    const fingerprint = JSON.stringify({
+      cart: store.cart,
+      customer,
+      method,
+      customerId: profile?.id || null,
+    });
     let requestKey = "";
     try {
       const previous = JSON.parse(
@@ -159,6 +177,7 @@ export default function Checkout() {
                       Full name
                       <input
                         name="name"
+                        defaultValue={profile?.name || ""}
                         required
                         maxLength={120}
                         autoComplete="name"
@@ -166,25 +185,26 @@ export default function Checkout() {
                       />
                     </label>
                     <label>
-                      Email address
-                      <input
-                        name="email"
-                        type="email"
-                        required
-                        maxLength={254}
-                        autoComplete="email"
-                        placeholder="you@example.com"
-                      />
-                    </label>
-                    <label>
                       Phone number
                       <input
                         name="phone"
+                        defaultValue={profile?.phone || ""}
                         type="tel"
                         required
                         maxLength={30}
                         autoComplete="tel"
                         placeholder="+92 300 1234567"
+                      />
+                    </label>
+                    <label>
+                      Email address <small>(optional)</small>
+                      <input
+                        name="email"
+                        defaultValue={profile?.email || ""}
+                        type="email"
+                        maxLength={254}
+                        autoComplete="email"
+                        placeholder="you@example.com"
                       />
                     </label>
                     <label>
@@ -246,6 +266,7 @@ export default function Checkout() {
                       Full address
                       <input
                         name="address"
+                        defaultValue={profile?.address || ""}
                         required
                         maxLength={300}
                         autoComplete="street-address"
@@ -265,6 +286,7 @@ export default function Checkout() {
                       City
                       <input
                         name="city"
+                        defaultValue={profile?.city || ""}
                         required
                         maxLength={120}
                         autoComplete="address-level2"
@@ -275,6 +297,7 @@ export default function Checkout() {
                       Postal code
                       <input
                         name="postalCode"
+                        defaultValue={profile?.postalCode || ""}
                         required
                         maxLength={20}
                         autoComplete="postal-code"

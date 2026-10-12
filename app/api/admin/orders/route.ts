@@ -1,50 +1,82 @@
-import { timingSafeEqual } from "node:crypto";
 import { db } from "../../../../lib/db";
-function authorized(request: Request) {
-  const token = process.env.ADMIN_API_TOKEN;
-  if (!token || token.length < 32) return false;
-  const a = Buffer.from(request.headers.get("authorization") || ""),
-    b = Buffer.from(`Bearer ${token}`);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
+import { adminAuthorized } from "../../../../lib/auth";
+import { safeMediaUrl } from "../../../../lib/auth-core";
 export async function GET(request: Request) {
-  if (!authorized(request))
+  if (!adminAuthorized(request))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
+    const url = new URL(request.url),
+      offset = Math.max(
+        0,
+        Math.floor(Number(url.searchParams.get("offset")) || 0),
+      );
     const orders =
-      await db()`SELECT * FROM orders ORDER BY created_at DESC LIMIT 100`;
+      await db()`SELECT * FROM orders ORDER BY created_at DESC LIMIT 100 OFFSET ${offset}`;
+    const result = [];
+    for (const o of orders) {
+      const items =
+        await db()`SELECT product_id,name,price_minor,quantity FROM order_items WHERE order_id=${o.id}`;
+      result.push({ ...o, items });
+    }
+    const summary =
+      await db()`SELECT count(*)::int AS total,count(*) FILTER (WHERE created_at::date=current_date)::int AS today,count(*) FILTER (WHERE status IN ('confirmed','paid','processing'))::int AS pending FROM orders`;
     return Response.json(
-      { orders },
+      { orders: result, summary: summary[0] },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {
-    return Response.json({ error: "Database unavailable" }, { status: 503 });
+    return Response.json(
+      { error: "Orders unavailable. Check database setup." },
+      { status: 503 },
+    );
   }
 }
 export async function PATCH(request: Request) {
-  if (!authorized(request))
+  if (!adminAuthorized(request))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
-    const body = await request.json();
+    const b = await request.json();
+    if (typeof b.id !== "string" || !/^[0-9a-f-]{36}$/i.test(b.id))
+      throw Error("Invalid order.");
     if (
-      !/^[a-f0-9-]{36}$/i.test(body.id) ||
-      !["processing", "shipped", "delivered"].includes(body.status)
+      b.trackingNumber !== undefined &&
+      (typeof b.trackingNumber !== "string" || b.trackingNumber.length > 100)
     )
-      return Response.json({ error: "Invalid update" }, { status: 400 });
-    const previous: Record<string, string[]> = {
-      processing: ["confirmed", "paid"],
-      shipped: ["processing"],
-      delivered: ["shipped"],
-    };
-    const result =
-      await db()`UPDATE orders SET status=${body.status},updated_at=now() WHERE id=${body.id} AND status IN ${db()(previous[body.status])} RETURNING id,status`;
-    return result.length
-      ? Response.json(result[0])
-      : Response.json(
-          { error: "Order not found or invalid status transition" },
-          { status: 409 },
-        );
-  } catch {
-    return Response.json({ error: "Update failed" }, { status: 503 });
+      throw Error("Invalid tracking number.");
+    if (
+      b.trackingUrl !== undefined &&
+      (typeof b.trackingUrl !== "string" ||
+        (b.trackingUrl && !safeMediaUrl(b.trackingUrl)))
+    )
+      throw Error("Invalid tracking URL.");
+    await db().begin(async (sql) => {
+      const rows =
+        await sql`SELECT status FROM orders WHERE id=${b.id} FOR UPDATE`;
+      if (!rows.length) throw Error("Order not found.");
+      const previous: Record<string, string[]> = {
+        processing: ["confirmed", "paid"],
+        shipped: ["processing"],
+        delivered: ["shipped"],
+      };
+      if (b.status) {
+        if (!previous[b.status]?.includes(rows[0].status))
+          throw Error("Invalid status transition.");
+        await sql`UPDATE orders SET status=${b.status},updated_at=now() WHERE id=${b.id}`;
+        await sql`INSERT INTO order_events (order_id,status) VALUES (${b.id},${b.status})`;
+      }
+      if (b.trackingNumber !== undefined)
+        await sql`UPDATE orders SET tracking_number=${b.trackingNumber},tracking_url=${b.trackingUrl || ""},updated_at=now() WHERE id=${b.id}`;
+    });
+    return Response.json({ ok: true });
+  } catch (e) {
+    return Response.json(
+      {
+        error:
+          e instanceof Error && !/postgres|column|relation/i.test(e.message)
+            ? e.message
+            : "Order update failed.",
+      },
+      { status: 400 },
+    );
   }
 }

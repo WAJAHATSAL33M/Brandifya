@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { randomUUID, createHash } from "node:crypto";
+import { sessionUser } from "../../../lib/auth";
 import { db, cancelOrder } from "../../../lib/db";
 import {
   validateItems,
@@ -26,7 +27,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "The store is not accepting orders yet. Your bag is saved; no order or payment has been created.",
+          "The store is not accepting orders yet. Your cart is saved; no order or payment has been created.",
       },
       { status: 503 },
     );
@@ -70,8 +71,16 @@ export async function POST(request: Request) {
       { error: "This payment method is unavailable." },
       { status: 400 },
     );
+  const account = await sessionUser();
   const fingerprint = createHash("sha256")
-    .update(JSON.stringify({ items, customer, method: body.method }))
+    .update(
+      JSON.stringify({
+        items,
+        customer,
+        method: body.method,
+        customerId: account?.id || null,
+      }),
+    )
     .digest("hex");
   const currency = process.env.NEXT_PUBLIC_STORE_CURRENCY || "PKR";
   const shipping = Number(process.env.SHIPPING_MINOR);
@@ -84,7 +93,7 @@ export async function POST(request: Request) {
         await sql`SELECT id,status,payment_method,stripe_session_id,request_fingerprint,currency,shipping_minor FROM orders WHERE request_key=${body.requestKey}`;
       if (previous.length) {
         if (previous[0].request_fingerprint !== fingerprint)
-          throw new Error("Your bag has changed. Start a new checkout.");
+          throw new Error("Your cart has changed. Start a new checkout.");
         const rows =
           await sql`SELECT product_id AS id,name,price_minor,quantity FROM order_items WHERE order_id=${previous[0].id} ORDER BY product_id`;
         return {
@@ -100,7 +109,7 @@ export async function POST(request: Request) {
         const p = rows[0];
         if (!p || p.stock < item.quantity)
           throw new Error(
-            "A product is unavailable or its stock has changed. Please update your bag.",
+            "A product is unavailable or its stock has changed. Please update your cart.",
           );
         if (p.currency !== currency)
           throw new Error("Product currency mismatch.");
@@ -116,7 +125,7 @@ export async function POST(request: Request) {
         shipping,
       );
       id = randomUUID();
-      await sql`INSERT INTO orders (id,request_key,request_fingerprint,status,payment_method,currency,total_minor,shipping_minor,customer) VALUES (${id},${body.requestKey},${fingerprint},${body.method === "cod" ? "confirmed" : "awaiting_payment"},${body.method},${currency},${amount},${shipping},${sql.json(customer)})`;
+      await sql`INSERT INTO orders (id,request_key,request_fingerprint,status,payment_method,currency,total_minor,shipping_minor,customer,customer_id) VALUES (${id},${body.requestKey},${fingerprint},${body.method === "cod" ? "confirmed" : "awaiting_payment"},${body.method},${currency},${amount},${shipping},${sql.json(customer)},${account?.id || null})`;
       for (const line of lines) {
         await sql`INSERT INTO order_items (order_id,product_id,name,price_minor,quantity) VALUES (${id},${line.id},${line.name},${line.price_minor},${line.quantity})`;
         await sql`UPDATE products SET stock=stock-${line.quantity} WHERE id=${line.id}`;
@@ -163,8 +172,8 @@ export async function POST(request: Request) {
       cancel_url: `${origin}/checkout?cancelled=1`,
       client_reference_id: id,
       "metadata[order_id]": id,
-      customer_email: customer.email,
     });
+    if (customer.email) form.set("customer_email", customer.email);
     result.lines.forEach((line, i) => {
       form.set(
         `line_items[${i}][price_data][currency]`,

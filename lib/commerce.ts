@@ -1,7 +1,7 @@
 export type CheckoutItem = { id: number; quantity: number };
 export function validateItems(input: unknown): CheckoutItem[] {
   if (!Array.isArray(input) || input.length === 0 || input.length > 50)
-    throw new Error("Your bag must contain 1–50 products.");
+    throw new Error("Your cart must contain 1–50 products.");
   const seen = new Set<number>();
   return input.map((i) => {
     if (
@@ -25,7 +25,6 @@ export function validateCustomer(input: unknown) {
   const values: Record<string, string> = {};
   for (const [key, max] of Object.entries({
     name: 120,
-    email: 254,
     phone: 30,
     address: 300,
     city: 120,
@@ -37,7 +36,14 @@ export function validateCustomer(input: unknown) {
       throw new Error(`Please enter a valid ${key}.`);
     values[key] = value.trim();
   }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
+  const email = c.email;
+  if (
+    email !== undefined &&
+    (typeof email !== "string" || email.trim().length > 254)
+  )
+    throw new Error("Please enter a valid email address.");
+  values.email = typeof email === "string" ? email.trim() : "";
+  if (values.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email))
     throw new Error("Please enter a valid email address.");
   if (!/^[+\d\s()-]{7,30}$/.test(values.phone))
     throw new Error("Please enter a valid phone number.");

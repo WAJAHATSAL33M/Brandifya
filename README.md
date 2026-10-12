@@ -135,3 +135,10 @@ The shared header now uses one desktop navigation row and an expandable search f
 Category artwork: `public/categories/electronics.webp`, `fashion.webp`, `grocery.webp`, `home.webp` and `fitness.webp` are new transparent cutouts made with the built-in image-generation tool. Prompt set: realistic matte-black headphones, cognac handbag, grocery bag with fresh produce, cream electric kettle and black fitness watch; centered square studio photography, full object visible, transparent background, no text/logos/badges/buttons, designed for pastel category tiles. Originals remain unmodified; 512px WebP exports retain transparency.
 
 Compact-style validation: production build and five commerce tests pass. Browser checks span 320/390/768/1024/1440/1920px on homepage, shop, category, product, cart and checkout. They check no horizontal overflow, shared header/footer, compact header sizes, mobile navigation and modal behavior, catalog price consistency, persistent hearts, expandable search, badge variants and optional-statistics fixtures. Category filter/search/sort/URL restoration and navigation regressions are also checked. New cutouts retain alpha transparency and are used only as category decoration, not replacement catalog product photography.
+
+
+## Product management and customer accounts
+
+Open `/admin` directly for product editing, inventory, uploads, order processing and customer records. Admin access uses the private `ADMIN_API_TOKEN`; no public navigation link is added. Customer login, registration, profile editing and private order history are at `/account`.
+
+Before live activation, apply the additive database schema and configure email and social providers as described in [Account and admin setup](database/accounts-and-admin.md). Products from the configured database can be previewed while `STORE_LIVE=false`; this does not enable checkout.

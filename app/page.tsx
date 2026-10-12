@@ -99,12 +99,13 @@ function ReferenceCard({
 }
 
 const photo = (id: string, w = 800) =>
-  id.startsWith("/")
+  id.startsWith("/") || id.startsWith("https://")
     ? id
     : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=85`;
 export default function Store() {
   const [catalog, setCatalog] = useState<Product[]>(products),
-    [live, setLive] = useState(false);
+    [live, setLive] = useState(false),
+    [managed, setManaged] = useState(false);
   const [category, setCategory] = useState("All finds"),
     [query, setQuery] = useState(""),
     [sort, setSort] = useState("featured"),
@@ -183,6 +184,7 @@ export default function Store() {
       .then((data) => {
         setCatalog(data.products);
         setLive(data.live);
+        setManaged(data.managed === true);
         try {
           setCart(
             sanitizeCart(
@@ -377,46 +379,53 @@ export default function Store() {
             <div className="category-carousel-viewport">
               <div className="category-carousel-track">
                 {[0, 1].map((copy) => (
-                <div key={copy} className={`hp-category-grid${copy ? " category-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
-              {categoryTiles.map((c, i) => (
-                <button
-                  key={c.name}
-                  className="hp-category"
-                  tabIndex={copy ? -1 : undefined}
-                  onClick={() => browse(c.category)}
-                >
-                  {i === 5 ? (
-                    <span className="compact-category-more" aria-hidden="true">
-                      <b />
-                      <b />
-                      <b />
-                    </span>
-                  ) : (
-                    <img
-                      className="compact-category-image"
-                      src={
-                        [
-                          "/categories/electronics.webp",
-                          "/categories/fashion.webp",
-                          "/categories/grocery.webp",
-                          "/categories/home.webp",
-                          "/categories/fitness.webp",
-                        ][i]
-                      }
-                      alt=""
-                      width={300}
-                      height={300}
-                    />
-                  )}
-                  <span>
-                    {c.name}
-                    <i>
-                      <ArrowRight size={16} />
-                    </i>
-                  </span>
-                </button>
-              ))}
-            </div>
+                  <div
+                    key={copy}
+                    className={`hp-category-grid${copy ? " category-carousel-copy" : ""}`}
+                    aria-hidden={copy ? true : undefined}
+                  >
+                    {categoryTiles.map((c, i) => (
+                      <button
+                        key={c.name}
+                        className="hp-category"
+                        tabIndex={copy ? -1 : undefined}
+                        onClick={() => browse(c.category)}
+                      >
+                        {i === 5 ? (
+                          <span
+                            className="compact-category-more"
+                            aria-hidden="true"
+                          >
+                            <b />
+                            <b />
+                            <b />
+                          </span>
+                        ) : (
+                          <img
+                            className="compact-category-image"
+                            src={
+                              [
+                                "/categories/electronics.webp",
+                                "/categories/fashion.webp",
+                                "/categories/grocery.webp",
+                                "/categories/home.webp",
+                                "/categories/fitness.webp",
+                              ][i]
+                            }
+                            alt=""
+                            width={300}
+                            height={300}
+                          />
+                        )}
+                        <span>
+                          {c.name}
+                          <i>
+                            <ArrowRight size={16} />
+                          </i>
+                        </span>
+                      </button>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
@@ -522,7 +531,7 @@ export default function Store() {
                 </button>
               </div>
               <div className="hp-six-grid">
-                {live
+                {live || managed
                   ? catalog
                       .slice(0, 6)
                       .map((p) => (
@@ -531,7 +540,7 @@ export default function Store() {
                           product={p}
                           saved={saved.includes(p.id)}
                           onSave={() => favorite(p.id)}
-                          live
+                          live={live}
                         />
                       ))
                   : dealProducts.map((p, i) => (
@@ -599,7 +608,7 @@ export default function Store() {
                   <ChevronLeft />
                 </button>
                 <div className="hp-six-grid hp-scroll" id="best-products">
-                  {live
+                  {live || managed
                     ? catalog
                         .slice(0, 6)
                         .map((p) => (
@@ -608,7 +617,7 @@ export default function Store() {
                             product={p}
                             saved={saved.includes(p.id)}
                             onSave={() => favorite(p.id)}
-                            live
+                            live={live}
                           />
                         ))
                     : [
@@ -749,7 +758,20 @@ export default function Store() {
                     key={p.title}
                     onClick={() => window.location.assign(`/blog/${p.slug}`)}
                   >
-                    <span className="hp-art" style={{ aspectRatio: "1.65" }}><img src={p.image} alt="" width={900} height={450} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}} /></span>
+                    <span className="hp-art" style={{ aspectRatio: "1.65" }}>
+                      <img
+                        src={p.image}
+                        alt=""
+                        width={900}
+                        height={450}
+                        loading="lazy"
+                        style={{
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                        }}
+                      />
+                    </span>
                     <div>
                       <small>{p.tag}</small>
                       <h3>{p.title}</h3>
@@ -930,7 +952,7 @@ export default function Store() {
                   Color <b>{selected.color}</b>
                 </div>
                 <div className="detail-line">
-                  {live ? "Availability" : "Sample availability"}{" "}
+                  {live || managed ? "Availability" : "Sample availability"}{" "}
                   <b>{selected.stock} units</b>
                 </div>
                 <button className="primary" onClick={() => add(selected)}>

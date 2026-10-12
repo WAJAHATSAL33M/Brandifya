@@ -7,14 +7,21 @@ import { money, type Product } from "../lib/catalog";
 export function ProductBadge({ label }: { label: string }) {
   const kind = /sold out|out of stock/i.test(label)
     ? "sold"
-    : /star seller|top rated/i.test(label) ? "trust"
-    : /best seller/i.test(label) ? "best"
-    : /flash sale|lightning deal/i.test(label) ? "sale"
-    : /few left|almost sold out/i.test(label) ? "low"
-    : /ends soon/i.test(label) ? "ending"
-    : /early bird/i.test(label) ? "early"
-    : /new arrival|^new$/i.test(label) ? "new"
-    : "standard";
+    : /star seller|top rated/i.test(label)
+      ? "trust"
+      : /best seller/i.test(label)
+        ? "best"
+        : /flash sale|lightning deal/i.test(label)
+          ? "sale"
+          : /few left|almost sold out/i.test(label)
+            ? "low"
+            : /ends soon/i.test(label)
+              ? "ending"
+              : /early bird/i.test(label)
+                ? "early"
+                : /new arrival|^new$/i.test(label)
+                  ? "new"
+                  : "standard";
   return (
     <span className={`store-card-badge hp-badge badge-${kind}`}>
       {label}
@@ -35,9 +42,10 @@ export default function ProductCard({
   onSave: () => void;
   live?: boolean;
 }) {
-  const src = p.image.startsWith("/")
-    ? p.image
-    : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=800&q=85`;
+  const src =
+    p.image.startsWith("/") || p.image.startsWith("https://")
+      ? p.image
+      : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=800&q=85`;
   const { badge, lowStock } = useMerchandising(p, live);
   const rating =
     typeof p.rating === "number" &&
@@ -71,7 +79,7 @@ export default function ProductCard({
         <span className="store-card-category shop-card-category">
           {p.category}
         </span>
-        {(rating || sold || lowStock) ? (
+        {rating || sold || lowStock ? (
           <div className="store-card-stats">
             {rating && (
               <span
@@ -89,7 +97,9 @@ export default function ProductCard({
                 {p.rating!.toFixed(1)}
               </span>
             )}
-            {lowStock ? <small className="store-card-low">Only {p.stock} left</small> : sold ? (
+            {lowStock ? (
+              <small className="store-card-low">Only {p.stock} left</small>
+            ) : sold ? (
               <small>
                 {new Intl.NumberFormat("en", {
                   notation: "compact",
@@ -99,8 +109,17 @@ export default function ProductCard({
               </small>
             ) : null}
           </div>
-        ) : <div className="store-card-stats store-card-stats-empty" aria-hidden="true" />}
-        <ProductPrice className="store-card-price" price={p.price} originalPrice={p.originalPrice} />
+        ) : (
+          <div
+            className="store-card-stats store-card-stats-empty"
+            aria-hidden="true"
+          />
+        )}
+        <ProductPrice
+          className="store-card-price"
+          price={p.price}
+          originalPrice={p.originalPrice}
+        />
       </div>
     </article>
   );

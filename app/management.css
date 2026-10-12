@@ -1,0 +1,359 @@
+.management-admin {
+  background: #f7f7f8;
+  min-height: 100vh;
+  padding: 40px 0;
+  color: #101216;
+}
+.management-container {
+  width: min(calc(100% - 48px), 1280px);
+  margin: auto;
+}
+.management-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.hp .management-heading h1 {
+  font-size: 38px;
+  margin: 0 0 10px;
+}
+.hp .management-panel h2 {
+  font-size: 28px;
+  margin: 0 0 20px;
+}
+.hp .management-panel h3 {
+  font-size: 21px;
+  margin: 0;
+}
+.management-heading a,
+.management-heading > button,
+.account-help button {
+  color: #ff5100;
+  font-size: 13px;
+}
+.management-panel {
+  background: #fff;
+  border: 1px solid #e9e9ec;
+  border-radius: 12px;
+  padding: 28px;
+  margin-bottom: 24px;
+  min-width: 0;
+}
+.management-form {
+  display: grid;
+  gap: 18px;
+}
+.management-form label,
+.management-search {
+  display: grid;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 500;
+  min-width: 0;
+}
+.management-form input:not([type="checkbox"]),
+.management-form textarea,
+.management-form select,
+.management-search input {
+  width: 100%;
+  padding: 11px 12px;
+  border: 1px solid #dedee3;
+  border-radius: 6px;
+  background: white;
+  font: inherit;
+  box-sizing: border-box;
+  color: #101216;
+}
+.management-form textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+.management-form small,
+.management-muted {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.6;
+  color: #707580;
+}
+.management-form fieldset {
+  border: 1px solid #e9e9ec;
+  padding: 18px;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.management-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.management-form .management-check {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.management-form input[type="checkbox"] {
+  accent-color: #ff5100;
+}
+.management-form .commerce-primary {
+  width: fit-content;
+}
+.management-alert {
+  padding: 14px 18px;
+  border-radius: 7px;
+  background: #ffeded;
+  color: #b12704;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.management-message {
+  padding: 14px 18px;
+  border-radius: 7px;
+  background: #fff5ef;
+  color: #101216;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.management-tabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.management-tabs button {
+  padding: 10px 16px;
+  background: white;
+  border: 1px solid #e9e9ec;
+  border-radius: 6px;
+  font-size: 13px;
+}
+.management-tabs button[aria-pressed="true"] {
+  background: #101216;
+  color: white;
+}
+.management-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 26px 0;
+}
+.management-toolbar .management-tabs {
+  margin: 0;
+}
+.management-search {
+  flex: 1;
+  min-width: 160px;
+}
+.management-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.management-stats > div {
+  background: white;
+  padding: 22px;
+  border: 1px solid #e9e9ec;
+  border-radius: 10px;
+}
+.management-stats small {
+  display: block;
+  color: #707580;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+.management-stats strong {
+  font-size: 30px;
+  color: #ff5100;
+}
+.management-table-wrap {
+  overflow-x: auto;
+  background: white;
+  border: 1px solid #e9e9ec;
+  border-radius: 10px;
+}
+.management-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 680px;
+  text-align: left;
+}
+.management-table th {
+  font-size: 12px;
+  color: #707580;
+  background: #fafafa;
+}
+.management-table td,
+.management-table th {
+  padding: 16px;
+  border-bottom: 1px solid #e9e9ec;
+  font-size: 13px;
+}
+.management-table small {
+  display: block;
+  margin-top: 5px;
+  color: #707580;
+}
+.management-table button {
+  color: #ff5100;
+  margin-right: 12px;
+  font-size: 12px;
+}
+.management-status {
+  display: inline-flex;
+  background: #fff5ef;
+  color: #b33900;
+  border-radius: 20px;
+  padding: 5px 10px;
+  font-size: 12px;
+  text-transform: capitalize;
+}
+.account-login {
+  max-width: 520px;
+  margin: 0 auto 30px;
+}
+.account-help {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 18px 0;
+}
+.account-social {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+.account-social a {
+  padding: 13px;
+  border: 1px solid #dedee3;
+  border-radius: 6px;
+  text-align: center;
+  font-size: 13px;
+}
+.account-social a[aria-disabled="true"] {
+  opacity: 0.55;
+}
+.account-social small {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+}
+.account-layout {
+  display: grid;
+  grid-template-columns: 360px minmax(0, 1fr);
+  gap: 24px;
+}
+.account-order {
+  border-top: 1px solid #e9e9ec;
+  padding: 20px 0;
+  overflow-wrap: anywhere;
+}
+.account-order p,
+.account-order li {
+  font-size: 13px;
+  line-height: 1.7;
+  color: #545963;
+}
+.account-order summary {
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.7;
+}
+.account-order ul {
+  padding-left: 20px;
+}
+.account-order .management-heading {
+  margin-bottom: 8px;
+}
+.management-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  font-size: 12px;
+  margin: 18px 0;
+}
+.management-details dt {
+  color: #707580;
+  text-transform: capitalize;
+}
+.management-details dd {
+  margin: 4px 0 0;
+  overflow-wrap: anywhere;
+}
+.management-product-preview {
+  width: 160px;
+  height: 160px;
+  object-fit: contain;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+.management-admin button:focus-visible,
+.management-form input:focus-visible,
+.management-form textarea:focus-visible {
+  outline: 2px solid #ff5100;
+  outline-offset: 3px;
+}
+.management-admin button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.management-admin .commerce-primary {
+  background: #ff5100;
+  color: white;
+  padding: 12px 18px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  justify-content: center;
+}
+@media (max-width: 900px) {
+  .account-layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .management-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .management-admin {
+    padding-top: 24px;
+  }
+  .management-container {
+    width: calc(100% - 28px);
+  }
+  .management-panel {
+    padding: 20px;
+  }
+  .management-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .management-stats {
+    gap: 10px;
+  }
+  .management-stats > div {
+    padding: 16px;
+  }
+  .management-details {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .hp .management-heading h1 {
+    font-size: 30px;
+  }
+  .management-search {
+    flex-basis: 100%;
+  }
+}
+
+.management-media-item {
+  padding: 16px;
+  border: 1px solid #ececef;
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  margin-bottom: 12px;
+}

@@ -89,3 +89,21 @@ test("optional delivery details are retained and checked", () => {
   assert.throws(() => validateCustomer({ ...base, addressType: "Invalid" }));
   assert.throws(() => validateCustomer({ ...base, notes: "x".repeat(501) }));
 });
+
+test("checkout accepts no email but still requires full name and phone", () => {
+  const base = {
+    name: "Customer",
+    phone: "+92 300 1234567",
+    address: "Street 1",
+    city: "Lahore",
+    postalCode: "54000",
+    country: "PK",
+  };
+  assert.equal(validateCustomer(base).email, "");
+  assert.equal(
+    validateCustomer({ ...base, email: "", alternatePhone: "" }).email,
+    "",
+  );
+  assert.throws(() => validateCustomer({ ...base, phone: "" }));
+  assert.throws(() => validateCustomer({ ...base, name: "" }));
+});

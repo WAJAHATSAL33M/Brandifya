@@ -1,5 +1,6 @@
 "use client";
 import { useMerchandising } from "./use-merchandising";
+import ProductPrice from "./product-price";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { money, type Product } from "../lib/catalog";
@@ -99,9 +100,7 @@ export default function ProductCard({
             ) : null}
           </div>
         ) : <div className="store-card-stats store-card-stats-empty" aria-hidden="true" />}
-        <strong className="store-card-price">
-          {money(p.price)}
-        </strong>
+        <ProductPrice className="store-card-price" price={p.price} originalPrice={p.originalPrice} />
       </div>
     </article>
   );

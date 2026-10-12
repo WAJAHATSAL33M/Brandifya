@@ -1171,3 +1171,17 @@
 .hp .store-card-stats .store-card-low { color: #b12704; font-weight: 600; }
 .hp .product-stock-status { color: #b12704; font-size: 13px; font-weight: 600; margin: 10px 0; }
 .hp .product-promotion-status { background: #121212; color: #fff; display: inline-block; border-radius: 5px; padding: 7px 10px; font-size: 12px; margin: 8px 0; }
+
+/* Shared comparison prices; discounts are computed from catalog amounts. */
+.hp .product-price-display { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; max-width: 100%; }
+.hp .product-price-current { font-size: inherit; font-weight: inherit; color: #ff5100; line-height: 1.25; }
+.hp .product-price-original { font-size: 12px; font-weight: 400; color: #757575; line-height: 1.4; text-decoration-thickness: 1px; }
+.hp .product-price-saving { font-size: 10px; line-height: 1.4; font-weight: 600; color: #b33900; background: #fff5ef; border-radius: 4px; padding: 2px 5px; white-space: nowrap; }
+.hp .commerce-product-price.product-price-display { display: flex; }
+.hp .commerce-product-price .product-price-original { font-size: 16px; }
+.hp .commerce-product-price .product-price-saving { font-size: 12px; }
+@media (max-width: 700px) {
+  .hp .store-card-price.product-price-display { gap: 3px 6px; }
+  .hp .store-card-price .product-price-original { font-size: 11px; }
+  .hp .store-card-price .product-price-saving { font-size: 9px; }
+}

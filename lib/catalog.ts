@@ -3,6 +3,7 @@ export type Product = {
   name: string;
   category: string;
   price: number;
+  originalPrice?: number | null;
   image: string;
   color: string;
   description: string;
@@ -22,6 +23,7 @@ export const products: Product[] = [
     name: "Vintage leather backpack",
     category: "Accessories",
     price: 12900,
+    originalPrice: 15900,
     image: "/products/featured0.webp",
     color: "Cognac",
     description:
@@ -34,6 +36,7 @@ export const products: Product[] = [
     name: "Ceramic aroma diffuser",
     category: "Home & Living",
     price: 6900,
+    originalPrice: 8900,
     image: "/products/featured1.webp",
     color: "Natural",
     description:
@@ -78,6 +81,7 @@ export const products: Product[] = [
     name: "Skincare serum set",
     category: "Beauty",
     price: 11900,
+    originalPrice: 14900,
     image: "/products/featured5.webp",
     color: "Natural",
     description:

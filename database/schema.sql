@@ -22,3 +22,6 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS sold_count integer NOT NULL DEFAUL
 ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_active boolean NOT NULL DEFAULT false;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_starts_at timestamptz;
 ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_ends_at timestamptz;
+
+-- Optional comparison price. price_minor remains the amount charged.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS original_price_minor integer CHECK (original_price_minor > 0);

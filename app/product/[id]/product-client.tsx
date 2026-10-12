@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
+import ProductPrice from "../../product-price";
 import Link from "next/link";
 import { useMerchandising } from "../../use-merchandising";
 import { ProductBadge } from "../../product-card";
@@ -88,9 +89,7 @@ export default function ProductPage({ product }: { product: Product }) {
               <ArrowRight size={14} />
             </Link>
             <h1>{p.name}</h1>
-            <strong className="commerce-product-price">
-              {money(p.price)}
-            </strong>
+            <ProductPrice className="commerce-product-price" price={p.price} originalPrice={p.originalPrice} />
             {lowStock && <p className="product-stock-status">Only {p.stock} left in stock</p>}
             {promotion && <p className="product-promotion-status">Offer ends in {minutesLeft} min</p>}
             <p className="commerce-availability">

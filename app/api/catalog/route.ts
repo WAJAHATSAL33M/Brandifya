@@ -14,6 +14,7 @@ export async function GET() {
           name: p.name,
           category: p.category,
           price: p.price_minor / 100,
+        originalPrice: p.original_price_minor == null ? null : p.original_price_minor / 100,
           stock: p.stock,
           image: p.image,
           color: p.color,

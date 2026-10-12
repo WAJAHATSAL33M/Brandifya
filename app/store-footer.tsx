@@ -143,7 +143,9 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
             </p>
             <div className="store-payment-logos" aria-label="Payment brands">
               {["visa", "mastercard", "easypaisa", "jazzcash", "payfast"].map((brand) => (
-                <img key={brand} src={`/payments/${brand}.svg`} alt={{visa:"Visa",mastercard:"MasterCard",easypaisa:"EasyPaisa",jazzcash:"JazzCash",payfast:"PayFast"}[brand]} width={90} height={42} loading="lazy" />
+                <span key={brand} className={`store-payment-logo payment-${brand}`}>
+                  <img src={`/payments/${brand}.${brand === "easypaisa" ? "webp" : brand === "jazzcash" || brand === "payfast" ? "png" : "svg"}`} alt={{visa:"Visa",mastercard:"MasterCard",easypaisa:"EasyPaisa",jazzcash:"JazzCash",payfast:"PayFast"}[brand]} width={brand === "payfast" ? 2048 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 90} height={brand === "payfast" ? 519 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 42} loading="lazy" />
+                </span>
               ))}
             </div>
           </div>

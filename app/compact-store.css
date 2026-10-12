@@ -1021,3 +1021,40 @@
   .hp .store-payment-logos { gap: 6px; }
   .hp .store-payment-logos img { width: 75px; height: 36px; }
 }
+
+/* Original merchant-supplied payment marks, with their native aspect ratios. */
+.hp .store-payment-logos {
+  display: grid;
+  grid-template-columns: 1fr 1fr .85fr .85fr 1.6fr;
+  gap: 12px;
+  width: min(100%, 480px);
+}
+.hp .store-payment-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  height: 54px;
+}
+.hp .store-payment-logos img {
+  width: 100%;
+  max-width: 78px;
+  height: auto;
+  max-height: 48px;
+  object-fit: contain;
+  padding: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.hp .payment-payfast {
+  background: #101216;
+  border-radius: 6px;
+  padding: 8px;
+}
+.hp .payment-payfast img { max-width: none; }
+@media (max-width: 700px) {
+  .hp .store-payment-logos { gap: 8px; width: min(100%, 350px); }
+  .hp .store-payment-logo { height: 44px; }
+  .hp .store-payment-logos img { max-height: 40px; }
+  .hp .payment-payfast { padding: 6px; }
+}

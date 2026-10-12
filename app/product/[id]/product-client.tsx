@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { useMerchandising } from "../../use-merchandising";
 import { ProductBadge } from "../../product-card";
 import { categoryHref } from "../../../lib/categories";
 import { ArrowRight, Heart, Maximize2, ShoppingCart, X } from "lucide-react";
@@ -23,6 +24,7 @@ export default function ProductPage({ product }: { product: Product }) {
     trigger = useRef<HTMLButtonElement>(null);
   const current = store.catalog.find((p) => p.id === product.id),
     p = current || product;
+  const { badge, lowStock, promotion, minutesLeft } = useMerchandising(p, !!store.config?.live);
   const max = current
     ? Math.max(
         0,
@@ -75,19 +77,7 @@ export default function ProductPage({ product }: { product: Product }) {
             >
               <Maximize2 size={20} />
             </button>
-            {(p.id < 0 ||
-              p.stock === 0 ||
-              (p.badge && !p.badge.includes("%"))) && (
-              <ProductBadge
-                label={
-                  p.id < 0
-                    ? "Design sample"
-                    : p.stock === 0
-                      ? "Sold Out"
-                      : p.badge!
-                }
-              />
-            )}
+            {badge && <ProductBadge label={badge} />}
           </div>
           <div className="commerce-product-copy">
             <Link
@@ -101,6 +91,8 @@ export default function ProductPage({ product }: { product: Product }) {
             <strong className="commerce-product-price">
               {money(p.price)}
             </strong>
+            {lowStock && <p className="product-stock-status">Only {p.stock} left in stock</p>}
+            {promotion && <p className="product-promotion-status">Offer ends in {minutesLeft} min</p>}
             <p className="commerce-availability">
               {store.loading
                 ? "Checking availability…"

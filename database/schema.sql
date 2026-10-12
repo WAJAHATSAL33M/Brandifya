@@ -17,3 +17,8 @@ ALTER TABLE products ADD COLUMN IF NOT EXISTS badge text NOT NULL DEFAULT '';
 ALTER TABLE products ADD COLUMN IF NOT EXISTS rating numeric(2,1) CHECK (rating >= 0 AND rating <= 5);
 ALTER TABLE products ADD COLUMN IF NOT EXISTS review_count integer NOT NULL DEFAULT 0 CHECK (review_count >= 0);
 ALTER TABLE products ADD COLUMN IF NOT EXISTS sold_count integer NOT NULL DEFAULT 0 CHECK (sold_count >= 0);
+
+-- Optional scheduled promotions; inactive until explicitly configured.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_active boolean NOT NULL DEFAULT false;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_starts_at timestamptz;
+ALTER TABLE products ADD COLUMN IF NOT EXISTS promotion_ends_at timestamptz;

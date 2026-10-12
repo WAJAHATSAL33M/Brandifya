@@ -1,17 +1,23 @@
 "use client";
+import { useMerchandising } from "./use-merchandising";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { money, type Product } from "../lib/catalog";
 export function ProductBadge({ label }: { label: string }) {
   const kind = /sold out|out of stock/i.test(label)
     ? "sold"
-    : /star seller/i.test(label)
-      ? "star"
-      : "standard";
+    : /star seller|top rated/i.test(label) ? "trust"
+    : /best seller/i.test(label) ? "best"
+    : /flash sale|lightning deal/i.test(label) ? "sale"
+    : /few left|almost sold out/i.test(label) ? "low"
+    : /ends soon/i.test(label) ? "ending"
+    : /early bird/i.test(label) ? "early"
+    : /new arrival|^new$/i.test(label) ? "new"
+    : "standard";
   return (
     <span className={`store-card-badge hp-badge badge-${kind}`}>
       {label}
-      {kind === "star" && (
+      {kind === "trust" && (
         <Star size={11} fill="currentColor" aria-hidden="true" />
       )}
     </span>
@@ -31,14 +37,7 @@ export default function ProductCard({
   const src = p.image.startsWith("/")
     ? p.image
     : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=800&q=85`;
-  const badge =
-    p.id < 0
-      ? "Design sample"
-      : p.stock === 0
-        ? "Sold Out"
-        : p.badge && !p.badge.includes("%")
-          ? p.badge
-          : null;
+  const { badge, lowStock } = useMerchandising(p, live);
   const rating =
     typeof p.rating === "number" &&
     Number.isFinite(p.rating) &&
@@ -71,7 +70,7 @@ export default function ProductCard({
         <span className="store-card-category shop-card-category">
           {p.category}
         </span>
-        {(rating || sold || (live && p.stock > 0 && p.stock <= 3)) ? (
+        {(rating || sold || lowStock) ? (
           <div className="store-card-stats">
             {rating && (
               <span
@@ -89,7 +88,7 @@ export default function ProductCard({
                 {p.rating!.toFixed(1)}
               </span>
             )}
-            {sold ? (
+            {lowStock ? <small className="store-card-low">Only {p.stock} left</small> : sold ? (
               <small>
                 {new Intl.NumberFormat("en", {
                   notation: "compact",
@@ -97,8 +96,6 @@ export default function ProductCard({
                 }).format(p.soldCount!)}{" "}
                 sold
               </small>
-            ) : live && p.stock > 0 && p.stock <= 3 ? (
-              <small className="store-card-low">Few left</small>
             ) : null}
           </div>
         ) : <div className="store-card-stats store-card-stats-empty" aria-hidden="true" />}

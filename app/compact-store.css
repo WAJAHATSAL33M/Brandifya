@@ -1157,3 +1157,17 @@
 .hp .hp-footer-column > a:hover,.hp .support-footer-links a:hover {color:#ff5100;}
 .hp .support-footer-links {display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:11px;color:#707580;}
 .hp .hp-footer-column > a:focus-visible,.hp .support-footer-links a:focus-visible {outline:2px solid #ff5100;outline-offset:3px;}
+
+/* Owner-approved status palette; primary actions retain brand orange. */
+.hp .store-card-badge.badge-best { background: #ff5100; color: #fff; }
+.hp .store-card-badge.badge-trust { background: #232f3e; color: #fff; }
+.hp .store-card-badge.badge-new { background: #fff; color: #101216; border: 1px solid #e8e6e3; }
+.hp .store-card-badge.badge-sale { background: #cc0c39; color: #fff; }
+.hp .store-card-badge.badge-low { background: #ffeded; color: #d32f2f; }
+.hp .store-card-badge.badge-ending { background: #ff9900; color: #101216; }
+.hp .store-card-badge.badge-early { background: #00a651; color: #fff; }
+.hp .store-card-badge.badge-sold { background: #e0e0e0; color: #565656; }
+.hp .store-card-stats > small { color: #757575; }
+.hp .store-card-stats .store-card-low { color: #b12704; font-weight: 600; }
+.hp .product-stock-status { color: #b12704; font-size: 13px; font-weight: 600; margin: 10px 0; }
+.hp .product-promotion-status { background: #121212; color: #fff; display: inline-block; border-radius: 5px; padding: 7px 10px; font-size: 12px; margin: 8px 0; }

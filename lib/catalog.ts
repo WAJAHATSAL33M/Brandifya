@@ -11,6 +11,9 @@ export type Product = {
   rating?: number | null;
   reviewCount?: number;
   soldCount?: number;
+  promotionActive?: boolean;
+  promotionStartsAt?: string | null;
+  promotionEndsAt?: string | null;
 };
 export const products: Product[] = [
   {

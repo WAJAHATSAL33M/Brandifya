@@ -131,7 +131,7 @@ export default function StoreHeader(props: Props) {
             >
               Home
             </Link>
-            <Link href="/#confidence" onClick={close}>
+            <Link href="/about" onClick={close}>
               About
             </Link>
             <div
@@ -187,10 +187,10 @@ export default function StoreHeader(props: Props) {
                 </div>
               )}
             </div>
-            <Link href="/#journal" onClick={close}>
+            <Link href="/blog" onClick={close}>
               Journal
             </Link>
-            <Link href="/#contact" onClick={close}>
+            <Link href="/contact" onClick={close}>
               Contact
             </Link>
           </nav>

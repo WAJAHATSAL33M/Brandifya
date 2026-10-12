@@ -1,35 +1,6 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import { Mail, MapPin, Phone, ChevronRight, X, Check } from "lucide-react";
-import art from "../lib/home-art.json";
-function Art({
-  name,
-  alt,
-  eager = false,
-}: {
-  name: string;
-  alt: string;
-  eager?: boolean;
-}) {
-  const a = art.assets[name as keyof typeof art.assets];
-  return (
-    <span className="hp-art" style={{ aspectRatio: `${a.w}/${a.h}` }}>
-      <img
-        src="/homepage-design.webp"
-        alt={alt}
-        loading={eager ? "eager" : "lazy"}
-        fetchPriority={eager ? "high" : "auto"}
-        style={{
-          width: `${(art.width / a.w) * 100}%`,
-          left: 0,
-          top: 0,
-          transform: `translate(${(-a.x / art.width) * 100}%, ${(-a.y / art.height) * 100}%)`,
-        }}
-      />
-    </span>
-  );
-}
-
 const policies: Record<string,string> = {
   "Size Guide": "Product-specific measurements and fit guidance will be supplied with the final catalog.",
   "Gift Cards": "Gift cards are not currently available.",
@@ -170,10 +141,11 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
               All rights reserved — {new Date().getFullYear()} ©{" "}
               <strong>Brandifya</strong>
             </p>
-            <Art
-              name="payments"
-              alt="PayPal, Visa, Mastercard, Apple Pay, Shop Pay, American Express"
-            />
+            <div className="store-payment-logos" aria-label="Payment brands">
+              {["visa", "mastercard", "easypaisa", "jazzcash", "payfast"].map((brand) => (
+                <img key={brand} src={`/payments/${brand}.svg`} alt={{visa:"Visa",mastercard:"MasterCard",easypaisa:"EasyPaisa",jazzcash:"JazzCash",payfast:"PayFast"}[brand]} width={90} height={42} loading="lazy" />
+              ))}
+            </div>
           </div>
           {!live && (
             <p className="hp-demo-note">
@@ -187,3 +159,4 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
     {info&&<div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)setInfo(null)}}><section className="info-modal" role="dialog" aria-modal="true" aria-labelledby="footer-info-title" ref={dialogRef}><button className="modal-close" aria-label="Close information" onClick={()=>setInfo(null)}><X/></button><span className="info-star">✳</span><h2 id="footer-info-title">{info}</h2><p>{policies[info]}</p><button className="primary" onClick={()=>setInfo(null)}>Got it<Check size={17}/></button></section></div>}
   </>;
 }
+

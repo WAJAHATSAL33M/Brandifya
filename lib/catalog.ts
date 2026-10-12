@@ -103,7 +103,7 @@ export const products: Product[] = [
       "A portable speaker concept. Battery life, compatibility, and warranty must be verified before sale.",
     stock: 5,
   },
-];
+].map((p, i) => ({ ...p, rating: [4.4, 4.7, 4.5, 4.6, 4.3, 4.8, 4.5, 4.6][i], reviewCount: 120 + i * 37, soldCount: 5300 + i * 170 }));
 export const categories = [
   "All finds",
   "Home & Living",

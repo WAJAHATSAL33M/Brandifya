@@ -86,7 +86,8 @@ export default function ProductCard({
               <span
                 className="store-card-rating"
                 role="img"
-                aria-label={`${p.rating} out of 5 from ${p.reviewCount} reviews`}
+                title={live ? undefined : "Demo rating and sales figures"}
+                aria-label={`${live ? "" : "Demo: "}${p.rating} out of 5 from ${p.reviewCount} reviews`}
               >
                 <span className="store-card-stars" aria-hidden="true">
                   ★★★★★
@@ -111,7 +112,7 @@ export default function ProductCard({
           </div>
         ) : <div className="store-card-stats store-card-stats-empty" aria-hidden="true" />}
         <strong className="store-card-price">
-          {p.id < 0 ? "Price to be confirmed" : money(p.price)}
+          {money(p.price)}
         </strong>
       </div>
     </article>

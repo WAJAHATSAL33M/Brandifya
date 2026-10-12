@@ -1001,3 +1001,23 @@
   .hp .store-card-price,
   .hp .commerce-product-grid .store-card-price { font-size: 16px; }
 }
+
+/* One three-row card information layout throughout the storefront. */
+.hp .store-card-body, .hp.shop-page .shop-grid .store-card-body {
+  grid-template-rows: minmax(23px, auto) 18px auto;
+  gap: 5px;
+}
+.hp .store-card-stats { color: #101216; }
+.hp .store-card-stats > small { color: #101216; font-size: 11px; }
+.hp .store-card-rating { font-weight: 500; }
+.hp .store-card-rating .store-card-stars { font-size: 13px; }
+.hp .store-payment-logos { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; }
+.hp .store-payment-logos img { display: block; width: 90px; height: 42px; object-fit: contain; background: white; border-radius: 5px; padding: 3px; box-sizing: border-box; }
+@media (max-width: 700px) {
+  .hp .store-card-body, .hp.shop-page .shop-grid .store-card-body { grid-template-rows: 38px 18px auto; }
+  .hp .store-card-stats { font-size: 10px; gap: 3px; }
+  .hp .store-card-stats > small { font-size: 9px; }
+  .hp .store-card-rating .store-card-stars { font-size: 10px; }
+  .hp .store-payment-logos { gap: 6px; }
+  .hp .store-payment-logos img { width: 75px; height: 36px; }
+}

@@ -99,7 +99,7 @@ export default function ProductPage({ product }: { product: Product }) {
             </Link>
             <h1>{p.name}</h1>
             <strong className="commerce-product-price">
-              {p.id < 0 ? "Price to be confirmed" : money(p.price)}
+              {money(p.price)}
             </strong>
             <p className="commerce-availability">
               {store.loading

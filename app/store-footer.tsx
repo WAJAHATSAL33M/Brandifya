@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { Mail, MapPin, Phone, ChevronRight, X, Check } from "lucide-react";
 const policies: Record<string,string> = {
@@ -55,54 +56,27 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
             <div className="hp-footer-column">
               <h3>Shopping</h3>
               {[
-                "Favorites",
-                "Shop by Brand",
-                "Offers",
-                "Track Order",
-                "Size Guide",
-              ].map((x) => (
-                <button
-                  key={x}
-                  onClick={() => {
-                    if (x === "Favorites") window.location.assign("/shop?saved=1");
-                    else if (x === "Shop by Brand") window.location.assign("/#brands");
-                    else if (x === "Offers") window.location.assign("/#deals");
-                    else if (x === "Track Order") window.location.assign("/order");
-                    else setInfo(x);
-                  }}
-                >
-                  <ChevronRight size={15} />
-                  {x}
-                </button>
-              ))}
+                ["Favorites", "/shop?saved=1"],
+                ["Shop by Brand", "/#brands"],
+                ["Offers", "/#deals"],
+                ["Track Order", "/order-tracking"],
+                ["Size Guide", "/size-guide"],
+                ["Payments", "/payments"],
+              ].map(([label, href]) => <Link key={href} href={href}><ChevronRight size={15}/>{label}</Link>)}
             </div>
             <div className="hp-footer-column">
               <h3>Information</h3>
               {[
-                "Track Order",
-                "Shipping & Returns",
-                "About Us",
-                "Help",
-                "Gift Cards",
-              ].map((x) => (
-                <button
-                  key={x}
-                  onClick={() =>
-                    setInfo(
-                      x === "Shipping & Returns"
-                        ? "Shipping & returns"
-                        : x === "About Us"
-                          ? "About Brandifya"
-                          : x === "Help"
-                            ? "Contact us"
-                            : x,
-                    )
-                  }
-                >
-                  <ChevronRight size={15} />
-                  {x}
-                </button>
-              ))}
+                ["Journal", "/blog"],
+                ["About Us", "/about"],
+                ["Contact Us", "/contact"],
+                ["FAQs", "/faq"],
+                ["Shipping", "/shipping"],
+                ["Returns & Refunds", "/returns"],
+                ["Privacy Policy", "/privacy-policy"],
+                ["Terms & Conditions", "/terms-and-conditions"],
+                ["Cookies Policy", "/cookies-policy"],
+              ].map(([label, href]) => <Link key={href} href={href}><ChevronRight size={15}/>{label}</Link>)}
             </div>
             <div className="hp-newsletter">
               <h3>Subscribe.</h3>
@@ -149,6 +123,7 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
               ))}
             </div>
           </div>
+          <nav className="support-footer-links" aria-label="Additional store information"><Link href="/accessibility">Accessibility</Link><Link href="/disclaimer">Disclaimer</Link></nav>
           {!live && (
             <p className="hp-demo-note">
               Homepage design preview. Prices, ratings, promotions, contact

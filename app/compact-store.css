@@ -1151,3 +1151,9 @@
   .hp .commerce-product-purchase { gap: 8px; flex-wrap: wrap; }
   .hp .commerce-product-purchase .commerce-quantity { flex-basis: 100%; }
 }
+
+.hp .hp-footer-column > a {display:flex;align-items:center;gap:7px;font-size:12px;line-height:1.5;margin-bottom:10px;text-align:left;}
+.hp .hp-footer-column > a svg {width:12px;height:12px;color:#ff5100;flex-shrink:0;}
+.hp .hp-footer-column > a:hover,.hp .support-footer-links a:hover {color:#ff5100;}
+.hp .support-footer-links {display:flex;flex-wrap:wrap;gap:16px;margin-top:18px;font-size:11px;color:#707580;}
+.hp .hp-footer-column > a:focus-visible,.hp .support-footer-links a:focus-visible {outline:2px solid #ff5100;outline-offset:3px;}

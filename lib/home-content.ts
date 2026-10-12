@@ -254,17 +254,23 @@ export const bestProducts: ReferenceProduct[] = [
 ];
 export const journalPosts = [
   {
-    title: "5 Everyday Habits for Healthier, Glowing Skin",
-    tag: "BEAUTY · LIFESTYLE",
+    "title": "A Calmer Home, One Corner at a Time",
+    "tag": "HOME & LIVING",
+    "slug": "a-calmer-home",
+    "image": "/heroes/home-tech.webp"
   },
   {
-    title: "The Skincare Ingredients That Actually Make a Difference",
-    tag: "SKINCARE · TIPS",
+    "title": "The Everyday Bag Checklist",
+    "tag": "FASHION & ACCESSORIES",
+    "slug": "everyday-bag-checklist",
+    "image": "/heroes/fashion.webp"
   },
   {
-    title: "A More Mindful Beauty Routine for a Happier You",
-    tag: "LIFESTYLE · NEWS",
-  },
+    "title": "Make Room for More Thoughtful Shopping",
+    "tag": "EVERYDAY IDEAS",
+    "slug": "thoughtful-shopping",
+    "image": "/heroes/everyday.webp"
+  }
 ];
 
 export const referenceNames = [

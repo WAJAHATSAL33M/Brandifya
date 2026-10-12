@@ -747,9 +747,9 @@ export default function Store() {
                   <button
                     className="hp-blog-card"
                     key={p.title}
-                    onClick={() => setInfo(p.title)}
+                    onClick={() => window.location.assign(`/blog/${p.slug}`)}
                   >
-                    <Art name={`blog${i}`} alt={p.title} />
+                    <span className="hp-art" style={{ aspectRatio: "1.65" }}><img src={p.image} alt="" width={900} height={450} loading="lazy" style={{width:"100%",height:"100%",objectFit:"cover"}} /></span>
                     <div>
                       <small>{p.tag}</small>
                       <h3>{p.title}</h3>

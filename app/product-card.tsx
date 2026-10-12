@@ -80,7 +80,7 @@ export default function ProductCard({
         <span className="store-card-category shop-card-category">
           {p.category}
         </span>
-        {(rating || sold || (live && p.stock > 0 && p.stock <= 3)) && (
+        {(rating || sold || (live && p.stock > 0 && p.stock <= 3)) ? (
           <div className="store-card-stats">
             {rating && (
               <span
@@ -109,7 +109,7 @@ export default function ProductCard({
               <small className="store-card-low">Few left</small>
             ) : null}
           </div>
-        )}
+        ) : <div className="store-card-stats store-card-stats-empty" aria-hidden="true" />}
         <strong className="store-card-price">
           {p.id < 0 ? "Price to be confirmed" : money(p.price)}
         </strong>

@@ -41,7 +41,7 @@ export default function HeroSlider() {
   }, []);
   useEffect(() => {
     if (hovered || focused || paused || reducedMotion || !visible) return;
-    const timer = window.setTimeout(() => setIndex(current => (current + 1) % slides.length), 6000);
+    const timer = window.setTimeout(() => setIndex(current => (current + 1) % slides.length), 5000);
     return () => window.clearTimeout(timer);
   }, [index, hovered, focused, paused, reducedMotion, visible]);
   const touch = useRef<{x:number;y:number}|null>(null);

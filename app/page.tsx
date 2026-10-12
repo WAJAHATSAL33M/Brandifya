@@ -374,11 +374,15 @@ export default function Store() {
             <p className="hp-subtitle">
               Explore the essentials across our most-loved departments.
             </p>
-            <div className="hp-category-grid">
+            <div className="category-carousel-viewport">
+              <div className="category-carousel-track">
+                {[0, 1].map((copy) => (
+                <div key={copy} className={`hp-category-grid${copy ? " category-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
               {categoryTiles.map((c, i) => (
                 <button
                   key={c.name}
                   className="hp-category"
+                  tabIndex={copy ? -1 : undefined}
                   onClick={() => browse(c.category)}
                 >
                   {i === 5 ? (
@@ -412,6 +416,9 @@ export default function Store() {
                   </span>
                 </button>
               ))}
+            </div>
+                ))}
+              </div>
             </div>
           </section>
           <section id="shop" className="hp-featured hp-container">

@@ -1058,3 +1058,76 @@
   .hp .store-payment-logos img { max-height: 40px; }
   .hp .payment-payfast { padding: 6px; }
 }
+
+/* Requested image fit, compact details and mobile-only category loop. */
+.hp .store-card-image > img,
+.hp.shop-page .shop-grid .store-card-image > img {
+  aspect-ratio: 1;
+  object-fit: contain;
+}
+.hp .store-card-body,
+.hp.shop-page .shop-grid .store-card-body {
+  grid-template-rows: minmax(23px, auto) 17px auto;
+  gap: 3px;
+  min-height: 96px;
+  padding: 10px 14px 12px;
+}
+.hp .store-card-price,
+.hp .commerce-product-grid .store-card-price {
+  color: #ff5100;
+}
+.hp .hp-category > span:last-child {
+  width: fit-content;
+  max-width: 100%;
+  min-height: 28px;
+  padding: 5px 10px;
+  font-size: 12px;
+}
+.category-carousel-copy { display: none !important; }
+@media (min-width: 1200px) {
+  .hp .hp-featured-grid,
+  .hp .hp-six-grid,
+  .hp.shop-page .shop-grid,
+  .hp .commerce-product-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+@media (max-width: 700px) {
+  .hp .store-card-body,
+  .hp.shop-page .shop-grid .store-card-body {
+    grid-template-rows: 38px 17px auto;
+    min-height: 103px;
+    padding: 9px 10px 10px;
+  }
+  .hp .hp-category > span:last-child {
+    font-size: 11px;
+    min-height: 26px;
+    padding: 4px 7px;
+  }
+  .category-carousel-viewport { overflow: hidden; }
+  .category-carousel-track {
+    display: flex;
+    width: max-content;
+    animation: category-loop 28s linear infinite;
+  }
+  .hp .category-carousel-track > .hp-category-grid {
+    display: grid !important;
+    flex: none;
+    grid-auto-flow: column;
+    grid-template-columns: none;
+    grid-auto-columns: clamp(94px, 26vw, 120px);
+    gap: 8px;
+    overflow: visible;
+    padding: 0 8px 4px 0;
+  }
+  .category-carousel-track:focus-within { animation-play-state: paused; }
+}
+@keyframes category-loop {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .category-carousel-viewport { overflow-x: auto; }
+  .category-carousel-track { animation: none; }
+  .hp .category-carousel-track > .category-carousel-copy { display: none !important; }
+}

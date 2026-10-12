@@ -21,3 +21,17 @@ export async function findProduct(id: number): Promise<Product | undefined> {
       }
     : undefined;
 }
+
+export async function categoryNames(): Promise<string[]> {
+  const { categories } = await import("./catalog");
+  const known = categories.filter((name) => name !== "All finds");
+  if (process.env.STORE_LIVE !== "true")
+    return [...new Set([...known, ...products.map((p) => p.category)])];
+  try {
+    const rows =
+      await db()`SELECT DISTINCT category FROM products WHERE active=true ORDER BY category`;
+    return [...new Set([...known, ...rows.map((p) => String(p.category))])];
+  } catch {
+    return known;
+  }
+}

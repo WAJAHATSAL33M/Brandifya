@@ -111,3 +111,13 @@ The new asset `public/heroes/shop-beauty.webp` was created with the built-in ima
 The PDF has flattened images without embedded font metadata. `app/heading-style.css` matches its “Your Shopping Cart” bold serif heading appearance using Georgia/Times fallbacks and applies it to all heading levels. Body typography stays DM Sans. Existing colors, original logo, shared header structure and shared footer are retained.
 
 Validation: production build and five commerce unit tests pass. Browser checks cover the four pages at 320, 390, 768, 1024, 1440 and 1920px, one shared header/footer, product navigation and image preview, favorites, stock-limited quantities, persistent cart edits, setup-disabled ordering, optional checkout fields, receipt access rejection, and mocked confirmed/pending/failed order states. Real database writes and payment collection were not exercised; live ordering remains dependent on the existing merchant configuration.
+
+## Product category pages
+
+`/category/[slug]` uses the shared store header/footer, current bold serif headings, cream/orange/black palette and compact product cards. Each collection has its own introduction and existing high-resolution banner, a collection navigation strip and the shop's product filtering tools. On mobile, the banner artwork sits below centered copy, the current collection is brought into view in the horizontal navigation, and filters use the existing accessible drawer.
+
+The selected collection stays fixed while shoppers search, change price/color/availability/wishlist filters, sort, reload or clear filters. Colors come from that collection's catalog. Query parameters retain these filter choices without turning the category page into the general shop. Header collection links, homepage categories, shop category shortcuts and product category links open the dedicated routes. Existing multi-category `/shop` links remain supported.
+
+Category names come from the configured departments plus active live inventory. Empty collections provide a link back to the shop; unknown routes render a branded 404. New named collections can use the same route template without creating another page file. Existing banner assets are reused without changing their contents, and all headings/buttons remain real website elements.
+
+Category validation: production build and commerce tests pass. Browser checks cover five stocked collections at 320/390/768/1024/1440/1920px, category-only results, category lock/reset and URL restoration, search/sorting/price/color/wishlist filters, mobile drawer focus and Escape, navigation from homepage/header/shop/product, empty and unknown collections, failed catalog recovery and legacy multi-category shop URLs.

@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { categoryHref } from "../../../lib/categories";
 import { ArrowRight, Heart, Maximize2, ShoppingBag, X } from "lucide-react";
 import { money, type Product } from "../../../lib/catalog";
 import { useStore } from "../../use-store";
@@ -80,7 +81,7 @@ export default function ProductPage({ product }: { product: Product }) {
           <div className="commerce-product-copy">
             <Link
               className="commerce-product-category"
-              href={`/shop?category=${encodeURIComponent(p.category)}`}
+              href={categoryHref(p.category)}
             >
               {p.category}
               <ArrowRight size={14} />

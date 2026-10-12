@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
+import { categoryHref } from "../lib/categories";
 import { ArrowRight, ChevronDown, Heart, Menu, Search, ShoppingBag, X } from "lucide-react";
 import "./store-header.css";
 
@@ -52,7 +53,7 @@ export default function StoreHeader(props: Props) {
           <div className="store-header-collections" onMouseEnter={() => { if (window.matchMedia("(hover: hover)").matches) setCollections(true); }} onMouseLeave={() => setCollections(false)} onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setCollections(false); }}>
             <Link href="/shop" aria-current={props.active === "shop" ? "page" : undefined} onClick={close}>Shop</Link>
             <button ref={collectionsToggle} aria-label="Browse shop collections" aria-expanded={collections} aria-controls={`${id}-collections`} onClick={() => setCollections(!collections)}><ChevronDown size={15}/></button>
-            {collections && <div className="store-header-dropdown" id={`${id}-collections`}><strong>Find your everyday favorites</strong><div>{departments.map(category => <Link key={category} href={`/shop?category=${encodeURIComponent(category)}`} onClick={close}>{category}<ArrowRight size={15}/></Link>)}</div><Link className="store-header-view-all" href="/shop" onClick={close}>Explore all products<ArrowRight size={16}/></Link></div>}
+            {collections && <div className="store-header-dropdown" id={`${id}-collections`}><strong>Find your everyday favorites</strong><div>{departments.map(category => <Link key={category} href={categoryHref(category)} onClick={close}>{category}<ArrowRight size={15}/></Link>)}</div><Link className="store-header-view-all" href="/shop" onClick={close}>Explore all products<ArrowRight size={16}/></Link></div>}
           </div>
           <Link href="/#journal" onClick={close}>Journal</Link>
           <Link href="/#contact" onClick={close}>Contact</Link>
@@ -62,3 +63,4 @@ export default function StoreHeader(props: Props) {
     </div>
   </header>;
 }
+

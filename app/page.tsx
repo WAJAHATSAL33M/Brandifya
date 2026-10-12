@@ -35,6 +35,7 @@ import {
   type CartItem,
 } from "../lib/catalog";
 import "./homepage.css";
+import { categoryHref } from "../lib/categories";
 import HeroSlider from "./hero-slider";
 import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
@@ -322,7 +323,7 @@ export default function Store() {
     setSaved((s) => (s.includes(id) ? s.filter((x) => x !== id) : [...s, id]));
   }
   function browse(c = "All finds") {
-    window.location.assign(c === "All finds" ? "/shop" : `/shop?category=${encodeURIComponent(c)}`);
+    window.location.assign(c === "All finds" ? "/shop" : categoryHref(c));
   }
   const policies: Record<string, string> = {
     ...Object.fromEntries(

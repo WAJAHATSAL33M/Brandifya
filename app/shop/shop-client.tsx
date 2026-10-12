@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import StoreHeader from "../store-header";
+import ProductCard from "../product-card";
 import ShopOpening from "./shop-opening";
 import CategoryOpening from "../category/category-opening";
 import { categoryHref } from "../../lib/categories";
@@ -314,13 +315,11 @@ export default function Shop({ category }: { category?: string } = {}) {
     setNotice(`${p.name} added to your bag`);
   }
   function scrollResults() {
-    document
-      .getElementById("shop-results")
-      ?.scrollIntoView({
-        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-          ? "instant"
-          : "smooth",
-      });
+    document.getElementById("shop-results")?.scrollIntoView({
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "instant"
+        : "smooth",
+    });
   }
   function chooseCategory(name: string | null) {
     if (name) window.location.assign(categoryHref(name));
@@ -683,46 +682,13 @@ export default function Shop({ category }: { category?: string } = {}) {
               <>
                 <div className="shop-grid">
                   {results.slice(0, limit).map((p) => (
-                    <article className="hp-featured-card" key={p.id}>
-                      <button
-                        className="hp-featured-image"
-                        aria-label={`View ${p.name}`}
-                        onClick={() =>
-                          window.location.assign(`/product/${p.id}`)
-                        }
-                      >
-                        <img src={image(p.image)} alt={p.name} loading="lazy" />
-                      </button>
-                      {p.badge && !p.badge.includes("%") && (
-                        <span className="hp-badge">{p.badge}</span>
-                      )}
-                      <button
-                        className="hp-heart"
-                        aria-label={`${saved.includes(p.id) ? "Remove" : "Save"} ${p.name}${saved.includes(p.id) ? " from wishlist" : " to wishlist"}`}
-                        aria-pressed={saved.includes(p.id)}
-                        onClick={() => favorite(p.id)}
-                      >
-                        <Heart
-                          size={17}
-                          fill={saved.includes(p.id) ? "currentColor" : "none"}
-                        />
-                      </button>
-                      <div className="hp-featured-body">
-                        <button
-                          className="hp-featured-name"
-                          onClick={() =>
-                            window.location.assign(`/product/${p.id}`)
-                          }
-                        >
-                          {p.name}
-                        </button>
-                        <span className="shop-card-category">{p.category}</span>
-                        <div className="shop-card-price">
-                          <strong>{money(p.price)}</strong>
-                          {p.stock <= 0 && <small>Sold out</small>}
-                        </div>
-                      </div>
-                    </article>
+                    <ProductCard
+                      key={p.id}
+                      product={p}
+                      saved={saved.includes(p.id)}
+                      onSave={() => favorite(p.id)}
+                      live={live}
+                    />
                   ))}
                 </div>
                 {results.length > limit && (

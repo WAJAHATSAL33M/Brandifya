@@ -3,6 +3,7 @@ import "./globals.css";
 import "./homepage.css";
 import "./commerce.css";
 import "./heading-style.css";
+import "./compact-store.css";
 import StoreFooter from "./store-footer";
 export const metadata: Metadata = {
   title: "Brande | Brandifya Store",

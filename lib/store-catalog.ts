@@ -18,6 +18,9 @@ export async function findProduct(id: number): Promise<Product | undefined> {
         color: p.color,
         description: p.description,
         badge: p.badge || undefined,
+        rating: p.rating == null ? undefined : Number(p.rating),
+        reviewCount: p.review_count ?? undefined,
+        soldCount: p.sold_count ?? undefined,
       }
     : undefined;
 }

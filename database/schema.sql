@@ -11,3 +11,9 @@ CREATE INDEX IF NOT EXISTS orders_created_idx ON orders(created_at DESC);
 CREATE TABLE IF NOT EXISTS newsletter (email text PRIMARY KEY, subscribed_at timestamptz NOT NULL DEFAULT now());
 
 ALTER TABLE products ADD COLUMN IF NOT EXISTS badge text NOT NULL DEFAULT '';
+
+
+-- Optional verified merchandising statistics. Zero reviews hide rating UI.
+ALTER TABLE products ADD COLUMN IF NOT EXISTS rating numeric(2,1) CHECK (rating >= 0 AND rating <= 5);
+ALTER TABLE products ADD COLUMN IF NOT EXISTS review_count integer NOT NULL DEFAULT 0 CHECK (review_count >= 0);
+ALTER TABLE products ADD COLUMN IF NOT EXISTS sold_count integer NOT NULL DEFAULT 0 CHECK (sold_count >= 0);

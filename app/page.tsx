@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ArrowRight,
@@ -36,13 +37,13 @@ import {
 } from "../lib/catalog";
 import "./homepage.css";
 import { categoryHref } from "../lib/categories";
+import ProductCard from "./product-card";
+import { referenceProducts } from "../lib/reference-catalog";
 import HeroSlider from "./hero-slider";
 import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
 import {
   categoryTiles,
-  referencePrices,
-  referenceNames,
   dealProducts,
   bestProducts,
   journalPosts,
@@ -90,41 +91,13 @@ function ReferenceCard({
   onSave: () => void;
   saved: boolean;
 }) {
-  return (
-    <article className={`hp-product ${deal ? "hp-product-deal" : ""}`}>
-      <div className="hp-product-image">
-        <button onClick={onView} aria-label={`View ${p.name}`}>
-          <img src={`/products/${artwork}.webp`} alt={p.name} loading="lazy" />
-        </button>
-        {p.badge && <span className="hp-badge">{p.badge}</span>}
-        <button
-          className="hp-heart"
-          aria-label={`${saved ? "Remove" : "Save"} ${p.name}${saved ? " from wishlist" : " to wishlist"}`}
-          aria-pressed={saved}
-          onClick={onSave}
-        >
-          <Heart size={17} fill={saved ? "currentColor" : "none"} />
-        </button>
-      </div>
-      <div className="hp-product-body">
-        <button className="hp-product-name" onClick={onView}>
-          {p.name}
-        </button>
-        <div className="hp-rating">
-          <span aria-label={`Illustrative ${p.rating} star rating`}>★★★★★</span>
-          <small>
-            {p.rating} ({p.sold})
-          </small>
-        </div>
-        {deal && <p>{p.description}</p>}
-        <div className="hp-product-price">
-          <strong>{p.price}</strong>
-          <del>{p.old}</del>
-        </div>
-      </div>
-    </article>
-  );
+  const id = artwork.startsWith("deal")
+    ? -1 - Number(artwork.slice(4))
+    : -7 - Number(artwork.slice(4));
+  const product = referenceProducts.find((item) => item.id === id)!;
+  return <ProductCard product={product} saved={saved} onSave={onSave} />;
 }
+
 const photo = (id: string, w = 800) =>
   id.startsWith("/")
     ? id
@@ -175,8 +148,10 @@ export default function Store() {
         ?.scrollBy({ left: direction * 200, behavior: "smooth" });
   }
   function openReference(p: ReferenceProduct) {
-    const index=dealProducts.includes(p)?dealProducts.indexOf(p):6+bestProducts.indexOf(p);
-    window.location.assign(`/product/${-1-index}`);
+    const index = dealProducts.includes(p)
+      ? dealProducts.indexOf(p)
+      : 6 + bestProducts.indexOf(p);
+    window.location.assign(`/product/${-1 - index}`);
   }
   const closeRef = useRef<HTMLButtonElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
@@ -193,7 +168,9 @@ export default function Store() {
         Array.isArray(s)
           ? s.filter(
               (id: unknown) =>
-                typeof id === "number" && Number.isSafeInteger(id) && (id > 0 || (id >= -12 && id < 0)),
+                typeof id === "number" &&
+                Number.isSafeInteger(id) &&
+                (id > 0 || (id >= -12 && id < 0)),
             )
           : [],
       );
@@ -235,7 +212,10 @@ export default function Store() {
   }, [cart, saved, ready]);
   useEffect(() => {
     if (!notice) return;
-    const t = setTimeout(() => { setNotice(""); setAddedId(null); }, 5000);
+    const t = setTimeout(() => {
+      setNotice("");
+      setAddedId(null);
+    }, 5000);
     return () => clearTimeout(t);
   }, [notice]);
   useEffect(() => {
@@ -371,7 +351,21 @@ export default function Store() {
         Skip to products
       </a>
       <div className="hp">
-        <StoreHeader active="home" wishlistCount={saved.length} bagCount={count} wishlistActive={savedOnly} onWishlist={() => { setCategory("All finds"); setQuery(""); setSavedOnly(true); document.getElementById("shop")?.scrollIntoView({behavior:"smooth"}); }} onBag={() => window.location.assign("/cart")}/>
+        <StoreHeader
+          active="home"
+          wishlistCount={saved.length}
+          bagCount={count}
+          wishlistActive={savedOnly}
+          onWishlist={() => {
+            setCategory("All finds");
+            setQuery("");
+            setSavedOnly(true);
+            document
+              .getElementById("shop")
+              ?.scrollIntoView({ behavior: "smooth" });
+          }}
+          onBag={() => window.location.assign("/cart")}
+        />
 
         <main>
           <HeroSlider />
@@ -387,7 +381,29 @@ export default function Store() {
                   className="hp-category"
                   onClick={() => browse(c.category)}
                 >
-                  <Art name={`category${i}`} alt={c.name} />
+                  {i === 5 ? (
+                    <span className="compact-category-more" aria-hidden="true">
+                      <b />
+                      <b />
+                      <b />
+                    </span>
+                  ) : (
+                    <img
+                      className="compact-category-image"
+                      src={
+                        [
+                          "/categories/electronics.webp",
+                          "/categories/fashion.webp",
+                          "/categories/grocery.webp",
+                          "/categories/home.webp",
+                          "/categories/fitness.webp",
+                        ][i]
+                      }
+                      alt=""
+                      width={300}
+                      height={300}
+                    />
+                  )}
                   <span>
                     {c.name}
                     <i>
@@ -444,90 +460,84 @@ export default function Store() {
               <p role="alert">Products could not be loaded. Please refresh.</p>
             )}
             <div className="hp-featured-grid">
-              {visible.map((p, i) => (
-                <article className="hp-featured-card" key={p.id}>
-                  <button
-                    className="hp-featured-image"
-                    onClick={() => window.location.assign(`/product/${p.id}`)}
-                    aria-label={`View ${p.name}`}
-                  >
-                    <img src={photo(p.image)} alt={p.name} loading="lazy" />
-                  </button>
-                  {p.badge && <span className="hp-badge">{p.badge}</span>}
-                  <button className="hp-heart" onClick={() => favorite(p.id)} aria-pressed={saved.includes(p.id)} aria-label={`${saved.includes(p.id) ? "Remove" : "Save"} ${p.name}${saved.includes(p.id) ? " from wishlist" : " to wishlist"}`}><Heart size={17} fill={saved.includes(p.id) ? "currentColor" : "none"} /></button>
-                  <div className="hp-featured-body">
-                    <button
-                      onClick={() => window.location.assign(`/product/${p.id}`)}
-                      className="hp-featured-name"
-                    >
-                      {live ? p.name : referenceNames[p.id - 1] || p.name}
-                    </button>
-                    <div className="hp-featured-rating">
-                      <span aria-label="Illustrative 4.4 star rating">
-                        ★★★★★ <b>4.4</b>
-                      </span>
-                      <small>{i % 3 === 1 ? "Few Left" : "5.3K+ Sold"}</small>
-                    </div>
-                    <strong>
-                      {live ? money(p.price) : referencePrices[i % 8]}
-                    </strong>
-                  </div>
-                </article>
+              {visible.map((p) => (
+                <ProductCard
+                  key={p.id}
+                  product={p}
+                  saved={saved.includes(p.id)}
+                  onSave={() => favorite(p.id)}
+                  live={live}
+                />
               ))}
             </div>
-            {savedOnly && <div className="hp-featured-grid hp-reference-wishlist">
-              {[...dealProducts, ...bestProducts].map((p, i) => saved.includes(-1-i) && <ReferenceCard key={p.name} product={p} artwork={i < 6 ? `deal${i}` : `best${i-6}`} saved onView={() => openReference(p)} onSave={() => favorite(-1-i)} />)}
-            </div>}
-            {!visible.length && !(savedOnly && saved.some(id => id < 0)) && !catalogError && (
-              <div className="empty">
-                <Search size={30} />
-                <h3>No products found</h3>
-                <button
-                  className="primary"
-                  onClick={() => {
-                    setQuery("");
-                    browse();
-                  }}
-                >
-                  View all products
-                </button>
+            {savedOnly && (
+              <div className="hp-featured-grid hp-reference-wishlist">
+                {[...dealProducts, ...bestProducts].map(
+                  (p, i) =>
+                    saved.includes(-1 - i) && (
+                      <ReferenceCard
+                        key={p.name}
+                        product={p}
+                        artwork={i < 6 ? `deal${i}` : `best${i - 6}`}
+                        saved
+                        onView={() => openReference(p)}
+                        onSave={() => favorite(-1 - i)}
+                      />
+                    ),
+                )}
               </div>
             )}
+            {!visible.length &&
+              !(savedOnly && saved.some((id) => id < 0)) &&
+              !catalogError && (
+                <div className="empty">
+                  <Search size={30} />
+                  <h3>No products found</h3>
+                  <button
+                    className="primary"
+                    onClick={() => {
+                      setQuery("");
+                      browse();
+                    }}
+                  >
+                    View all products
+                  </button>
+                </div>
+              )}
           </section>
           <section id="deals" className="hp-deals">
             <div className="hp-container">
               <div className="hp-deal-heading">
-                <h2>Deal of the Week</h2>
-                <div className="hp-countdown">
-                  <span>Ends in</span>
-                  {[
-                    { v: "02", l: "Days" },
-                    { v: "14", l: "Hours" },
-                    { v: "36", l: "Minutes" },
-                    { v: "21", l: "Seconds" },
-                  ].map((x) => (
-                    <div key={x.l}>
-                      <b>{x.v}</b>
-                      <small>{x.l}</small>
-                    </div>
-                  ))}
-                  <button onClick={() => browse()}>
-                    See all <ArrowRight size={17} />
-                  </button>
-                </div>
+                <h2>Everyday Finds</h2>
+                <button className="compact-view-all" onClick={() => browse()}>
+                  View all
+                  <ArrowRight size={16} />
+                </button>
               </div>
               <div className="hp-six-grid">
-                {dealProducts.map((p, i) => (
-                  <ReferenceCard
-                    key={p.name}
-                    product={p}
-                    artwork={`deal${i}`}
-                    deal
-                    onView={() => openReference(p)}
-                    onSave={() => favorite(-1 - dealProducts.indexOf(p))}
-                    saved={saved.includes(-1 - dealProducts.indexOf(p))}
-                  />
-                ))}
+                {live
+                  ? catalog
+                      .slice(0, 6)
+                      .map((p) => (
+                        <ProductCard
+                          key={p.id}
+                          product={p}
+                          saved={saved.includes(p.id)}
+                          onSave={() => favorite(p.id)}
+                          live
+                        />
+                      ))
+                  : dealProducts.map((p, i) => (
+                      <ReferenceCard
+                        key={p.name}
+                        product={p}
+                        artwork={`deal${i}`}
+                        deal
+                        onView={() => openReference(p)}
+                        onSave={() => favorite(-1 - dealProducts.indexOf(p))}
+                        saved={saved.includes(-1 - dealProducts.indexOf(p))}
+                      />
+                    ))}
               </div>
             </div>
           </section>
@@ -537,24 +547,28 @@ export default function Store() {
               Discover top brands, exclusive offers and everything you need in
               one place.
             </p>
-            <div className="hp-promo-grid">
-              {["Fashion", "Beauty", "Tech"].map((c, i) => (
-                <button
-                  key={c}
-                  onClick={() => browse(c)}
-                  aria-label={`Shop ${c}`}
-                >
-                  <Art
-                    name={`promo${i}`}
-                    alt={
-                      i === 0
-                        ? "Casual Leather Fashion for Men — up to 20% off"
-                        : i === 1
-                          ? "Glow Brighter Everyday — up to 30% off"
-                          : "Smarter Tech for a Better Day — up to 25% off"
-                    }
+            <div className="hp-promo-grid compact-promos">
+              {[
+                { name: "Fashion", image: "/heroes/fashion.webp" },
+                { name: "Beauty", image: "/heroes/shop-beauty.webp" },
+                { name: "Tech", image: "/heroes/home-tech.webp" },
+              ].map((c) => (
+                <Link key={c.name} href={categoryHref(c.name)}>
+                  <img
+                    src={c.image}
+                    alt=""
+                    width={600}
+                    height={300}
+                    loading="lazy"
                   />
-                </button>
+                  <div>
+                    <h3>{c.name}</h3>
+                    <span>
+                      Explore collection
+                      <ArrowRight size={15} />
+                    </span>
+                  </div>
+                </Link>
               ))}
             </div>
           </section>
@@ -562,11 +576,9 @@ export default function Store() {
             <div className="hp-container">
               <div className="hp-centered-heading">
                 <h2>
-                  Best Selling <em>Products</em>
+                  More to <em>Explore</em>
                 </h2>
-                <p>
-                  Discover our most loved items, chosen by customers like you.
-                </p>
+                <p>Discover more everyday finds across the collection.</p>
                 <button className="hp-view-all" onClick={() => browse()}>
                   View All Products <ArrowRight size={16} />
                 </button>
@@ -580,19 +592,31 @@ export default function Store() {
                   <ChevronLeft />
                 </button>
                 <div className="hp-six-grid hp-scroll" id="best-products">
-                  {[
-                    ...bestProducts.slice(bestPage),
-                    ...bestProducts.slice(0, bestPage),
-                  ].map((p) => (
-                    <ReferenceCard
-                      key={p.name}
-                      product={p}
-                      artwork={`best${bestProducts.indexOf(p)}`}
-                      onView={() => openReference(p)}
-                      onSave={() => favorite(-7 - bestProducts.indexOf(p))}
-                      saved={saved.includes(-7 - bestProducts.indexOf(p))}
-                    />
-                  ))}
+                  {live
+                    ? catalog
+                        .slice(0, 6)
+                        .map((p) => (
+                          <ProductCard
+                            key={p.id}
+                            product={p}
+                            saved={saved.includes(p.id)}
+                            onSave={() => favorite(p.id)}
+                            live
+                          />
+                        ))
+                    : [
+                        ...bestProducts.slice(bestPage),
+                        ...bestProducts.slice(0, bestPage),
+                      ].map((p) => (
+                        <ReferenceCard
+                          key={p.name}
+                          product={p}
+                          artwork={`best${bestProducts.indexOf(p)}`}
+                          onView={() => openReference(p)}
+                          onSave={() => favorite(-7 - bestProducts.indexOf(p))}
+                          saved={saved.includes(-7 - bestProducts.indexOf(p))}
+                        />
+                      ))}
                 </div>
                 <button
                   className="hp-carousel-arrow hp-arrow-right"
@@ -732,14 +756,22 @@ export default function Store() {
             </div>
           </section>
         </main>
-
       </div>
       <div className="toast hp-toast" role="status" aria-live="polite">
         {notice && (
           <>
             <Check size={18} />
             <span>{notice}</span>
-            {addedId !== null && <button onClick={() => { setDrawer(true); setNotice(""); }}>View cart <ArrowRight size={14} /></button>}
+            {addedId !== null && (
+              <button
+                onClick={() => {
+                  setDrawer(true);
+                  setNotice("");
+                }}
+              >
+                View cart <ArrowRight size={14} />
+              </button>
+            )}
           </>
         )}
       </div>
@@ -944,4 +976,3 @@ export default function Store() {
     </>
   );
 }
-

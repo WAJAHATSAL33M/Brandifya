@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { money, subtotal, type Product } from "../lib/catalog";
 import type { Store } from "./use-store";
+import ProductCard from "./product-card";
 import StoreHeader from "./store-header";
 export const productImage = (src: string) =>
   src.startsWith("/")
@@ -104,36 +105,13 @@ export function ProductCards({
       </div>
       <div className="commerce-product-grid">
         {items.slice(0, 3).map((p) => (
-          <article className="commerce-product-card" key={p.id}>
-            <Link href={`/product/${p.id}`}>
-              <img
-                src={productImage(p.image)}
-                alt={p.name}
-                loading="lazy"
-                width={300}
-                height={300}
-              />
-            </Link>
-            {p.badge && !p.badge.includes("%") && (
-              <span className="commerce-product-badge">{p.badge}</span>
-            )}
-            <button
-              className="commerce-favorite"
-              aria-label={`${store.saved.includes(p.id) ? "Remove" : "Save"} ${p.name}${store.saved.includes(p.id) ? " from wishlist" : " to wishlist"}`}
-              aria-pressed={store.saved.includes(p.id)}
-              onClick={() => store.favorite(p.id)}
-            >
-              <Heart
-                size={17}
-                fill={store.saved.includes(p.id) ? "currentColor" : "none"}
-              />
-            </button>
-            <div>
-              <Link href={`/product/${p.id}`}>{p.name}</Link>
-              <small>{p.category}</small>
-              <strong>{money(p.price)}</strong>
-            </div>
-          </article>
+          <ProductCard
+            key={p.id}
+            product={p}
+            saved={store.saved.includes(p.id)}
+            onSave={() => store.favorite(p.id)}
+            live={store.config?.live}
+          />
         ))}
       </div>
     </section>

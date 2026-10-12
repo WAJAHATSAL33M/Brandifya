@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { ProductBadge } from "../../product-card";
 import { categoryHref } from "../../../lib/categories";
 import { ArrowRight, Heart, Maximize2, ShoppingBag, X } from "lucide-react";
 import { money, type Product } from "../../../lib/catalog";
@@ -74,8 +75,18 @@ export default function ProductPage({ product }: { product: Product }) {
             >
               <Maximize2 size={20} />
             </button>
-            {p.badge && !p.badge.includes("%") && (
-              <span className="commerce-product-badge">{p.badge}</span>
+            {(p.id < 0 ||
+              p.stock === 0 ||
+              (p.badge && !p.badge.includes("%"))) && (
+              <ProductBadge
+                label={
+                  p.id < 0
+                    ? "Design sample"
+                    : p.stock === 0
+                      ? "Sold Out"
+                      : p.badge!
+                }
+              />
             )}
           </div>
           <div className="commerce-product-copy">

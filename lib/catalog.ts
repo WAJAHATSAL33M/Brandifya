@@ -8,6 +8,9 @@ export type Product = {
   description: string;
   badge?: string;
   stock: number;
+  rating?: number | null;
+  reviewCount?: number;
+  soldCount?: number;
 };
 export const products: Product[] = [
   {
@@ -145,3 +148,4 @@ export function subtotal(cart: CartItem[], catalog: Product[] = products) {
     0,
   );
 }
+

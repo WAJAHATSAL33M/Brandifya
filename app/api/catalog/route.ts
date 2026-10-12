@@ -19,6 +19,9 @@ export async function GET() {
           color: p.color,
           description: p.description,
           badge: p.badge || undefined,
+          rating: p.rating == null ? undefined : Number(p.rating),
+          reviewCount: p.review_count ?? undefined,
+          soldCount: p.sold_count ?? undefined,
         })),
       },
       { headers: { "Cache-Control": "no-store" } },
@@ -27,3 +30,4 @@ export async function GET() {
     return Response.json({ error: "Inventory unavailable" }, { status: 503 });
   }
 }
+

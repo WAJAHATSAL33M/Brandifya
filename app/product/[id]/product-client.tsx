@@ -252,7 +252,7 @@ export default function ProductPage({ product }: { product: Product }) {
               <summary>Need help choosing?</summary>
               <p>
                 Have a question about this product?{" "}
-                <Link href="/#contact">Contact Brande</Link> before placing your
+                <Link href="/contact">Contact Brande</Link> before placing your
                 order.
               </p>
             </details>

@@ -48,7 +48,7 @@ export default function Cart() {
                   </Link>
                   <CheckoutNote />
                   <p className="commerce-summary-help">
-                    Need a hand? <Link href="/#contact">Contact us</Link>
+                    Need a hand? <Link href="/contact">Contact us</Link>
                   </p>
                 </aside>
               </div>
@@ -67,3 +67,4 @@ export default function Cart() {
     </div>
   );
 }
+

@@ -285,7 +285,7 @@ export default function Order() {
                   <h2>Need Help?</h2>
                   <p>Contact us with your order reference.</p>
                 </div>
-                <Link href="/#contact">Contact Support</Link>
+                <Link href="/contact">Contact Support</Link>
               </div>
             </section>
             <aside className="commerce-panel commerce-summary">
@@ -333,3 +333,4 @@ export default function Order() {
     </div>
   );
 }
+

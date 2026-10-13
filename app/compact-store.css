@@ -1469,7 +1469,7 @@
   }
 }
 
-/* Mobile cards follow their content rather than reserving empty rows. */
+/* Mobile hierarchy: title, primary price and sale details, then social proof. */
 .store-card-review-count {
   display: none;
 }
@@ -1483,20 +1483,50 @@
     flex-direction: column;
     flex: 0 0 auto;
     min-height: 0;
-    gap: 5px;
-    padding: 8px 10px 10px;
+    gap: 6px;
+    padding: 10px;
   }
   .hp .store-card-name,
   .hp.shop-page .shop-grid .store-card-name,
   .hp .commerce-product-grid .store-card-name {
+    order: 1;
     min-height: 0;
+    font-size: 14px !important;
+    font-weight: 500 !important;
     line-height: 1.25;
   }
+  .hp .store-card-price.product-price-display {
+    order: 2;
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: 4px 6px;
+    margin: 0;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .hp .store-card-price .product-price-current {
+    grid-column: 1 / -1;
+  }
+  .hp .store-card-price .product-price-original {
+    grid-column: 1;
+    font-size: 11px;
+  }
+  .hp .store-card-price .product-price-saving {
+    grid-column: 2;
+    justify-self: start;
+    align-self: center;
+    font-size: 10px;
+    padding: 1px 4px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
   .hp .store-card-stats {
+    order: 3;
     min-height: 0;
     justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 3px 8px;
+    gap: 4px 8px;
+    font-size: 11px;
     line-height: 1.3;
   }
   .hp .store-card-stats-empty {
@@ -1504,34 +1534,24 @@
   }
   .hp .store-card-stats > small {
     margin-left: 0;
+    font-size: 10px;
   }
   .hp .store-card-rating {
     gap: 3px;
     white-space: nowrap;
   }
+  .hp .store-card-rating .store-card-stars {
+    font-size: 12px;
+  }
   .hp .store-card-rating .store-card-review-count {
     display: inline;
-    font-size: 9px;
+    font-size: 10px;
     font-weight: 400;
     color: #707580;
   }
-  .hp .store-card-price.product-price-display {
-    display: grid;
-    grid-template-columns: max-content minmax(0, 1fr);
-    gap: 3px 6px;
-    margin: 0;
-  }
-  .hp .store-card-price .product-price-current {
-    grid-column: 1 / -1;
-  }
-  .hp .store-card-price .product-price-original {
-    grid-column: 1;
-  }
-  .hp .store-card-price .product-price-saving {
-    grid-column: 2;
-    justify-self: start;
-    align-self: center;
-    white-space: normal;
-    overflow-wrap: anywhere;
+}
+@media (max-width: 399px) {
+  .hp .store-card-stats > small:not(.store-card-low) {
+    display: none;
   }
 }

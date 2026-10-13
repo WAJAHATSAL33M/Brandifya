@@ -1555,3 +1555,38 @@
     display: none;
   }
 }
+
+
+/* Mobile supporting chips reuse the approved status palette. */
+.store-card-chips { display: none; }
+@media (max-width: 700px) {
+  .hp .store-card-name,
+  .hp.shop-page .shop-grid .store-card-name,
+  .hp .commerce-product-grid .store-card-name { font-weight: 600 !important; }
+  .hp .store-card-stats > small { display: none; }
+  .hp .store-card-chips {
+    order: 4;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-width: 0;
+  }
+  .hp .store-card-chips > span { max-width: 100%; min-width: 0; }
+  .hp .store-card-badge.store-card-detail-badge,
+  .hp .store-card-sold-chip {
+    position: static;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 4px 6px;
+    border-radius: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+  }
+  .hp .store-card-sold-chip { background: #e0e0e0; color: #565656; }
+  .hp .store-card-detail-badge svg { flex-shrink: 0; }
+}

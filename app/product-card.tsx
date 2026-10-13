@@ -3,8 +3,9 @@ import { useMerchandising } from "./use-merchandising";
 import ProductPrice from "./product-price";
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { money, type Product } from "../lib/catalog";
-export function ProductBadge({ label }: { label: string }) {
+import { cardChips } from "../lib/card-badges";
+import { type Product } from "../lib/catalog";
+export function ProductBadge({ label, className = "" }: { label: string; className?: string }) {
   const kind = /sold out|out of stock/i.test(label)
     ? "sold"
     : /star seller|top rated/i.test(label)
@@ -23,7 +24,7 @@ export function ProductBadge({ label }: { label: string }) {
                   ? "new"
                   : "standard";
   return (
-    <span className={`store-card-badge hp-badge badge-${kind}`}>
+    <span className={`store-card-badge hp-badge badge-${kind} ${className}`}>
       {label}
       {kind === "trust" && (
         <Star size={11} fill="currentColor" aria-hidden="true" />
@@ -46,7 +47,9 @@ export default function ProductCard({
     p.image.startsWith("/") || p.image.startsWith("https://")
       ? p.image
       : `https://images.unsplash.com/${p.image}?auto=format&fit=crop&w=800&q=85`;
-  const { badge, lowStock } = useMerchandising(p, live);
+  const merchandising = useMerchandising(p, live);
+  const { badge, lowStock } = merchandising;
+  const chips = cardChips(p, merchandising);
   const rating =
     typeof p.rating === "number" &&
     Number.isFinite(p.rating) &&
@@ -123,7 +126,17 @@ export default function ProductCard({
           price={p.price}
           originalPrice={p.originalPrice}
         />
+        {chips.length > 0 && (
+          <div className="store-card-chips" title={live ? undefined : "Demo rating and sales figures"}>
+            {chips.map(chip => (
+              <span key={chip.label} title={chip.detail}>
+                {chip.kind === "sold" ? <span className="store-card-sold-chip">{chip.label}</span> : <ProductBadge label={chip.label} className="store-card-detail-badge" />}
+              </span>
+            ))}
+          </div>
+        )}
       </div>
     </article>
   );
 }
+

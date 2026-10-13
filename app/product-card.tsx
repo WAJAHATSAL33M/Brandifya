@@ -95,6 +95,9 @@ export default function ProductCard({
                   </span>
                 </span>
                 {p.rating!.toFixed(1)}
+                <span className="store-card-review-count" aria-hidden="true">
+                  ({new Intl.NumberFormat("en", { notation: "compact", maximumFractionDigits: 1 }).format(p.reviewCount!)})
+                </span>
               </span>
             )}
             {lowStock ? (

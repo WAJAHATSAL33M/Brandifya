@@ -7,6 +7,8 @@ import { money, type Product } from "../lib/catalog";
 export function ProductBadge({ label }: { label: string }) {
   const kind = /sold out|out of stock/i.test(label)
     ? "sold"
+    : /countdown|^\d+d \d+h$|^\d{2}:\d{2}:\d{2}$/i.test(label)
+      ? "timer"
     : /star seller|top rated/i.test(label)
       ? "trust"
       : /best seller/i.test(label)
@@ -23,7 +25,7 @@ export function ProductBadge({ label }: { label: string }) {
                   ? "new"
                   : "standard";
   return (
-    <span className={`store-card-badge hp-badge badge-${kind}`}>
+    <span className={`store-card-badge hp-badge badge-${kind}`} aria-label={kind === "timer" ? `Promotion ends in ${label}` : undefined}>
       {label}
       {kind === "trust" && (
         <Star size={11} fill="currentColor" aria-hidden="true" />

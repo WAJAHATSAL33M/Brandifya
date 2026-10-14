@@ -443,11 +443,19 @@ export default function Admin() {
                               "Featured",
                               "Flash Sale",
                               "Ends Soon",
+                              "Trending",
+                              "Lightning Deal",
+                              "Countdown Timer",
+                              "Few Left",
+                              "Almost Sold Out",
+                              "Early Bird Price",
+                              "Sold Out",
                             ].map((x) => (
                               <option key={x}>{x}</option>
                             ))}
                           </datalist>
                         </label>
+                        <p className="management-muted">One badge appears on the product image. Countdown Timer, Flash Sale, Lightning Deal, Ends Soon and Early Bird Price require an enabled promotion with start/end dates. Few Left requires 1–3 units; Sold Out appears automatically at zero stock. Leave Badge blank to hide it.</p>
                         <label>
                           Rating
                           <input
@@ -920,3 +928,4 @@ export default function Admin() {
     </div>
   );
 }
+

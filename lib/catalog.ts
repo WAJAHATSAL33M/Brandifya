@@ -47,6 +47,7 @@ export const products: Product[] = [
   },
   {
     id: 3,
+    badge: "Top Rated",
     name: "Smart fitness band",
     category: "Tech",
     price: 4200,
@@ -58,6 +59,7 @@ export const products: Product[] = [
   },
   {
     id: 4,
+    badge: "Best Seller",
     name: "Everyday tote bag",
     category: "Accessories",
     price: 8900,
@@ -69,6 +71,7 @@ export const products: Product[] = [
   },
   {
     id: 5,
+    badge: "Few Left",
     name: "Electric kettle",
     category: "Home & Living",
     price: 7500,
@@ -76,10 +79,14 @@ export const products: Product[] = [
     color: "Black",
     description:
       "A countertop kettle concept. Capacity, voltage, safety certification, and warranty require merchant verification.",
-    stock: 4,
+    stock: 3,
   },
   {
     id: 6,
+    badge: "Countdown Timer",
+    promotionActive: true,
+    promotionStartsAt: "2026-10-14T00:00:00Z",
+    promotionEndsAt: "2026-10-15T23:59:59Z",
     name: "Skincare serum set",
     category: "Beauty",
     price: 11900,
@@ -92,6 +99,10 @@ export const products: Product[] = [
   },
   {
     id: 7,
+    badge: "Lightning Deal",
+    promotionActive: true,
+    promotionStartsAt: "2026-10-14T00:00:00Z",
+    promotionEndsAt: "2026-10-15T23:59:59Z",
     name: "Casual loafers",
     category: "Fashion",
     price: 3500,
@@ -103,6 +114,7 @@ export const products: Product[] = [
   },
   {
     id: 8,
+    badge: "Trending",
     name: "Portable Bluetooth speaker",
     category: "Tech",
     price: 5900,
@@ -162,3 +174,4 @@ export function subtotal(cart: CartItem[], catalog: Product[] = products) {
     0,
   );
 }
+

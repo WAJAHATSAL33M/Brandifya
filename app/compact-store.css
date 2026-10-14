@@ -1535,3 +1535,32 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* Continuous mobile brand loop matches the category carousel. */
+.brand-carousel-viewport,
+.brand-carousel-track { display: contents; }
+.brand-carousel-copy { display: none !important; }
+@media (max-width: 700px) {
+  .hp .brand-carousel-viewport { display: block; overflow: hidden; }
+  .hp .brand-carousel-track {
+    display: flex;
+    width: max-content;
+    animation: category-loop 28s linear infinite;
+  }
+  .hp .brand-carousel-track > .hp-brand-grid {
+    display: flex !important;
+    flex: none;
+    width: max-content;
+    overflow: visible;
+    gap: 13px;
+    padding: 0 13px 15px 0;
+  }
+  .hp .brand-carousel-track .hp-brand-tile { flex: 0 0 120px; }
+  .hp .brand-carousel-track:focus-within { animation-play-state: paused; }
+  .hp .hp-brands .hp-carousel-arrow { display: none; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .hp .brand-carousel-viewport { overflow-x: auto; }
+  .hp .brand-carousel-track { animation: none; }
+  .hp .brand-carousel-track > .brand-carousel-copy { display: none !important; }
+}

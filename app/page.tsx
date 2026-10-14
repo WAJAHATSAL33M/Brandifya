@@ -671,23 +671,32 @@ export default function Store() {
                 >
                   <ChevronLeft />
                 </button>
-                <div className="hp-brand-grid" id="brand-list">
-                  {[
-                    ...brandNames.slice(brandPage),
-                    ...brandNames.slice(0, brandPage),
-                  ].map((name) => (
-                    <button
-                      className="hp-brand-tile"
-                      key={name}
-                      onClick={() => setInfo("Brands")}
-                    >
-                      <Art
-                        name={`brand${brandNames.indexOf(name)}`}
-                        alt={`${name} logo`}
-                      />
-                      <span>{name}</span>
-                    </button>
-                  ))}
+                <div className="brand-carousel-viewport">
+                  <div className="brand-carousel-track">
+                    {[0, 1].map((copy) => (
+                      <div
+                        className={`hp-brand-grid${copy ? " brand-carousel-copy" : ""}`}
+                        id={copy ? undefined : "brand-list"}
+                        key={copy}
+                        aria-hidden={copy ? true : undefined}
+                      >
+                        {[
+                          ...brandNames.slice(brandPage),
+                          ...brandNames.slice(0, brandPage),
+                        ].map((name) => (
+                          <button
+                            className="hp-brand-tile"
+                            key={name}
+                            tabIndex={copy ? -1 : undefined}
+                            onClick={() => setInfo("Brands")}
+                          >
+                            <Art name={`brand${brandNames.indexOf(name)}`} alt={`${name} logo`} />
+                            <span>{name}</span>
+                          </button>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <button
                   className="hp-carousel-arrow hp-arrow-right"
@@ -1005,3 +1014,4 @@ export default function Store() {
     </>
   );
 }
+

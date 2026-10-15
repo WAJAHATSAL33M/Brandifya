@@ -22,7 +22,7 @@ export const products: Product[] = [
   {
     id: 1,
     badge: "Featured",
-    name: "Vintage leather backpack",
+    name: "Vintage leather backpack with classic front pockets for everyday essentials",
     category: "Accessories",
     price: 12900,
     originalPrice: 15900,
@@ -35,7 +35,7 @@ export const products: Product[] = [
   {
     id: 2,
     badge: "New",
-    name: "Ceramic aroma diffuser",
+    name: "Ceramic aroma diffuser in a natural finish for everyday home styling",
     category: "Home & Living",
     price: 6900,
     originalPrice: 8900,
@@ -115,7 +115,7 @@ export const products: Product[] = [
   {
     id: 8,
     badge: "Trending",
-    name: "Portable Bluetooth speaker",
+    name: "Portable Bluetooth speaker in charcoal for everyday listening at home and on the go",
     category: "Tech",
     price: 5900,
     image: "/products/featured7.webp",

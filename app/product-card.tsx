@@ -74,6 +74,7 @@ export default function ProductCard({
       <div className="store-card-body hp-featured-body">
         <Link
           className="store-card-name hp-featured-name"
+          title={p.name}
           href={`/product/${p.id}`}
         >
           {p.name}

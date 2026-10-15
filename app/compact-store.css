@@ -1620,3 +1620,17 @@
   margin-top: auto;
   background: #ffffff;
 }
+
+/* Product-card titles never exceed two lines, including long unbroken names. */
+.hp .store-card-name,
+.hp.shop-page .shop-grid .store-card-name,
+.hp .commerce-product-grid .store-card-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  max-height: 2lh;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  flex-shrink: 0;
+}

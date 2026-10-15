@@ -386,7 +386,7 @@ export default function Store() {
                     {categoryTiles.map((c, i) => (
                       <button
                         key={c.name}
-                        className="hp-category"
+                        className={`hp-category${i === 5 ? " hp-category-more" : ""}`}
                         tabIndex={copy ? -1 : undefined}
                         onClick={() => browse(c.category)}
                       >

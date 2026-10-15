@@ -112,7 +112,7 @@ export default function StoreHeader(props: Props) {
           aria-controls={id}
           onClick={() => {
             setMobile(!mobile);
-            setCollections(false);
+            setCollections(!mobile);
             setSearchOpen(false);
           }}
         >
@@ -138,7 +138,7 @@ export default function StoreHeader(props: Props) {
             </Link>
             <div
               className="store-header-collections"
-              onMouseLeave={() => setCollections(false)}
+              onMouseLeave={() => { if (!mobile) setCollections(false); }}
               onBlur={(e) => {
                 if (!e.currentTarget.contains(e.relatedTarget))
                   setCollections(false);

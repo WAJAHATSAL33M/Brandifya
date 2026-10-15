@@ -1849,3 +1849,36 @@
   .hp .store-header-collections > .store-header-shop-toggle { grid-column: 1; grid-row: 2; }
   .hp .store-header-collections > .store-header-dropdown { grid-column: 1 / -1; grid-row: 4; margin-top: 6px; }
 }
+
+/* Warm, compact navigation tiles in the mobile menu. */
+@media (max-width: 900px) {
+  .hp .store-header-nav { padding: 10px 14px; gap: 6px 8px; }
+  .hp .store-header-nav > a,
+  .hp .store-header-collections > .store-header-shop-toggle {
+    min-height: 40px;
+    padding: 7px 12px;
+    border: 1px solid #f0e5db;
+    border-radius: 9px;
+    background: #fff8f2;
+    color: #27221e;
+    font-family: var(--store-heading-font);
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 1.2;
+    text-decoration: none;
+    transition: background .15s, border-color .15s, color .15s;
+  }
+  .hp .store-header-nav > a[aria-current="page"],
+  .hp .store-header-collections > .store-header-shop-toggle[aria-current="page"],
+  .hp .store-header-collections > .store-header-shop-toggle[aria-expanded="true"] {
+    background: #fff0e5;
+    border-color: #ffb98e;
+    color: #c43b00;
+  }
+  .hp .store-header-nav > .store-account-link { font-family: "DM Sans", Arial, sans-serif; font-size: 11px; font-weight: 600; gap: 5px; }
+  .hp .store-header-collections > .store-header-dropdown { margin-top: 2px; border: 1px solid #f0e5db; background: #fff; }
+}
+@media (max-width: 900px) and (hover: hover) {
+  .hp .store-header-nav > a:hover,
+  .hp .store-header-collections > .store-header-shop-toggle:hover { background: #ffe9d8; border-color: #ffb98e; }
+}

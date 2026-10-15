@@ -390,32 +390,20 @@ export default function Store() {
                         tabIndex={copy ? -1 : undefined}
                         onClick={() => browse(c.category)}
                       >
-                        {i === 5 ? (
-                          <span
-                            className="compact-category-more"
-                            aria-hidden="true"
-                          >
-                            <b />
-                            <b />
-                            <b />
-                          </span>
-                        ) : (
-                          <img
-                            className="compact-category-image"
-                            src={
-                              [
-                                "/categories/electronics.webp",
-                                "/categories/fashion.webp",
-                                "/categories/grocery.webp",
-                                "/categories/home.webp",
-                                "/categories/fitness.webp",
-                              ][i]
-                            }
-                            alt=""
-                            width={300}
-                            height={300}
-                          />
-                        )}
+                        <img
+                          className="compact-category-image"
+                          src={[
+                            "/categories/electronics.webp",
+                            "/categories/fashion.webp",
+                            "/categories/grocery.webp",
+                            "/categories/home.webp",
+                            "/categories/fitness.webp",
+                            "/products/featured5.webp",
+                          ][i]}
+                          alt=""
+                          width={300}
+                          height={300}
+                        />
                         <span>
                           {c.name}
                           <i>

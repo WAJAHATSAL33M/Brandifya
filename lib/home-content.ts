@@ -122,7 +122,7 @@ export const categoryTiles = [
   { name: "Grocery", category: "Grocery" },
   { name: "Home & Kitchen", category: "Home & Living" },
   { name: "Sports & Fitness", category: "Sports & Fitness" },
-  { name: "More", category: "All finds" },
+  { name: "Beauty", category: "Beauty" },
 ];
 export const referencePrices = [
   "$89.99",
@@ -283,3 +283,4 @@ export const referenceNames = [
   "Casual Loafers",
   "Portable Bluetooth Speaker",
 ];
+

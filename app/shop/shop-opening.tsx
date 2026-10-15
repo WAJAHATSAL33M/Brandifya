@@ -1,3 +1,4 @@
+import SwipeLoop from "../swipe-loop";
 import { ArrowRight, ChevronRight, Grid2X2, Heart, House, Laptop, Shirt, ShoppingBag, SlidersHorizontal, Sparkles } from "lucide-react";
 const icons: Record<string, typeof Heart> = {"Home & Living": House, Fashion: Shirt, Accessories: ShoppingBag, Beauty: Sparkles, Tech: Laptop};
 type Props = {
@@ -34,11 +35,11 @@ export default function ShopOpening({categories, selected, total, onCategory, on
     </section>
     {categories.length > 0 && <section className="shop-popular" aria-labelledby="shop-popular-title">
       <div className="shop-section-heading"><h2 id="shop-popular-title">Explore Categories</h2><button onClick={() => onCategory(null)}>View all<ArrowRight size={16}/></button></div>
-      <div className="shop-category-carousel-viewport"><div className="shop-category-carousel-track">
+      <SwipeLoop className="shop-category-carousel-viewport" label="Explore Categories"><div className="shop-category-carousel-track">
         {[0, 1].map(copy => <div key={copy} className={`shop-popular-grid${copy ? " shop-category-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
           {categories.map(category => <button key={category.name} tabIndex={copy ? -1 : undefined} aria-pressed={selected.length === 1 && selected[0] === category.name} onClick={() => onCategory(category.name)}><span><img src={category.image} alt="" width={200} height={200} loading="lazy"/></span><strong>{category.name}</strong></button>)}
         </div>)}
-      </div></div>
+      </div></SwipeLoop>
     </section>}
   </>;
 }

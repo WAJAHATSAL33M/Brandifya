@@ -26,6 +26,7 @@ const slides = [
 export default function HeroSlider() {
   const [index, setIndex] = useState(0);
   const [hovered, setHovered] = useState(false);
+  const [touching, setTouching] = useState(false);
   const [focused, setFocused] = useState(false);
   const [paused, setPaused] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(true);
@@ -40,20 +41,20 @@ export default function HeroSlider() {
     return () => { media.removeEventListener("change", motion); document.removeEventListener("visibilitychange", visibility); };
   }, []);
   useEffect(() => {
-    if (hovered || focused || paused || reducedMotion || !visible) return;
+    if (hovered || touching || focused || paused || reducedMotion || !visible) return;
     const timer = window.setTimeout(() => setIndex(current => (current + 1) % slides.length), 5000);
     return () => window.clearTimeout(timer);
-  }, [index, hovered, focused, paused, reducedMotion, visible]);
+  }, [index, hovered, touching, focused, paused, reducedMotion, visible]);
   const touch = useRef<{x:number;y:number}|null>(null);
   const slide = slides[index];
   const move = (direction:number) => setIndex(current=>(current+direction+slides.length)%slides.length);
   return <section className={`home-hero home-hero-${slide.theme}`} role="region" aria-roledescription="carousel" aria-label="Featured collections" tabIndex={0}
-    onMouseEnter={() => setHovered(true)} onMouseLeave={() => setHovered(false)}
+    onMouseEnter={() => { if (window.matchMedia("(hover: hover)").matches) setHovered(true); }} onMouseLeave={() => setHovered(false)}
     onFocusCapture={() => setFocused(true)} onBlurCapture={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}
     onKeyDown={e=>{if(e.key==="ArrowLeft"||e.key==="ArrowRight"){e.preventDefault();move(e.key==="ArrowLeft"?-1:1);}}}
-    onTouchStart={e=>{if(e.touches.length===1)touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};else touch.current=null;}}
-    onTouchCancel={()=>{touch.current=null;}}
-    onTouchEnd={e=>{const start=touch.current;touch.current=null;if(!start||!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.4)move(dx<0?1:-1);}}>
+    onTouchStart={e=>{setTouching(true);if(e.touches.length===1)touch.current={x:e.touches[0].clientX,y:e.touches[0].clientY};else touch.current=null;}}
+    onTouchCancel={()=>{setTouching(false);touch.current=null;}}
+    onTouchEnd={e=>{setTouching(false);const start=touch.current;touch.current=null;if(!start||!e.changedTouches.length)return;const dx=e.changedTouches[0].clientX-start.x,dy=e.changedTouches[0].clientY-start.y;if(Math.abs(dx)>=50&&Math.abs(dx)>Math.abs(dy)*1.4)move(dx<0?1:-1);}}>
     <div className="home-hero-images" aria-hidden="true">
       {slides.map((s, i) => <img key={s.image} className={index === i ? "is-active" : ""} src={s.image} alt="" width={2172} height={724} loading="eager" fetchPriority={i === 0 ? "high" : "auto"} draggable={false}/>)}
     </div>

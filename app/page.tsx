@@ -41,6 +41,7 @@ import { categoryHref } from "../lib/categories";
 import ProductCard from "./product-card";
 import { referenceProducts } from "../lib/reference-catalog";
 import HeroSlider from "./hero-slider";
+import SwipeLoop from "./swipe-loop";
 import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
 import {
@@ -394,7 +395,7 @@ export default function Store() {
             <p className="hp-subtitle">
               Explore the essentials across our most-loved departments.
             </p>
-            <div className="category-carousel-viewport">
+            <SwipeLoop className="category-carousel-viewport" label="Shop by Category">
               <div className="category-carousel-track">
                 {[0, 1].map((copy) => (
                   <div
@@ -434,7 +435,7 @@ export default function Store() {
                   </div>
                 ))}
               </div>
-            </div>
+            </SwipeLoop>
           </section>
           <section id="shop" className="hp-featured hp-container">
             <h2>
@@ -623,6 +624,7 @@ export default function Store() {
                   onPointerDown={() => { exploreInteracting.current = true; pauseExplore(); }}
                   onPointerUp={() => { exploreInteracting.current = false; pauseExplore(); }}
                   onPointerCancel={() => { exploreInteracting.current = false; pauseExplore(); }}
+                  onPointerLeave={() => { exploreInteracting.current = false; pauseExplore(); }}
                   onTouchStart={pauseExplore}
                   onTouchEnd={pauseExplore}
                   onWheel={pauseExplore}
@@ -676,7 +678,7 @@ export default function Store() {
                 >
                   <ChevronLeft />
                 </button>
-                <div className="brand-carousel-viewport">
+                <SwipeLoop className="brand-carousel-viewport" label="Shop by Brand">
                   <div className="brand-carousel-track">
                     {[0, 1].map((copy) => (
                       <div
@@ -702,7 +704,7 @@ export default function Store() {
                       </div>
                     ))}
                   </div>
-                </div>
+                </SwipeLoop>
                 <button
                   className="hp-carousel-arrow hp-arrow-right"
                   aria-label="Next brands"

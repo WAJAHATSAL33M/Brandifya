@@ -1776,8 +1776,30 @@
 
 /* Match the footer menu widths, link rows and spacing. */
 .hp .hp-footer-column { min-width: 0; padding: 0; }
-.hp .hp-footer-column > a { min-height: 36px; margin: 0; }
+.hp .hp-footer-column > a { margin-bottom: 10px; }
 @media (max-width: 700px) {
   .hp .hp-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .hp .hp-footer-column > a { min-height: 44px; }
+}
+
+/* Swipe the animated rails directly, using native touch momentum. */
+@media (max-width: 700px) {
+  .hp .swipe-loop,
+  .hp.shop-page .swipe-loop {
+    display: block;
+    overflow-x: auto;
+    overflow-y: hidden;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .hp .swipe-loop::-webkit-scrollbar { display: none; }
+  .hp .swipe-loop > div,
+  .hp.shop-page .swipe-loop > div { animation: none; transform: none; }
+  .hp .swipe-loop .category-carousel-copy { display: grid !important; }
+  .hp .swipe-loop .brand-carousel-copy,
+  .hp.shop-page .swipe-loop .shop-category-carousel-copy { display: flex !important; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .hp .swipe-loop .category-carousel-copy,
+  .hp .swipe-loop .brand-carousel-copy,
+  .hp.shop-page .swipe-loop .shop-category-carousel-copy { display: none !important; }
 }

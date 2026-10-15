@@ -57,13 +57,7 @@ export default function CategoryOpening({
             Explore the Collection
             <ArrowRight size={17} />
           </a>
-          <span className="category-count">
-            {loading
-              ? "Finding your everyday favorites…"
-              : failed
-                ? "Explore the collection below"
-                : `${count} ${count === 1 ? "product" : "products"} to explore`}
-          </span>
+
         </div>
       </section>
       <nav
@@ -84,9 +78,7 @@ export default function CategoryOpening({
             <img src={c.image} alt="" width={40} height={40} />
             <span>
               {c.name}
-              <small>
-                {c.count} {c.count === 1 ? "find" : "finds"}
-              </small>
+
             </span>
           </Link>
         ))}

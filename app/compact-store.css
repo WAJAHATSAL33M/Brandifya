@@ -1706,3 +1706,40 @@
   .hp .hp-newsletter form > div > button:hover { background: #e94a00; }
   .hp .hp-socials > button:hover { background: #ff5100; border-color: #ff5100; color: #ffffff; }
 }
+
+/* Compact mobile shortcuts and an automatic category-photo rail. */
+.hp.shop-page .shop-section-heading > button {
+  background: #ff5100;
+  color: #ffffff;
+  border-radius: 22px;
+  padding: 10px 16px;
+  min-height: 42px;
+}
+.shop-category-carousel-viewport,
+.shop-category-carousel-track { display: contents; }
+.shop-category-carousel-copy { display: none !important; }
+@media (max-width: 700px) {
+  .hp.shop-page .shop-opening-tools > button { display: grid; grid-template-columns: 20px minmax(0, 1fr); min-height: 52px; padding: 6px 8px; gap: 2px 5px; }
+  .hp.shop-page .shop-opening-tools > button > span { display: contents; }
+  .hp.shop-page .shop-opening-tools > button > svg { grid-column: 1; grid-row: 1; }
+  .hp.shop-page .shop-opening-tools strong { grid-column: 2; grid-row: 1; }
+  .hp.shop-page .shop-opening-tools small { grid-column: 1 / -1; grid-row: 2; margin-top: 0; }
+  .hp.shop-page .shop-opening-tools { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .hp.shop-page .shop-category-carousel-viewport { display: block; overflow: hidden; }
+  .hp.shop-page .shop-category-carousel-track { display: flex; width: max-content; animation: category-loop 24s linear infinite; }
+  .hp.shop-page .shop-category-carousel-track > .shop-popular-grid {
+    display: flex;
+    flex: none;
+    width: max-content;
+    overflow: visible;
+    gap: 12px;
+    padding: 0 12px 8px 0;
+  }
+  .hp.shop-page .shop-category-carousel-track .shop-popular-grid > button { flex: 0 0 clamp(104px, 29vw, 140px); }
+  .hp.shop-page .shop-category-carousel-track:focus-within { animation-play-state: paused; }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .hp.shop-page .shop-category-carousel-viewport { overflow-x: auto; }
+  .hp.shop-page .shop-category-carousel-track { animation: none; }
+  .hp.shop-page .shop-category-carousel-track > .shop-category-carousel-copy { display: none !important; }
+}

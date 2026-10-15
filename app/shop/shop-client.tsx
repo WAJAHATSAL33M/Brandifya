@@ -452,7 +452,6 @@ export default function Shop({ category }: { category?: string } = {}) {
                       onChange={() => toggleCategory(category)}
                     />
                     <span>{category}</span>
-                    <small>{categoryCounts[category] || 0}</small>
                   </label>
                 ))}
               </fieldset>
@@ -552,11 +551,6 @@ export default function Shop({ category }: { category?: string } = {}) {
             aria-busy={loading}
           >
             <div className="shop-toolbar">
-              <p role="status" aria-live="polite">
-                {loading
-                  ? "Loading products…"
-                  : `${results.length} ${results.length === 1 ? "product" : "products"}`}
-              </p>
               {category ? (
                 <form className="category-product-search" role="search" onSubmit={e => e.preventDefault()}>
                   <Search size={18} aria-hidden="true" />
@@ -702,10 +696,6 @@ export default function Shop({ category }: { category?: string } = {}) {
                 </div>
                 {results.length > limit && (
                   <div className="shop-load-more">
-                    <p>
-                      Showing {Math.min(limit, results.length)} of{" "}
-                      {results.length} products
-                    </p>
                     <button
                       className="primary"
                       onClick={() => setLimit((n) => n + 12)}

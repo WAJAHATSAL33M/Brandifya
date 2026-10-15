@@ -71,7 +71,6 @@ Enter these in Hostinger's environment-variable settings, not in GitHub source. 
 | SHIPPING_MINOR             | Integer delivery charge in minor units; 25000 means PKR 250                             | Live checkout                                 |
 | ENABLE_COD                 | true if the merchant actually offers cash on delivery; otherwise false                  | COD                                           |
 | ADMIN_API_TOKEN            | Unique random token, at least 32 characters                                             | /admin                                        |
-| NEXT_PUBLIC_SUPPORT_EMAIL  | Real public customer-support email                                                      | Contact link; set before building             |
 | RESEND_API_KEY             | Private Resend sending key                                                              | Registration, verification, password recovery |
 | AUTH_FROM_EMAIL            | Verified sender, e.g. no-reply@store.example.com                                        | Account emails                                |
 | GOOGLE_CLIENT_ID           | OAuth web-app client ID                                                                 | Google sign-in                                |
@@ -103,7 +102,6 @@ STORE_COUNTRY=PK
 SHIPPING_MINOR=0
 ENABLE_COD=false
 ADMIN_API_TOKEN=YOUR_RANDOM_PRIVATE_TOKEN
-NEXT_PUBLIC_SUPPORT_EMAIL=support@store.example.com
 RESEND_API_KEY=
 AUTH_FROM_EMAIL=
 GOOGLE_CLIENT_ID=
@@ -250,7 +248,7 @@ The current code sends account messages through **Resend**, not generic SMTP.
 
 Verification/recovery links expire in 30 minutes. Email changes revoke existing sessions after confirmation. A provider's limited test sender is not a substitute for a verified production domain. [E1, E2]
 
-Set NEXT_PUBLIC_SUPPORT_EMAIL to a monitored support inbox. This is independent of the sending API key. Newsletter signup currently records consented email addresses in the database; it is not a newsletter campaign-sending service.
+Public email, telephone and address are maintained in `lib/store-contact.ts`; update that file and rebuild when these details change. This is independent of the sending API key. Newsletter signup currently records consented email addresses in the database; it is not a newsletter campaign-sending service.
 
 ## 9. Activate Google and Facebook login
 
@@ -615,3 +613,4 @@ These links support the hosting/provider instructions; application behavior was 
 - P2: Stripe supported business countries — https://stripe.com/global
 - V1: NodeSource Debian/Ubuntu setup — https://github.com/nodesource/distributions
 - V2: Certbot — https://certbot.eff.org/instructions
+

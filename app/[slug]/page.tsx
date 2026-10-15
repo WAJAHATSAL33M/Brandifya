@@ -1,3 +1,4 @@
+import { storeContact } from "../../lib/store-contact";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -18,10 +19,11 @@ export default async function SupportPage({params}:{params:Promise<{slug:string}
     <div className="support-layout">
       <aside className="support-index"><nav aria-label="On this page"><h2>On this page</h2>{page.sections.map((s,i)=><a key={s.title} href={"#section-"+i}>{s.title}</a>)}</nav></aside>
       <article className="support-article">{page.sections.map((s,i)=>slug==="faq"?<details className="support-faq" key={s.title} id={"section-"+i}><summary>{s.title}</summary><p>{s.text}</p></details>:<section key={s.title} id={"section-"+i}><h2>{s.title}</h2><p>{s.text}</p></section>)}
-      {slug==="contact"&&process.env.NEXT_PUBLIC_SUPPORT_EMAIL&&<a className="commerce-primary support-action" href={"mailto:"+process.env.NEXT_PUBLIC_SUPPORT_EMAIL}>Email customer support</a>}
+      {slug==="contact"&&<div style={{display:"flex",flexWrap:"wrap",gap:12}}><a className="commerce-primary support-action" href={"mailto:"+storeContact.email}>Email customer support</a><a className="commerce-primary support-action" href={storeContact.phoneHref}>Call customer support</a></div>}
       {slug==="order-tracking"&&<Link className="commerce-primary support-action" href="/order">View order confirmation</Link>}
       </article>
     </div>
     <section className="support-related"><h2>More help</h2><div>{supportPages.filter(p=>p.slug!==slug).map(p=><Link key={p.slug} href={"/"+p.slug}>{p.title}<span aria-hidden="true">↗</span></Link>)}</div></section>
   </SupportFrame>;
 }
+

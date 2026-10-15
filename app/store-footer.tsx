@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { storeContact, storeContactMessage } from "../lib/store-contact";
 import { useEffect, useRef, useState } from "react";
 import { Mail, MapPin, Phone, ChevronRight, X, Check } from "lucide-react";
 const policies: Record<string,string> = {
@@ -9,7 +10,7 @@ const policies: Record<string,string> = {
   "Track Order": "Your order reference is available on the order confirmation page. Customer order tracking is being configured.",
   "Shipping & returns": "Delivery areas, shipping fees, timelines, and return terms will be published once the merchant confirms them. Products cannot currently be ordered.",
   "About Brandifya": "Brandifya is a general-store concept bringing home, style, tech, and everyday essentials together. This storefront currently uses sample products and prices.",
-  "Contact us": process.env.NEXT_PUBLIC_SUPPORT_EMAIL ? `Contact our team at ${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}.` : "Customer support details are being set up. This demo does not collect contact requests.",
+  "Contact us": storeContactMessage,
 };
 export default function StoreFooter({live=false}:{live?:boolean}) {
   const [info,setInfo]=useState<string|null>(null),[email,setEmail]=useState(""),[subscribing,setSubscribing]=useState(false),[notice,setNotice]=useState("");
@@ -36,22 +37,15 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
               <a href="/" aria-label="Brande home">
                 <img src="/brande-original.png" alt="Brande — Buy Branded with Brande.pk" />
               </a>
-              <button onClick={() => setInfo("Contact us")}>
-                <Mail />
-                <span>brandifya@gmail.com</span>
-              </button>
-              <button onClick={() => setInfo("Contact us")}>
-                <MapPin />
-                <span>
-                  29 SE 2nd Ave, Miami Florida
-                  <br />
-                  44041, United States
-                </span>
-              </button>
-              <button onClick={() => setInfo("Contact us")}>
-                <Phone />
-                <span>(+92) 413 90 762</span>
-              </button>
+              <a className="store-contact-link" href={`mailto:${storeContact.email}`}>
+                <Mail /><span>{storeContact.email}</span>
+              </a>
+              <a className="store-contact-link" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(storeContact.address)}`} target="_blank" rel="noopener noreferrer">
+                <MapPin /><span>{storeContact.address}</span>
+              </a>
+              <a className="store-contact-link" href={storeContact.phoneHref}>
+                <Phone /><span>{storeContact.phone}</span>
+              </a>
             </div>
             <div className="hp-footer-column">
               <h3>Shopping</h3>
@@ -126,7 +120,7 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
           <nav className="support-footer-links" aria-label="Additional store information"><Link href="/accessibility">Accessibility</Link><Link href="/disclaimer">Disclaimer</Link></nav>
           {!live && (
             <p className="hp-demo-note">
-              Homepage design preview. Prices, ratings, promotions, contact
+              Homepage design preview. Prices, ratings, promotions and product
               details and service terms shown are sample content.
             </p>
           )}
@@ -136,4 +130,5 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
     {info&&<div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)setInfo(null)}}><section className="info-modal" role="dialog" aria-modal="true" aria-labelledby="footer-info-title" ref={dialogRef}><button className="modal-close" aria-label="Close information" onClick={()=>setInfo(null)}><X/></button><span className="info-star">✳</span><h2 id="footer-info-title">{info}</h2><p>{policies[info]}</p><button className="primary" onClick={()=>setInfo(null)}>Got it<Check size={17}/></button></section></div>}
   </>;
 }
+
 

@@ -1,3 +1,4 @@
+import { storeContact, storeContactMessage } from "./store-contact";
 export type SupportPage = {
   slug: string;
   title: string;
@@ -29,6 +30,9 @@ export const supportPages: SupportPage[] = [
     title: "Contact Us",
     description: "Find the right help for your question.",
     sections: [
+      { title: "Email", text: storeContact.email },
+      { title: "Phone", text: storeContact.phone },
+      { title: "Our address", text: storeContact.address },
       {
         title: "Product questions",
         text: "Include the product name or reference and tell us what you would like to know. Check the product page for the information currently available.",
@@ -39,7 +43,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Customer support",
-        text: "Verified support contact details will appear here when the merchant configures them. This preview does not submit contact requests.",
+        text: storeContactMessage,
       },
     ],
   },
@@ -93,7 +97,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Delivery concerns",
-        text: "Once support is configured, provide your order reference when reporting a delivery issue. Use Order Tracking for the order information currently available.",
+        text: "Provide your order reference when reporting a delivery issue. Use Order Tracking for the order information currently available.",
       },
     ],
   },
@@ -108,7 +112,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Requesting a return",
-        text: "When support is enabled, contact the merchant with your order reference, the product and the reason for your request. Wait for return instructions before sending an item.",
+        text: "Contact our support team with your order reference, the product and the reason for your request. Wait for return instructions before sending an item.",
       },
       {
         title: "Product condition and eligibility",
@@ -151,7 +155,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Your requests",
-        text: "For questions about access, correction or deletion, use the verified support contact once configured. Applicable rights and any verification requirements depend on the final merchant setup and relevant law.",
+        text: "For questions about access, correction or deletion, contact our support team. Applicable rights and any verification requirements depend on the final merchant setup and relevant law.",
       },
       {
         title: "Customer accounts",
@@ -259,7 +263,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Need clarification?",
-        text: "Ask support about the product reference once verified contact details are available. Do not assume a sample image confirms size or fit.",
+        text: "Ask support about the product reference using the contact details on our Contact Us page. Do not assume a sample image confirms size or fit.",
       },
     ],
   },
@@ -278,7 +282,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Need help?",
-        text: "Once support is configured, share your order reference and the checkout email through the merchant’s verified channel. Do not share payment credentials.",
+        text: "Share your order reference and the checkout email through the merchant’s verified channel. Do not share payment credentials.",
       },
     ],
   },
@@ -413,3 +417,4 @@ export const posts: JournalPost[] = [
     ],
   },
 ];
+

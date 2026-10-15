@@ -1,4 +1,5 @@
 "use client";
+import { storeContactMessage } from "../lib/store-contact";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -339,9 +340,7 @@ export default function Store() {
       "Brandifya is a general-store concept bringing home, style, tech, and everyday essentials together. This storefront currently uses sample products and prices.",
     "Shipping & returns":
       "Delivery areas, shipping fees, timelines, and return terms will be published once the merchant confirms them. Products cannot currently be ordered.",
-    "Contact us": process.env.NEXT_PUBLIC_SUPPORT_EMAIL
-      ? `Contact our team at ${process.env.NEXT_PUBLIC_SUPPORT_EMAIL}.`
-      : "Customer support details are being set up. This demo does not collect contact requests.",
+    "Contact us": storeContactMessage,
     Privacy:
       "Your cart and saved items are stored in this browser. When live checkout is enabled, delivery details are stored in the merchant database and card details are handled by Stripe. Newsletter signup stores your email with your consent. The merchant must publish a complete privacy policy and data retention terms before launch.",
     Checkout:

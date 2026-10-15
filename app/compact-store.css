@@ -371,18 +371,18 @@
   grid-template-columns: 1.1fr 0.85fr 1fr 1.35fr;
   gap: 28px;
 }
-.hp .hp-contact > a {
+.hp .hp-contact > a:first-child {
   width: 155px;
   max-width: 155px;
   margin-bottom: 18px;
 }
-.hp .hp-contact > button {
+.hp .hp-contact > :is(button, .store-contact-link) {
   font-size: 12px;
   line-height: 1.6;
   gap: 10px;
   margin-bottom: 12px;
 }
-.hp .hp-contact > button svg {
+.hp .hp-contact > :is(button, .store-contact-link) svg {
   width: 18px;
   height: 18px;
 }
@@ -620,7 +620,7 @@
   .hp .hp-contact {
     grid-column: 1/-1;
   }
-  .hp .hp-contact > a {
+  .hp .hp-contact > a:first-child {
     width: 150px;
     max-width: 150px;
   }

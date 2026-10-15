@@ -120,8 +120,10 @@ export default function Store() {
     [addedId, setAddedId] = useState<number | null>(null),
     [info, setInfo] = useState<string | null>(null),
     [catalogError, setCatalogError] = useState(false);
-  const [bestPage, setBestPage] = useState(0),
-    [brandPage, setBrandPage] = useState(0);
+  const [brandPage, setBrandPage] = useState(0);
+  const exploreRef = useRef<HTMLDivElement>(null);
+  const exploreResumeAt = useRef(0);
+  const exploreInteracting = useRef(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const brandNames = [
     "Apple",
@@ -134,14 +136,32 @@ export default function Store() {
     "Philips",
   ];
   const requestedBrand = info && brandNames.includes(info) ? info : null;
-  function slideBest(direction: number) {
-    if (window.innerWidth > 900)
-      setBestPage((page) => (page + direction + 5) % 5);
-    else
-      document
-        .getElementById("best-products")
-        ?.scrollBy({ left: direction * 250, behavior: "smooth" });
+  function pauseExplore() {
+    exploreResumeAt.current = Date.now() + 6000;
   }
+  function slideBest(direction: number) {
+    pauseExplore();
+    const rail = exploreRef.current;
+    if (!rail) return;
+    const card = rail.firstElementChild as HTMLElement | null;
+    const step = (card?.getBoundingClientRect().width || 250) + parseFloat(getComputedStyle(rail).columnGap || "0");
+    rail.scrollBy({ left: direction * step, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  }
+  useEffect(() => {
+    const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const timer = window.setInterval(() => {
+      const rail = exploreRef.current;
+      if (!rail || motion.matches || document.hidden || exploreInteracting.current || Date.now() < exploreResumeAt.current ||
+          rail.contains(document.activeElement) ||
+          (window.matchMedia("(hover: hover)").matches && rail.matches(":hover"))) return;
+      const max = rail.scrollWidth - rail.clientWidth;
+      if (max < 2) return;
+      const card = rail.firstElementChild as HTMLElement | null;
+      const step = (card?.getBoundingClientRect().width || 250) + parseFloat(getComputedStyle(rail).columnGap || "0");
+      rail.scrollTo({ left: rail.scrollLeft >= max - 2 ? 0 : Math.min(max, rail.scrollLeft + step), behavior: "smooth" });
+    }, 3000);
+    return () => window.clearInterval(timer);
+  }, []);
   function slideBrands(direction: number) {
     if (window.innerWidth > 900)
       setBrandPage((page) => (page + direction + 8) % 8);
@@ -588,12 +608,25 @@ export default function Store() {
               <div className="hp-carousel">
                 <button
                   className="hp-carousel-arrow hp-arrow-left"
-                  aria-label="Previous best selling products"
+                  aria-label="Previous products in More to Explore"
                   onClick={() => slideBest(-1)}
                 >
                   <ChevronLeft />
                 </button>
-                <div className="hp-six-grid hp-scroll" id="best-products">
+                <div
+                  className="hp-six-grid hp-scroll explore-product-rail"
+                  id="best-products"
+                  ref={exploreRef}
+                  role="region"
+                  aria-roledescription="carousel"
+                  aria-label="More to Explore products"
+                  onPointerDown={() => { exploreInteracting.current = true; pauseExplore(); }}
+                  onPointerUp={() => { exploreInteracting.current = false; pauseExplore(); }}
+                  onPointerCancel={() => { exploreInteracting.current = false; pauseExplore(); }}
+                  onTouchStart={pauseExplore}
+                  onTouchEnd={pauseExplore}
+                  onWheel={pauseExplore}
+                >
                   {live || managed
                     ? catalog
                         .slice(0, 6)
@@ -606,10 +639,7 @@ export default function Store() {
                             live={live}
                           />
                         ))
-                    : [
-                        ...bestProducts.slice(bestPage),
-                        ...bestProducts.slice(0, bestPage),
-                      ].map((p) => (
+                    : bestProducts.map((p) => (
                         <ReferenceCard
                           key={p.name}
                           product={p}
@@ -622,22 +652,11 @@ export default function Store() {
                 </div>
                 <button
                   className="hp-carousel-arrow hp-arrow-right"
-                  aria-label="Next best selling products"
+                  aria-label="Next products in More to Explore"
                   onClick={() => slideBest(1)}
                 >
                   <ChevronRight />
                 </button>
-              </div>
-              <div className="hp-dots" aria-label="Best seller carousel pages">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <button
-                    key={i}
-                    aria-label={`Show best seller page ${i + 1}`}
-                    aria-pressed={bestPage === i}
-                    className={bestPage === i ? "active" : ""}
-                    onClick={() => setBestPage(i)}
-                  />
-                ))}
               </div>
             </div>
           </section>

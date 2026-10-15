@@ -50,12 +50,14 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
             <div className="hp-footer-column">
               <h3>Shopping</h3>
               {[
+                ["Shop All", "/shop"],
                 ["Favorites", "/shop?saved=1"],
                 ["Shop by Brand", "/#brands"],
                 ["Offers", "/#deals"],
                 ["Track Order", "/order-tracking"],
                 ["Size Guide", "/size-guide"],
                 ["Payments", "/payments"],
+                ["FAQs", "/faq"],
               ].map(([label, href]) => <Link key={href} href={href}><ChevronRight size={15}/>{label}</Link>)}
             </div>
             <div className="hp-footer-column">
@@ -64,7 +66,6 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
                 ["Journal", "/blog"],
                 ["About Us", "/about"],
                 ["Contact Us", "/contact"],
-                ["FAQs", "/faq"],
                 ["Shipping", "/shipping"],
                 ["Returns & Refunds", "/returns"],
                 ["Privacy Policy", "/privacy-policy"],

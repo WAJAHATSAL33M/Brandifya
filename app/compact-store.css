@@ -368,7 +368,7 @@
   padding: 64px 0 32px;
 }
 .hp .hp-footer-grid {
-  grid-template-columns: 1.1fr 0.85fr 1fr 1.35fr;
+  grid-template-columns: 1.1fr minmax(0, 1fr) minmax(0, 1fr) 1.35fr;
   gap: 28px;
 }
 .hp .hp-contact > a:first-child {
@@ -1772,4 +1772,12 @@
 }
 @media (max-width: 700px) {
   .hp .hp-best .explore-product-rail { grid-auto-columns: calc((100% - 12px) / 2); gap: 12px; }
+}
+
+/* Match the footer menu widths, link rows and spacing. */
+.hp .hp-footer-column { min-width: 0; padding: 0; }
+.hp .hp-footer-column > a { min-height: 36px; margin: 0; }
+@media (max-width: 700px) {
+  .hp .hp-footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .hp .hp-footer-column > a { min-height: 44px; }
 }

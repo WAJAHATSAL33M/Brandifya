@@ -1,5 +1,6 @@
 .store-header {
-  position: relative;
+  position: sticky;
+  top: 0;
   z-index: 30;
   background: #fff;
   border-bottom: 1px solid #ececef;

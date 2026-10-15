@@ -46,6 +46,7 @@ const initial = {
 type Filters = typeof initial;
 function fromUrl(category?: string): Filters {
   const p = new URLSearchParams(window.location.search);
+  if (category) return { ...initial, categories: [category], query: (p.get("q") || "").slice(0, 200) };
   const price = (key: string) => {
     const value = p.get(key) || "";
     return value && /^\d+(\.\d{1,2})?$/.test(value) ? value : "";
@@ -339,8 +340,8 @@ export default function Shop({ category }: { category?: string } = {}) {
         bagCount={bagCount}
         wishlistActive={filters.saved}
         onWishlist={() => {
-          update("saved", !filters.saved);
-          scrollResults();
+          if (category) window.location.assign("/shop?saved=1");
+          else { update("saved", !filters.saved); scrollResults(); }
         }}
         onBag={() => window.location.assign("/cart")}
         query={filters.query}
@@ -411,7 +412,7 @@ export default function Shop({ category }: { category?: string } = {}) {
               onClick={() => setFiltersOpen(false)}
             />
           )}
-          <aside
+          {!category && (<aside
             className={`shop-filters ${filtersOpen ? "is-open" : ""}`}
             {...(filtersOpen
               ? {
@@ -543,7 +544,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                 <ArrowRight size={17} />
               </button>
             </div>
-          </aside>
+          </aside>)}
           <section
             id="shop-results"
             className="shop-results"
@@ -556,6 +557,13 @@ export default function Shop({ category }: { category?: string } = {}) {
                   ? "Loading products…"
                   : `${results.length} ${results.length === 1 ? "product" : "products"}`}
               </p>
+              {category ? (
+                <form className="category-product-search" role="search" onSubmit={e => e.preventDefault()}>
+                  <Search size={18} aria-hidden="true" />
+                  <input type="search" aria-label={`Search ${category} products`} placeholder={`Search ${category}…`} maxLength={200} value={filters.query} onChange={e => update("query", e.target.value)} />
+                  {filters.query && <button type="button" aria-label="Clear category search" onClick={() => update("query", "")}><X size={18} /></button>}
+                </form>
+              ) : (
               <div>
                 <button
                   className="shop-filter-trigger"
@@ -580,8 +588,9 @@ export default function Shop({ category }: { category?: string } = {}) {
                   </select>
                 </label>
               </div>
+              )}
             </div>
-            {(activeCount > 0 || filters.query) && (
+            {!category && (activeCount > 0 || filters.query) && (
               <div className="shop-active-filters" aria-label="Active filters">
                 {filters.query && (
                   <button onClick={() => update("query", "")}>
@@ -673,7 +682,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                   </Link>
                 ) : (
                   <button className="primary" onClick={reset}>
-                    {category ? "Clear filters" : "View all products"}
+                    {category ? "Clear search" : "View all products"}
                     <ArrowRight size={17} />
                   </button>
                 )}
@@ -708,7 +717,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                 )}
               </>
             )}
-            {!live && !loading && !error && (
+            {!category && !live && !loading && !error && (
               <p className="shop-demo">
                 Sample catalog. Product details and availability require
                 merchant verification before sale.
@@ -906,3 +915,4 @@ export default function Shop({ category }: { category?: string } = {}) {
     </div>
   );
 }
+

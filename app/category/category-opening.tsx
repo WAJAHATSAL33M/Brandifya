@@ -93,8 +93,8 @@ export default function CategoryOpening({
       </nav>
       <div className="category-results-heading">
         <h2>Explore {name}</h2>
-        <p>Find your favorite with a few simple filters.</p>
       </div>
     </>
   );
 }
+

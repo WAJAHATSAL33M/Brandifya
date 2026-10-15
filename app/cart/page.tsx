@@ -15,7 +15,7 @@ import {
 export default function Cart() {
   const store = useStore();
   return (
-    <div className="hp commerce">
+    <div className="hp commerce cart-page">
       <CommerceHeader store={store} />
       <main className="commerce-container">
         <Breadcrumb label="Cart" />

@@ -1803,3 +1803,30 @@
   .hp .swipe-loop .brand-carousel-copy,
   .hp.shop-page .swipe-loop .shop-category-carousel-copy { display: none !important; }
 }
+
+/* Larger cart controls and prices, with room for each on narrow screens. */
+@media (max-width: 700px) {
+  .hp.cart-page .commerce-bag-item {
+    grid-template-columns: 64px minmax(0, 1fr) 44px;
+    gap: 8px;
+    padding: 12px;
+  }
+  .hp.cart-page .commerce-item-photo { grid-column: 1; grid-row: 1 / 4; align-self: start; }
+  .hp.cart-page .commerce-item-photo img { width: 64px; height: 84px; }
+  .hp.cart-page .commerce-item-info { grid-column: 2; grid-row: 1; min-width: 0; }
+  .hp.cart-page .commerce-item-subtotal { grid-column: 2; grid-row: 2; }
+  .hp.cart-page .commerce-item-subtotal strong { font-size: 20px; font-weight: 700; white-space: normal; overflow-wrap: anywhere; }
+  .hp.cart-page .commerce-item-quantity { grid-column: 2; grid-row: 3; }
+  .hp.cart-page .commerce-quantity { gap: 4px; }
+  .hp.cart-page .commerce-quantity button { min-width: 40px; min-height: 44px; }
+  .hp.cart-page .commerce-quantity span { min-width: 40px; font-size: 16px; }
+  .hp.cart-page .commerce-quantity button svg { width: 18px; height: 18px; }
+  .hp.cart-page .commerce-remove { grid-column: 3; grid-row: 1 / 4; align-self: center; min-width: 44px; min-height: 44px; color: #101216; }
+  .hp.cart-page .commerce-remove svg { width: 24px; height: 24px; }
+}
+/* Bring the mobile navigation links closer together. */
+@media (max-width: 900px) {
+  .hp .store-header-nav { padding: 6px 14px 8px; }
+  .hp .store-header-nav > a,
+  .hp .store-header-collections > .store-header-shop-toggle { min-height: 36px; margin: 0; padding: 0 10px; }
+}

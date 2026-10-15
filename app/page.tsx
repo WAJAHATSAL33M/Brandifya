@@ -398,7 +398,7 @@ export default function Store() {
                             "/categories/grocery.webp",
                             "/categories/home.webp",
                             "/categories/fitness.webp",
-                            "/products/featured5.webp",
+                            "/categories/more-assortment.webp",
                           ][i]}
                           alt=""
                           width={300}

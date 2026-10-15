@@ -122,7 +122,7 @@ export const categoryTiles = [
   { name: "Grocery", category: "Grocery" },
   { name: "Home & Kitchen", category: "Home & Living" },
   { name: "Sports & Fitness", category: "Sports & Fitness" },
-  { name: "Beauty", category: "Beauty" },
+  { name: "More", category: "All finds" },
 ];
 export const referencePrices = [
   "$89.99",

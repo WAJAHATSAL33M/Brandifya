@@ -152,15 +152,15 @@ export default function ProductPage({ product }: { product: Product }) {
                 Offer ends in {minutesLeft} min
               </p>
             )}
-            <p className="commerce-availability">
-              {store.loading
-                ? "Checking availability…"
-                : !current || p.stock < 1
-                  ? "Currently unavailable"
-                  : store.config?.live
-                    ? "In stock"
-                    : "Sample product"}
-            </p>
+            {(store.loading || !current || p.stock < 1 || store.config?.live) && (
+              <p className="commerce-availability">
+                {store.loading
+                  ? "Checking availability…"
+                  : !current || p.stock < 1
+                    ? "Currently unavailable"
+                    : "In stock"}
+              </p>
+            )}
             <dl className="commerce-product-facts">
               {p.color && (
                 <div>

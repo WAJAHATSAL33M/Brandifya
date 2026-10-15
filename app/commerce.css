@@ -676,9 +676,21 @@
 }
 .commerce-product-purchase > .commerce-primary {
   flex: 1;
+  font-family: var(--store-heading-font);
+  font-size: 18px !important;
+  font-weight: 700 !important;
+  line-height: 1.15;
 }
 .commerce-product-purchase .commerce-quantity {
   min-height: 46px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+.commerce-product-purchase .commerce-quantity button {
+  min-width: 40px;
+}
+.commerce-product-purchase .commerce-quantity span {
+  min-width: 32px;
 }
 .commerce-product-save {
   display: flex;

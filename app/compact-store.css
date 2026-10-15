@@ -1830,3 +1830,22 @@
   .hp .store-header-nav > a,
   .hp .store-header-collections > .store-header-shop-toggle { min-height: 36px; margin: 0; padding: 0 10px; }
 }
+
+/* Two compact columns in the mobile navigation. */
+@media (max-width: 900px) {
+  .hp .store-header-nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 12px;
+    align-items: center;
+  }
+  .hp .store-header-nav > a[href="/"] { grid-column: 1; grid-row: 1; }
+  .hp .store-header-nav > a[href="/about"] { grid-column: 1; grid-row: 3; }
+  .hp .store-header-nav > a[href="/blog"] { grid-column: 2; grid-row: 1; }
+  .hp .store-header-nav > a[href="/contact"] { grid-column: 2; grid-row: 2; }
+  .hp .store-header-nav > .store-account-link { grid-column: 2; grid-row: 3; gap: 5px; font-size: 11px; }
+  .hp .store-header-nav > .store-account-link svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .hp .store-header-nav .store-header-collections { display: contents; }
+  .hp .store-header-collections > .store-header-shop-toggle { grid-column: 1; grid-row: 2; }
+  .hp .store-header-collections > .store-header-dropdown { grid-column: 1 / -1; grid-row: 4; margin-top: 6px; }
+}

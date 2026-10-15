@@ -105,25 +105,16 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
             </div>
           </div>
           <div className="hp-footer-bottom">
-            <p>
-              All rights reserved — {new Date().getFullYear()} ©{" "}
-              <strong>Brandifya</strong>
-            </p>
             <div className="store-payment-logos" aria-label="Payment brands">
               {["visa", "mastercard", "easypaisa", "jazzcash", "payfast"].map((brand) => (
                 <span key={brand} className={`store-payment-logo payment-${brand}`}>
-                  <img src={`/payments/${brand}.${brand === "easypaisa" ? "webp" : brand === "jazzcash" || brand === "payfast" ? "png" : "svg"}`} alt={{visa:"Visa",mastercard:"MasterCard",easypaisa:"EasyPaisa",jazzcash:"JazzCash",payfast:"PayFast"}[brand]} width={brand === "payfast" ? 2048 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 90} height={brand === "payfast" ? 519 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 42} loading="lazy" />
+                  <img src={`/payments/${brand === "easypaisa" ? "easypaisa-transparent" : brand}.${brand === "easypaisa" ? "webp" : brand === "jazzcash" || brand === "payfast" ? "png" : "svg"}`} alt={{visa:"Visa",mastercard:"MasterCard",easypaisa:"EasyPaisa",jazzcash:"JazzCash",payfast:"PayFast"}[brand]} width={brand === "payfast" ? 2048 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 90} height={brand === "payfast" ? 519 : brand === "easypaisa" ? 400 : brand === "jazzcash" ? 320 : 42} loading="lazy" />
                 </span>
               ))}
             </div>
           </div>
           <nav className="support-footer-links" aria-label="Additional store information"><Link href="/accessibility">Accessibility</Link><Link href="/disclaimer">Disclaimer</Link></nav>
-          {!live && (
-            <p className="hp-demo-note">
-              Homepage design preview. Prices, ratings, promotions and product
-              details and service terms shown are sample content.
-            </p>
-          )}
+          <p className="store-copyright">All rights reserved — {new Date().getFullYear()} © <strong>Brand E</strong></p>
         </footer>
     </div>
     {notice&&<div className="toast hp-toast" role="status" aria-live="polite"><Check size={18}/><span>{notice}</span></div>}

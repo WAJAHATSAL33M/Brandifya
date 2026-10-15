@@ -1686,3 +1686,23 @@
   .hp.category-page .category-product-search { width: 100%; }
   .hp.category-page #shop-results { scroll-margin-top: 95px; }
 }
+
+/* Footer actions use the brand palette; copyright is the final footer row. */
+.hp .hp-newsletter form > div > button { background: #ff5100; color: #ffffff; }
+.hp .hp-socials > button { color: #ff5100; border-color: #ffdfce; }
+.hp .hp-newsletter form > div > button:focus-visible,
+.hp .hp-socials > button:focus-visible { outline: 2px solid #ff5100; outline-offset: 3px; }
+.hp .hp-footer-bottom { justify-content: center; }
+.hp .store-copyright {
+  margin: 20px 0 0;
+  padding-top: 16px;
+  border-top: 1px solid #ececef;
+  color: #545963;
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+@media (hover: hover) {
+  .hp .hp-newsletter form > div > button:hover { background: #e94a00; }
+  .hp .hp-socials > button:hover { background: #ff5100; border-color: #ff5100; color: #ffffff; }
+}

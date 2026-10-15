@@ -136,35 +136,25 @@ export default function StoreHeader(props: Props) {
             >
               Home
             </Link>
-            <Link href="/about" onClick={close}>
-              About
-            </Link>
             <div
               className="store-header-collections"
-              onMouseEnter={() => {
-                if (matchMedia("(hover: hover)").matches) setCollections(true);
-              }}
               onMouseLeave={() => setCollections(false)}
               onBlur={(e) => {
                 if (!e.currentTarget.contains(e.relatedTarget))
                   setCollections(false);
               }}
             >
-              <Link
-                href="/shop"
-                aria-current={props.active === "shop" ? "page" : undefined}
-                onClick={close}
-              >
-                Shop
-              </Link>
               <button
+                className="store-header-shop-toggle"
                 ref={collectionsToggle}
-                aria-label="Browse shop collections"
+                type="button"
+                aria-current={props.active === "shop" ? "page" : undefined}
                 aria-expanded={collections}
                 aria-controls={`${id}-collections`}
-                onClick={() => setCollections(!collections)}
+                onClick={() => setCollections(open => !open)}
               >
-                <ChevronDown size={15} />
+                <span>Shop</span>
+                <ChevronDown size={15} aria-hidden="true" />
               </button>
               {collections && (
                 <div className="store-header-dropdown" id={`${id}-collections`}>
@@ -187,12 +177,15 @@ export default function StoreHeader(props: Props) {
                     href="/shop"
                     onClick={close}
                   >
-                    Explore all products
+                    Explore All Products
                     <ArrowRight size={16} />
                   </Link>
                 </div>
               )}
             </div>
+            <Link href="/about" onClick={close}>
+              About
+            </Link>
             <Link href="/blog" onClick={close}>
               Journal
             </Link>

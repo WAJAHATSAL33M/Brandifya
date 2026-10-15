@@ -435,3 +435,25 @@
   object-fit: contain;
   object-position: center;
 }
+
+/* Shop opens collections; the dropdown contains the shop-page link. */
+.store-header-collections > .store-header-shop-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: auto;
+  gap: 6px;
+  padding: 0 3px;
+  border: 0;
+  background: transparent;
+  color: #101216;
+  font: inherit;
+  font-weight: 700;
+}
+.store-header-collections > .store-header-shop-toggle[aria-expanded="true"],
+.store-header-collections > .store-header-shop-toggle[aria-current="page"] { color: #ff5100; }
+.store-header-shop-toggle:focus-visible { outline: 2px solid #ff5100; outline-offset: 3px; }
+@media (max-width: 900px) {
+  .store-header-collections { grid-template-columns: minmax(0, 1fr); }
+  .store-header-collections > .store-header-shop-toggle { width: 100%; min-height: 46px; padding: 0 10px; }
+}

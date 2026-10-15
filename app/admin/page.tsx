@@ -364,6 +364,8 @@ export default function Admin() {
                               "Accessories",
                               "Grocery",
                               "Sports & Fitness",
+                              "Watches",
+                              "Footwear",
                             ].map((x) => (
                               <option key={x}>{x}</option>
                             ))}

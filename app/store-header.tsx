@@ -13,15 +13,27 @@ import {
   Search,
   ShoppingCart,
   X,
+  Shirt,
+  ShoppingBag,
+  Sparkles,
+  Monitor,
+  Apple,
+  Dumbbell,
+  Watch,
+  Footprints,
 } from "lucide-react";
 import { categoryHref } from "../lib/categories";
 import "./store-header.css";
 const departments = [
-  "Home & Living",
-  "Fashion",
-  "Accessories",
-  "Beauty",
-  "Tech",
+  { name: "Home & Living", icon: House },
+  { name: "Fashion", icon: Shirt },
+  { name: "Accessories", icon: ShoppingBag },
+  { name: "Beauty", icon: Sparkles },
+  { name: "Tech", icon: Monitor },
+  { name: "Grocery", icon: Apple },
+  { name: "Sports & Fitness", icon: Dumbbell },
+  { name: "Watches", icon: Watch },
+  { name: "Footwear", icon: Footprints },
 ];
 type Props = {
   active: "home" | "shop";
@@ -166,14 +178,15 @@ export default function StoreHeader(props: Props) {
                 <div className="store-header-dropdown" id={`${id}-collections`}>
                   <strong>Explore our collections</strong>
                   <div>
-                    {departments.map((category) => (
+                    {departments.map(({ name, icon: Icon }) => (
                       <Link
-                        key={category}
-                        href={categoryHref(category)}
+                        key={name}
+                        className="store-header-category-tile"
+                        href={categoryHref(name)}
                         onClick={close}
                       >
-                        {category}
-                        <ArrowRight size={15} />
+                        <span className="store-header-category-icon"><Icon size={25} aria-hidden="true" /></span>
+                        <span>{name}</span>
                       </Link>
                     ))}
                   </div>
@@ -322,3 +335,4 @@ export default function StoreHeader(props: Props) {
     </header>
   );
 }
+

@@ -38,6 +38,12 @@ export const categoryDesigns: Record<
       "Small upgrades for everyday life. Discover audio, wearable tech and useful essentials for your daily routine.",
     image: "/heroes/home-tech.webp",
   },
+  Watches: {
+    description: "Explore watches and everyday timepieces as our collection grows.",
+  },
+  Footwear: {
+    description: "Discover everyday footwear and find your next pair as new styles arrive.",
+  },
   Grocery: {
     description:
       "Explore everyday grocery essentials as our collection grows. Find available products below or discover another collection.",
@@ -47,3 +53,4 @@ export const categoryDesigns: Record<
       "Make room for movement. Explore our sports and fitness collection as new essentials become available.",
   },
 };
+

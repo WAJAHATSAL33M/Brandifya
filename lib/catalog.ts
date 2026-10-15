@@ -139,6 +139,8 @@ export const categories = [
   "Accessories",
   "Grocery",
   "Sports & Fitness",
+  "Watches",
+  "Footwear",
 ];
 export const money = (value: number) =>
   new Intl.NumberFormat("en-PK", {

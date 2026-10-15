@@ -133,6 +133,7 @@ export default function Store() {
     "Lenovo",
     "Philips",
   ];
+  const requestedBrand = info && brandNames.includes(info) ? info : null;
   function slideBest(direction: number) {
     if (window.innerWidth > 900)
       setBestPage((page) => (page + direction + 5) % 5);
@@ -334,8 +335,6 @@ export default function Store() {
       "Choose a bag around what you actually carry. Measure your laptop, consider how long you wear it, and look for pockets that suit your routine. A practical shape and a comfortable fit are more useful than extra compartments you rarely use.",
     "Make room for a simpler routine":
       "Keep your daily essentials easy to find and review what you use regularly. Store products according to their labels and check care instructions before buying. Start with a small, consistent routine that fits your time and preferences.",
-    Brands:
-      "Brand names are navigation placeholders from the supplied design. No affiliation or authorized reseller status is claimed. Verified branded inventory must be supplied before launch.",
     "About Brandifya":
       "Brandifya is a general-store concept bringing home, style, tech, and everyday essentials together. This storefront currently uses sample products and prices.",
     "Shipping & returns":
@@ -675,7 +674,7 @@ export default function Store() {
                             className="hp-brand-tile"
                             key={name}
                             tabIndex={copy ? -1 : undefined}
-                            onClick={() => setInfo("Brands")}
+                            onClick={() => setInfo(name)}
                           >
                             <Art name={`brand${brandNames.indexOf(name)}`} alt={`${name} logo`} />
                             <span>{name}</span>
@@ -698,9 +697,6 @@ export default function Store() {
           <section id="confidence" className="hp-confidence hp-container">
             <div className="hp-centered-heading">
               <h2>Shop with Confidence</h2>
-              <p>
-                A better shopping experience, from checkout to your doorstep.
-              </p>
             </div>
             <div className="hp-benefit-grid">
               {[
@@ -989,11 +985,19 @@ export default function Store() {
                 <X />
               </button>
               <span className="info-star">✳</span>
-              <h2 id="info-title">{info}</h2>
-              <p>{policies[info!]}</p>
-              <button className="primary" onClick={() => setInfo(null)}>
-                Got it <Check size={17} />
-              </button>
+              <h2 id="info-title">{requestedBrand ? "Contact us" : info}</h2>
+              <p>{requestedBrand
+                ? `Looking for a product from ${requestedBrand}? Contact us directly with your desired product or quotation request, and we’ll help you source it.`
+                : policies[info!]}</p>
+              {requestedBrand ? (
+                <Link className="primary" href={`/contact?brand=${encodeURIComponent(requestedBrand)}`}>
+                  Contact us <ArrowRight size={17} />
+                </Link>
+              ) : (
+                <button className="primary" onClick={() => setInfo(null)}>
+                  Got it <Check size={17} />
+                </button>
+              )}
             </section>
           )}
         </div>

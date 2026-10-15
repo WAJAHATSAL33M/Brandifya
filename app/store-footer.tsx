@@ -113,8 +113,7 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
               ))}
             </div>
           </div>
-          <nav className="support-footer-links" aria-label="Additional store information"><Link href="/accessibility">Accessibility</Link><Link href="/disclaimer">Disclaimer</Link></nav>
-          <p className="store-copyright">All rights reserved — {new Date().getFullYear()} © <strong>Brand E</strong></p>
+          <p className="store-copyright">All rights reserved — {new Date().getFullYear()} © <strong>BrandE</strong></p>
         </footer>
     </div>
     {notice&&<div className="toast hp-toast" role="status" aria-live="polite"><Check size={18}/><span>{notice}</span></div>}

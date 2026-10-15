@@ -1109,12 +1109,11 @@
   background: transparent;
 }
 .hp .payment-payfast {
-  background: #101216;
-  border-radius: 6px;
   padding: 8px;
 }
 .hp .payment-payfast img {
   max-width: none;
+  filter: brightness(0);
 }
 @media (max-width: 700px) {
   .hp .store-payment-logos {
@@ -1742,4 +1741,13 @@
   .hp.shop-page .shop-category-carousel-viewport { overflow-x: auto; }
   .hp.shop-page .shop-category-carousel-track { animation: none; }
   .hp.shop-page .shop-category-carousel-track > .shop-category-carousel-copy { display: none !important; }
+}
+
+/* Keep the confidence heading on one line on small screens. */
+@media (max-width: 700px) {
+  .hp .hp-confidence .hp-centered-heading h2 {
+    font-size: clamp(20px, 6vw, 30px);
+    letter-spacing: -0.6px;
+    white-space: nowrap;
+  }
 }

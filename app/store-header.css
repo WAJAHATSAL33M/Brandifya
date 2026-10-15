@@ -424,3 +424,13 @@
   .store-header-dropdown > div { gap: 6px; }
   .store-header-dropdown .store-header-category-tile { font-size: 10px; }
 }
+
+/* Category photos keep the same footprint as the previous menu icons. */
+.store-header-category-icon { overflow: hidden; flex-shrink: 0; }
+.store-header-category-icon > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}

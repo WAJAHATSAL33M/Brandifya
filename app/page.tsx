@@ -482,17 +482,24 @@ export default function Store() {
             {catalogError && (
               <p role="alert">Products could not be loaded. Please refresh.</p>
             )}
-            <div className="hp-featured-grid">
-              {visible.map((p) => (
-                <ProductCard
-                  key={p.id}
-                  product={p}
-                  saved={saved.includes(p.id)}
-                  onSave={() => favorite(p.id)}
-                  live={live}
-                />
-              ))}
-            </div>
+            <SwipeLoop className="featured-carousel-viewport" label="Featured Products">
+              <div className="featured-carousel-track">
+                {(visible.length > 2 ? [0, 1] : [0]).map((copy) => (
+                  <div key={copy} className={`hp-featured-grid${copy ? " featured-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
+                    {visible.map((p) => (
+                      <ProductCard
+                        key={p.id}
+                        product={p}
+                        saved={saved.includes(p.id)}
+                        onSave={() => favorite(p.id)}
+                        live={live}
+                        tabIndex={copy ? -1 : undefined}
+                      />
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </SwipeLoop>
             {savedOnly && (
               <div className="hp-featured-grid hp-reference-wishlist">
                 {[...dealProducts, ...bestProducts].map(

@@ -38,11 +38,13 @@ export default function ProductCard({
   saved,
   onSave,
   live = false,
+  tabIndex,
 }: {
   product: Product;
   saved: boolean;
   onSave: () => void;
   live?: boolean;
+  tabIndex?: number;
 }) {
   const src =
     p.image.startsWith("/") || p.image.startsWith("https://")
@@ -64,6 +66,7 @@ export default function ProductCard({
       data-product-id={p.id}
     >
       <Link
+        tabIndex={tabIndex}
         className="store-card-image hp-featured-image"
         href={`/product/${p.id}`}
         aria-label={`View ${p.name}`}
@@ -73,6 +76,7 @@ export default function ProductCard({
       {badge && <ProductBadge label={badge} />}
       <div className="store-card-body hp-featured-body">
         <Link
+          tabIndex={tabIndex}
           className="store-card-name hp-featured-name"
           title={p.name}
           href={`/product/${p.id}`}

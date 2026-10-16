@@ -1913,3 +1913,24 @@
 @media (max-width: 900px) and (prefers-reduced-motion: reduce) {
   .hp .store-header-category-tile::before { transition: none; }
 }
+
+/* Featured products retain their desktop grid and loop in one mobile row. */
+.featured-carousel-viewport,
+.featured-carousel-track { display: contents; }
+.featured-carousel-copy { display: none !important; }
+@media (max-width: 700px) {
+  .hp .featured-carousel-track { display: flex; width: max-content; }
+  .hp .featured-carousel-track > .hp-featured-grid {
+    display: grid !important;
+    flex: none;
+    grid-template-columns: none;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100vw - 40px) / 2);
+    gap: 12px;
+    overflow: visible;
+    padding: 2px 12px 12px 0;
+  }
+}
+@media (max-width: 700px) and (prefers-reduced-motion: reduce) {
+  .hp .featured-carousel-track > .featured-carousel-copy { display: none !important; }
+}

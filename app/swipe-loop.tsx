@@ -33,7 +33,7 @@ export default function SwipeLoop({ children, className, label }: {
       const loopWidth = group?.getBoundingClientRect().width || 0;
       const hovering = window.matchMedia("(hover: hover)").matches && rail.matches(":hover");
       if (mobile.matches && !motion.matches && !document.hidden && !held && !touching && now >= resumeAt &&
-          !hovering && !rail.contains(document.activeElement) && loopWidth > rail.clientWidth) {
+          !hovering && !rail.contains(document.activeElement) && (rail.firstElementChild?.children.length || 0) > 1 && loopWidth > rail.clientWidth) {
         position += elapsed * 0.028;
         if (position >= loopWidth) position -= loopWidth;
         rail.scrollLeft = position;

@@ -2,10 +2,11 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /** Native touch scrolling keeps momentum; autoplay advances the same scroll position. */
-export default function SwipeLoop({ children, className, label }: {
+export default function SwipeLoop({ children, className, label, advance = "continuous" }: {
   children: ReactNode;
   className: string;
   label: string;
+  advance?: "continuous" | "card";
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -14,7 +15,8 @@ export default function SwipeLoop({ children, className, label }: {
     const mobile = window.matchMedia("(max-width: 700px)");
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     let held = false, touching = false, resumeAt = 0, previous = 0, position = rail.scrollLeft, frame = 0;
-    const pause = () => { resumeAt = performance.now() + 3000; position = rail.scrollLeft; };
+    let nextSlideAt = performance.now() + 1400;
+    const pause = () => { resumeAt = performance.now() + 3000; nextSlideAt = resumeAt; position = rail.scrollLeft; };
     const start = () => { held = true; pause(); };
     const end = () => { held = false; pause(); };
     const touchStart = () => { touching = true; pause(); };
@@ -34,9 +36,20 @@ export default function SwipeLoop({ children, className, label }: {
       const hovering = window.matchMedia("(hover: hover)").matches && rail.matches(":hover");
       if (mobile.matches && !motion.matches && !document.hidden && !held && !touching && now >= resumeAt &&
           !hovering && !rail.contains(document.activeElement) && (rail.firstElementChild?.children.length || 0) > 1 && loopWidth > rail.clientWidth) {
-        position += elapsed * 0.028;
-        if (position >= loopWidth) position -= loopWidth;
-        rail.scrollLeft = position;
+        if (advance === "card") {
+          if (now >= nextSlideAt) {
+            if (rail.scrollLeft >= loopWidth - 1) rail.scrollLeft -= loopWidth;
+            const card = group?.firstElementChild as HTMLElement | null;
+            const gap = group ? parseFloat(getComputedStyle(group).columnGap) || 0 : 0;
+            const step = (card?.getBoundingClientRect().width || 180) + gap;
+            rail.scrollTo({ left: (Math.round(rail.scrollLeft / step) + 1) * step, behavior: "smooth" });
+            nextSlideAt = now + 1400;
+          }
+        } else {
+          position += elapsed * 0.028;
+          if (position >= loopWidth) position -= loopWidth;
+          rail.scrollLeft = position;
+        }
       } else {
         position = rail.scrollLeft;
       }
@@ -53,6 +66,6 @@ export default function SwipeLoop({ children, className, label }: {
       rail.removeEventListener("touchcancel", touchEnd);
       rail.removeEventListener("wheel", pause);
     };
-  }, []);
+  }, [advance]);
   return <div ref={viewport} className={`${className} swipe-loop`} role="region" aria-label={label}>{children}</div>;
 }

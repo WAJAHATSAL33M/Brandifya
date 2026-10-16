@@ -1934,3 +1934,8 @@
 @media (max-width: 700px) and (prefers-reduced-motion: reduce) {
   .hp .featured-carousel-track > .featured-carousel-copy { display: none !important; }
 }
+
+@media (max-width: 700px) {
+  .hp .featured-carousel-viewport { scroll-snap-type: x mandatory; }
+  .hp .featured-carousel-track .store-product-card { scroll-snap-align: start; }
+}

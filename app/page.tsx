@@ -482,7 +482,7 @@ export default function Store() {
             {catalogError && (
               <p role="alert">Products could not be loaded. Please refresh.</p>
             )}
-            <SwipeLoop className="featured-carousel-viewport" label="Featured Products">
+            <SwipeLoop className="featured-carousel-viewport" label="Featured Products" advance="card">
               <div className="featured-carousel-track">
                 {(visible.length > 2 ? [0, 1] : [0]).map((copy) => (
                   <div key={copy} className={`hp-featured-grid${copy ? " featured-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>

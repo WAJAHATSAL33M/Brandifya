@@ -1882,3 +1882,34 @@
   .hp .store-header-nav > a:hover,
   .hp .store-header-collections > .store-header-shop-toggle:hover { background: #ffe9d8; border-color: #ffb98e; }
 }
+
+/* Larger photos and a theme-color tap fill in mobile menu categories. */
+@media (max-width: 900px) {
+  .hp .store-header-dropdown .store-header-category-tile {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    border: 1.5px solid #ff5100;
+    min-height: 110px;
+    gap: 8px;
+  }
+  .hp .store-header-category-icon { width: 64px; height: 64px; }
+  .hp .store-header-category-tile > span { position: relative; z-index: 1; }
+  .hp .store-header-category-tile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #ff5100;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform .2s ease-out;
+    z-index: 0;
+  }
+  .hp .store-header-category-tile.is-selected::before,
+  .hp .store-header-category-tile:active::before { transform: scaleX(1); }
+  .hp .store-header-dropdown .store-header-category-tile.is-selected,
+  .hp .store-header-dropdown .store-header-category-tile:active { color: #fff; }
+}
+@media (max-width: 900px) and (prefers-reduced-motion: reduce) {
+  .hp .store-header-category-tile::before { transition: none; }
+}

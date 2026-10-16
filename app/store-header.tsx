@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useId, useRef, useState } from "react";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import AccountLink from "./account-link";
 import Link from "next/link";
 import {
@@ -39,6 +39,9 @@ type Props = {
   onSearch?: (query: string) => void;
 };
 export default function StoreHeader(props: Props) {
+  const router = useRouter();
+  const [tappedCategory, setTappedCategory] = useState<string | null>(null);
+  const categoryTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [mobile, setMobile] = useState(false),
     [collections, setCollections] = useState(false),
     [searchOpen, setSearchOpen] = useState(false),
@@ -56,6 +59,7 @@ export default function StoreHeader(props: Props) {
   const close = () => {
     setMobile(false);
     setCollections(false);
+    setTappedCategory(null);
   };
   function openSearch() {
     close();
@@ -83,6 +87,7 @@ export default function StoreHeader(props: Props) {
     document.addEventListener("pointerdown", outside);
     window.addEventListener("resize", resize);
     return () => {
+      if (categoryTimer.current) clearTimeout(categoryTimer.current);
       document.removeEventListener("pointerdown", outside);
       window.removeEventListener("resize", resize);
     };
@@ -163,9 +168,16 @@ export default function StoreHeader(props: Props) {
                     {departments.map(({ name, image }) => (
                       <Link
                         key={name}
-                        className="store-header-category-tile"
+                        className={`store-header-category-tile${tappedCategory === name ? " is-selected" : ""}`}
                         href={categoryHref(name)}
-                        onClick={close}
+                        onNavigate={(event) => {
+                          if (!window.matchMedia("(max-width: 900px)").matches) { close(); return; }
+                          event.preventDefault();
+                          if (categoryTimer.current) clearTimeout(categoryTimer.current);
+                          setTappedCategory(name);
+                          const delay = window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 220;
+                          categoryTimer.current = setTimeout(() => { close(); router.push(categoryHref(name)); }, delay);
+                        }}
                       >
                         <span className="store-header-category-icon"><img src={image} alt="" width={42} height={42} loading="lazy" /></span>
                         <span>{name}</span>

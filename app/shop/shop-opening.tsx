@@ -1,6 +1,5 @@
 import SwipeLoop from "../swipe-loop";
-import { ArrowRight, ChevronRight, Grid2X2, Heart, House, Laptop, Shirt, ShoppingBag, SlidersHorizontal, Sparkles } from "lucide-react";
-const icons: Record<string, typeof Heart> = {"Home & Living": House, Fashion: Shirt, Accessories: ShoppingBag, Beauty: Sparkles, Tech: Laptop};
+import { ArrowRight, Heart, ShoppingBag, SlidersHorizontal, Sparkles } from "lucide-react";
 type Props = {
   categories: {name: string; count: number; image: string}[];
   selected: string[];
@@ -13,13 +12,6 @@ type Props = {
 export default function ShopOpening({categories, selected, total, onCategory, onFilters, onWishlist, onBag}: Props) {
   return <>
     <section className="shop-opening" aria-label="Explore the store">
-      <nav className="shop-departments" aria-label="Shop departments">
-        <h2><Grid2X2 size={19}/>Shop by category</h2>
-        <div><button aria-pressed={!selected.length} onClick={() => onCategory(null)}><Grid2X2 size={18}/><span>All products</span><ChevronRight size={15}/></button>
-          {categories.map(category => { const Icon = icons[category.name] || Grid2X2; return <button key={category.name} aria-pressed={selected.length === 1 && selected[0] === category.name} onClick={() => onCategory(category.name)}><Icon size={18}/><span>{category.name}</span><ChevronRight size={15}/></button>; })}
-        </div>
-        <p>A little something for every day.</p>
-      </nav>
       <div className="shop-opening-main">
         <div className="shop-opening-banner">
           <img src="/heroes/shop-beauty.webp" alt="Skincare bottles and jars arranged on cream stone platforms" width={1860} height={845} fetchPriority="high"/>

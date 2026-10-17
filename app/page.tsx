@@ -739,48 +739,6 @@ export default function Store() {
               ))}
             </div>
           </section>
-          <section id="journal" className="hp-journal">
-            <div className="hp-container">
-              <div className="hp-centered-heading">
-                <h2>Latest Blogs &amp; News</h2>
-                <p>
-                  Stories, tips and inspiration from the world of modern beauty,
-                  <br className="hp-desktop" /> wellness and everyday living.
-                </p>
-              </div>
-              <div className="hp-blog-grid">
-                {journalPosts.map((p, i) => (
-                  <button
-                    className="hp-blog-card"
-                    key={p.title}
-                    onClick={() => window.location.assign(`/blog/${p.slug}`)}
-                  >
-                    <span className="hp-art" style={{ aspectRatio: "1.65" }}>
-                      <img
-                        src={p.image}
-                        alt=""
-                        width={900}
-                        height={450}
-                        loading="lazy"
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </span>
-                    <div>
-                      <small>{p.tag}</small>
-                      <h3>{p.title}</h3>
-                      <span>
-                        <ArrowRight size={17} />
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
-          </section>
         </main>
       </div>
       <div className="toast hp-toast" role="status" aria-live="polite">

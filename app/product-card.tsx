@@ -1,6 +1,6 @@
 "use client";
 import { useMerchandising } from "./use-merchandising";
-import ProductPrice from "./product-price";
+import ProductPrice, { CardDiscount } from "./product-price";
 import Link from "next/link";
 import { Star } from "lucide-react";
 import { money, type Product } from "../lib/catalog";
@@ -74,6 +74,7 @@ export default function ProductCard({
         <img src={src} alt={p.name} loading="lazy" width={600} height={450} />
       </Link>
       {badge && <ProductBadge label={badge} />}
+      <CardDiscount price={p.price} originalPrice={p.originalPrice} />
       <div className="store-card-body hp-featured-body">
         <Link
           tabIndex={tabIndex}
@@ -126,6 +127,7 @@ export default function ProductCard({
           />
         )}
         <ProductPrice
+          card
           className="store-card-price"
           price={p.price}
           originalPrice={p.originalPrice}

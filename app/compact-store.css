@@ -2028,3 +2028,33 @@
   .hp .hp-deal-heading h2 { min-width: 0; font-size: clamp(22px, 6vw, 26px); }
   .hp .hp-deal-heading .compact-view-all { flex-shrink: 0; white-space: nowrap; gap: 5px; }
 }
+
+/* Three-image category banners, with steady headings and hero-style actions. */
+.compact-promos > .promo-banner { touch-action: pan-y; }
+.compact-promos .promo-image-track {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transition: transform .4s ease-in-out;
+}
+.compact-promos .promo-image-track.is-resetting { transition: none; }
+.compact-promos .promo-image-track img { flex: 0 0 100%; min-width: 100%; width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+.compact-promos .promo-banner-copy { position: relative; }
+.compact-promos .promo-explore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0 23px;
+  border-radius: 28px;
+  background: #ff5100;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background .2s, transform .2s;
+}
+@media (hover: hover) { .compact-promos > .promo-banner:hover .promo-explore { background: #e94a00; transform: translateY(-2px); } }
+@media (prefers-reduced-motion: reduce) { .compact-promos .promo-image-track, .compact-promos .promo-explore { transition: none; } }

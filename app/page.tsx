@@ -41,6 +41,7 @@ import { categoryHref } from "../lib/categories";
 import ProductCard from "./product-card";
 import { referenceProducts } from "../lib/reference-catalog";
 import HeroSlider from "./hero-slider";
+import PromoBanner from "./promo-banner";
 import SwipeLoop from "./swipe-loop";
 import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
@@ -572,27 +573,10 @@ export default function Store() {
             </p>
             <div className="hp-promo-grid compact-promos">
               {[
-                { name: "Fashion", image: "/heroes/fashion.webp" },
-                { name: "Beauty", image: "/heroes/shop-beauty.webp" },
-                { name: "Tech", image: "/heroes/home-tech.webp" },
-              ].map((c) => (
-                <Link key={c.name} href={categoryHref(c.name)}>
-                  <img
-                    src={c.image}
-                    alt=""
-                    width={600}
-                    height={300}
-                    loading="lazy"
-                  />
-                  <div>
-                    <h3>{c.name}</h3>
-                    <span>
-                      Explore collection
-                      <ArrowRight size={15} />
-                    </span>
-                  </div>
-                </Link>
-              ))}
+                { name: "Fashion", images: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"] },
+                { name: "Beauty", images: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"] },
+                { name: "Tech", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
+              ].map(c => <PromoBanner key={c.name} name={c.name} images={c.images} />)}
             </div>
           </section>
           <section className="hp-best hp-pattern">

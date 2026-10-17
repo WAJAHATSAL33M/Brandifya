@@ -22,7 +22,7 @@ export const products: Product[] = [
   {
     id: 1,
     badge: "Featured",
-    name: "Vintage leather backpack with classic front pockets for everyday essentials",
+    name: "Vintage Leather Backpack with Classic Front Pockets for Everyday Essentials, Commuting, Travel and Casual Weekend Outings",
     category: "Accessories",
     price: 12900,
     originalPrice: 15900,
@@ -35,7 +35,7 @@ export const products: Product[] = [
   {
     id: 2,
     badge: "New",
-    name: "Ceramic aroma diffuser in a natural finish for everyday home styling",
+    name: "Ceramic Aroma Diffuser in a Natural Finish for Everyday Home Styling, Relaxing Corners and Thoughtful Interior Arrangements",
     category: "Home & Living",
     price: 6900,
     originalPrice: 8900,
@@ -48,7 +48,7 @@ export const products: Product[] = [
   {
     id: 3,
     badge: "Top Rated",
-    name: "Smart fitness band",
+    name: "Smart Fitness Band for Daily Activity Routines, Personal Fitness Planning and Everyday Wear at Home or on the Go",
     category: "Tech",
     price: 4200,
     image: "/products/featured2.webp",
@@ -60,7 +60,7 @@ export const products: Product[] = [
   {
     id: 4,
     badge: "Best Seller",
-    name: "Everyday tote bag",
+    name: "Everyday Tote Bag in a Cream Finish for Daily Essentials, Shopping Trips, Office Outfits and Casual Weekend Styling",
     category: "Accessories",
     price: 8900,
     image: "/products/featured3.webp",
@@ -72,7 +72,7 @@ export const products: Product[] = [
   {
     id: 5,
     badge: "Few Left",
-    name: "Electric kettle",
+    name: "Electric Countertop Kettle in a Black Finish for Everyday Kitchen Routines, Morning Tea Breaks and Home Coffee Corners",
     category: "Home & Living",
     price: 7500,
     image: "/products/featured4.webp",
@@ -87,7 +87,7 @@ export const products: Product[] = [
     promotionActive: true,
     promotionStartsAt: "2026-10-14T00:00:00Z",
     promotionEndsAt: "2026-10-15T23:59:59Z",
-    name: "Skincare serum set",
+    name: "Skincare Serum Set for Everyday Beauty Routines, Personal Care Collections and Thoughtfully Arranged Dressing Tables",
     category: "Beauty",
     price: 11900,
     originalPrice: 14900,
@@ -103,7 +103,7 @@ export const products: Product[] = [
     promotionActive: true,
     promotionStartsAt: "2026-10-14T00:00:00Z",
     promotionEndsAt: "2026-10-15T23:59:59Z",
-    name: "Casual loafers",
+    name: "Casual Loafers in a Sand Finish for Everyday Outfit Styling, Relaxed Weekend Looks and Your Seasonal Footwear Collection",
     category: "Fashion",
     price: 3500,
     image: "/products/featured6.webp",
@@ -115,7 +115,7 @@ export const products: Product[] = [
   {
     id: 8,
     badge: "Trending",
-    name: "Portable Bluetooth speaker in charcoal for everyday listening at home and on the go",
+    name: "Portable Bluetooth Speaker in Charcoal for Everyday Listening at Home, Casual Gatherings and Your On-the-Go Music Collection",
     category: "Tech",
     price: 5900,
     image: "/products/featured7.webp",

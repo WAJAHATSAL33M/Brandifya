@@ -146,7 +146,7 @@ export type ReferenceProduct = {
 };
 export const dealProducts: ReferenceProduct[] = [
   {
-    name: "Brande Classic Sunglasses",
+    name: "Brande Classic Sunglasses for Everyday Styling, Travel Outfits and Casual Accessories Collections Throughout the Seasons",
     description: "Timeless style with all-day UV protection.",
     price: "$59.00",
     old: "$79.00",
@@ -155,7 +155,7 @@ export const dealProducts: ReferenceProduct[] = [
     hot: "5.3K+ Sold",
   },
   {
-    name: "Brande SafeView Safety Sunglasses",
+    name: "Brande SafeView Safety Sunglasses for Everyday Accessories Collections, Outdoor Outfit Styling and Your Travel Essentials",
     description: "Rugged protection for work and adventure.",
     price: "$63.00",
     old: "$79.00",
@@ -164,7 +164,7 @@ export const dealProducts: ReferenceProduct[] = [
     hot: "3.2K+ Sold",
   },
   {
-    name: "Brande Vogue Sunglasses",
+    name: "Brande Vogue Sunglasses for Everyday Fashion Collections, Casual Weekend Outfits and Your Favourite Seasonal Accessories",
     description: "Effortless style for everyday moments.",
     price: "$49.00",
     old: "$59.00",
@@ -173,7 +173,7 @@ export const dealProducts: ReferenceProduct[] = [
     hot: "2.6K+ Sold",
   },
   {
-    name: "Brande Travel Shoe Bags (Set of 2)",
+    name: "Brande Travel Shoe Bags Set of Two for Organising Footwear, Planning Your Packing List and Keeping Travel Essentials Together",
     description: "Keep your shoes organised wherever you go.",
     price: "$34.00",
     old: "$49.00",
@@ -182,7 +182,7 @@ export const dealProducts: ReferenceProduct[] = [
     hot: "4.1K+ Sold",
   },
   {
-    name: "Brande Sneaker Cleaning Kit",
+    name: "Brande Sneaker Cleaning Kit for Everyday Footwear Care Routines, Shoe Collections and Your Personal Wardrobe Essentials",
     description: "Everything you need for fresh, clean kicks.",
     price: "$29.00",
     old: "$39.00",
@@ -191,7 +191,7 @@ export const dealProducts: ReferenceProduct[] = [
     hot: "3.9K+ Sold",
   },
   {
-    name: "Brande Wall-Mounted Shoehorn",
+    name: "Brande Wall-Mounted Shoehorn for Your Everyday Footwear Routine, Entrance Organisation and Thoughtfully Arranged Home Spaces",
     description: "A simple, elegant solution for everyday ease.",
     price: "$27.00",
     old: "$35.00",
@@ -202,7 +202,7 @@ export const dealProducts: ReferenceProduct[] = [
 ];
 export const bestProducts: ReferenceProduct[] = [
   {
-    name: "Wireless Noise Cancelling Headphones",
+    name: "Wireless Noise Cancelling Headphones for Everyday Listening, Personal Audio Collections and Music at Home or on the Go",
     badge: "Best Seller",
     description: "",
     price: "$79.00",
@@ -211,7 +211,7 @@ export const bestProducts: ReferenceProduct[] = [
     sold: "2.1K sold",
   },
   {
-    name: "Smart Watch with Health Tracking",
+    name: "Smart Watch with Health Tracking for Everyday Wear, Personal Activity Routines and Your Favourite Daily Accessories Collection",
     description: "",
     price: "$59.00",
     old: "$89.00",
@@ -219,7 +219,7 @@ export const bestProducts: ReferenceProduct[] = [
     sold: "1.8K sold",
   },
   {
-    name: "Elegant Tote Handbag for Everyday Use",
+    name: "Elegant Tote Handbag for Everyday Use, Daily Essentials, Office Outfit Styling and Your Favourite Weekend Accessories Collection",
     description: "",
     price: "$49.00",
     old: "$69.00",
@@ -227,7 +227,7 @@ export const bestProducts: ReferenceProduct[] = [
     sold: "3.2K sold",
   },
   {
-    name: "Casual Sneakers for Daily Comfort",
+    name: "Casual Sneakers for Daily Comfort, Everyday Outfit Styling, Relaxed Weekend Looks and Your Seasonal Footwear Collection",
     badge: "Trending",
     description: "",
     price: "$39.00",
@@ -236,7 +236,7 @@ export const bestProducts: ReferenceProduct[] = [
     sold: "2.9K sold",
   },
   {
-    name: "Aroma Diffuser with LED Light",
+    name: "Aroma Diffuser with LED Light for Everyday Home Styling, Relaxing Corners and Your Favourite Interior Accessories Collection",
     description: "",
     price: "$29.00",
     old: "$39.00",
@@ -244,7 +244,7 @@ export const bestProducts: ReferenceProduct[] = [
     sold: "1.4K sold",
   },
   {
-    name: "Classic Sunglasses UV Protection",
+    name: "Classic Sunglasses with UV Protection for Everyday Outfit Styling, Casual Travel Looks and Your Seasonal Accessories Collection",
     description: "",
     price: "$34.00",
     old: "$49.00",

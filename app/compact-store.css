@@ -1999,3 +1999,20 @@
 @media (max-width: 700px) {
   .hp .store-card-discount { top: 7px; right: 7px; padding: 4px 6px; font-size: 9px; }
 }
+
+/* Seven balanced category tiles, with modestly larger photos and one-line labels. */
+@media (min-width: 701px) {
+  .hp .hp-categories .hp-category-grid { grid-template-columns: repeat(7, minmax(0, 1fr)); }
+}
+.hp .hp-categories .compact-category-image { transform: scale(1.07); transform-origin: center; }
+.hp .hp-categories .hp-category > span:last-child {
+  position: relative;
+  white-space: nowrap;
+  font-size: clamp(11px, 1.1vw, 14px);
+  line-height: 1.25;
+  text-transform: none;
+  padding-inline: 0;
+}
+@media (max-width: 700px) {
+  .hp .hp-categories .hp-category > span:last-child { font-size: 13px; }
+}

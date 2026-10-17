@@ -17,13 +17,15 @@ import {
 import { categoryHref } from "../lib/categories";
 import "./store-header.css";
 const departments = [
-  { name: "Home & Living", image: "/categories/home.webp" },
+  { name: "Home", image: "/categories/home-decor.webp" },
+  { name: "Kitchen", image: "/categories/home.webp" },
+  { name: "Gadgets", image: "/categories/gadgets.webp" },
   { name: "Fashion", image: "/categories/fashion.webp" },
   { name: "Accessories", image: "/products/featured0.webp" },
   { name: "Beauty", image: "/products/featured5.webp" },
   { name: "Tech", image: "/categories/electronics.webp" },
   { name: "Grocery", image: "/categories/grocery.webp" },
-  { name: "Sports & Fitness", image: "/products/featured2.webp" },
+  { name: "Sports", image: "/products/featured2.webp" },
   { name: "Watches", image: "/products/best1.webp" },
   { name: "Footwear", image: "/products/featured6.webp" },
 ];

@@ -12,6 +12,20 @@ export const categoryDesigns: Record<
   string,
   { description: string; image?: string; dark?: boolean }
 > = {
+  Home: {
+    description: "Thoughtful home essentials and decor for a space that feels like you.",
+    image: "/heroes/home-tech.webp",
+  },
+  Kitchen: {
+    description: "Explore kitchen appliances and everyday essentials for your cooking and tea-time routines.",
+  },
+  Gadgets: {
+    description: "Discover useful gadgets, wearable tech and portable essentials for everyday life.",
+    image: "/heroes/home-tech.webp",
+  },
+  Sports: {
+    description: "Make room for movement. Explore sports essentials as our collection grows.",
+  },
   "Home & Living": {
     description:
       "Thoughtful essentials for a space that feels like you. Explore home finds that bring ease to your everyday routine.",

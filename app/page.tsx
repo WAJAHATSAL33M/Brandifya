@@ -403,23 +403,16 @@ export default function Store() {
                     className={`hp-category-grid${copy ? " category-carousel-copy" : ""}`}
                     aria-hidden={copy ? true : undefined}
                   >
-                    {categoryTiles.map((c, i) => (
+                    {categoryTiles.map((c) => (
                       <button
                         key={c.name}
-                        className={`hp-category${i === 5 ? " hp-category-more" : ""}`}
+                        className="hp-category"
                         tabIndex={copy ? -1 : undefined}
                         onClick={() => browse(c.category)}
                       >
                         <img
                           className="compact-category-image"
-                          src={[
-                            "/categories/electronics.webp",
-                            "/categories/fashion.webp",
-                            "/categories/grocery.webp",
-                            "/categories/home.webp",
-                            "/categories/fitness.webp",
-                            "/categories/more-assortment.webp",
-                          ][i]}
+                          src={c.image}
                           alt=""
                           width={300}
                           height={300}

@@ -36,8 +36,8 @@ export const departments = [
     ],
   },
   {
-    name: "Home & Kitchen",
-    category: "Home & Living",
+    name: "Home",
+    category: "Home",
     icon: House,
     links: [
       "Kitchen Appliances",
@@ -63,8 +63,8 @@ export const departments = [
     ],
   },
   {
-    name: "Sports & Fitness",
-    category: "Sports & Fitness",
+    name: "Sports",
+    category: "Sports",
     icon: Dumbbell,
     links: [
       "Exercise Equipment",
@@ -117,12 +117,13 @@ export const departments = [
   },
 ];
 export const categoryTiles = [
-  { name: "Electronics", category: "Tech" },
-  { name: "Fashion", category: "Fashion" },
-  { name: "Grocery", category: "Grocery" },
-  { name: "Home & Kitchen", category: "Home & Living" },
-  { name: "Sports & Fitness", category: "Sports & Fitness" },
-  { name: "More", category: "All finds" },
+  { name: "Electronics", category: "Tech", image: "/categories/electronics.webp" },
+  { name: "Fashion", category: "Fashion", image: "/categories/fashion.webp" },
+  { name: "Grocery", category: "Grocery", image: "/categories/grocery.webp" },
+  { name: "Home", category: "Home", image: "/categories/home-decor.webp" },
+  { name: "Kitchen", category: "Kitchen", image: "/categories/home.webp" },
+  { name: "Sports", category: "Sports", image: "/categories/fitness.webp" },
+  { name: "Gadgets", category: "Gadgets", image: "/categories/gadgets.webp" },
 ];
 export const referencePrices = [
   "$89.99",

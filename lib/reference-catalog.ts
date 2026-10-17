@@ -9,14 +9,14 @@ export const referenceProducts: Product[] = [
   category:
     i < 6
       ? i === 5
-        ? "Home & Living"
+        ? "Home"
         : "Accessories"
       : [
           "Tech",
           "Tech",
           "Accessories",
           "Fashion",
-          "Home & Living",
+          "Home",
           "Accessories",
         ][i - 6],
   price: [4500, 7900, 3200, 8900, 6900, 12500, 18900, 24900, 5900, 7500, 4200, 9900][i],

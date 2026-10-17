@@ -98,7 +98,7 @@ export function ProductCards({
     <section className="commerce-recommendations">
       <div className="commerce-section-heading">
         <h2>{title}</h2>
-        <Link href="/shop">
+        <Link href="/shop" className="store-view-all">
           View all
           <ArrowRight size={16} />
         </Link>

@@ -26,7 +26,7 @@ export default function ShopOpening({categories, selected, total, onCategory, on
       </div>
     </section>
     {categories.length > 0 && <section className="shop-popular" aria-labelledby="shop-popular-title">
-      <div className="shop-section-heading"><h2 id="shop-popular-title">Explore Categories</h2><button onClick={() => onCategory(null)}>View all<ArrowRight size={16}/></button></div>
+      <div className="shop-section-heading"><h2 id="shop-popular-title">Explore Categories</h2><button className="store-view-all" onClick={() => onCategory(null)}>View all<ArrowRight size={16}/></button></div>
       <SwipeLoop className="shop-category-carousel-viewport" label="Explore Categories"><div className="shop-category-carousel-track">
         {[0, 1].map(copy => <div key={copy} className={`shop-popular-grid${copy ? " shop-category-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
           {categories.map(category => <button key={category.name} tabIndex={copy ? -1 : undefined} aria-pressed={selected.length === 1 && selected[0] === category.name} onClick={() => onCategory(category.name)}><span><img src={category.image} alt="" width={200} height={200} loading="lazy"/></span><strong>{category.name}</strong></button>)}

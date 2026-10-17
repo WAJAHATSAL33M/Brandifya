@@ -675,7 +675,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                     <ArrowRight size={17} />
                   </Link>
                 ) : (
-                  <button className="primary" onClick={reset}>
+                  <button className={category ? "primary" : "primary store-view-all"} onClick={reset}>
                     {category ? "Clear search" : "View all products"}
                     <ArrowRight size={17} />
                   </button>

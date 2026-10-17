@@ -518,7 +518,7 @@ export default function Store() {
                   <Search size={30} />
                   <h3>No products found</h3>
                   <button
-                    className="primary"
+                    className="primary store-view-all"
                     onClick={() => {
                       setQuery("");
                       browse();
@@ -533,7 +533,7 @@ export default function Store() {
             <div className="hp-container">
               <div className="hp-deal-heading">
                 <h2>Everyday Finds</h2>
-                <button className="compact-view-all" onClick={() => browse()}>
+                <button className="compact-view-all store-view-all" onClick={() => browse()}>
                   View all
                   <ArrowRight size={16} />
                 </button>
@@ -586,7 +586,7 @@ export default function Store() {
                   More to <em>Explore</em>
                 </h2>
                 <p>Discover more everyday finds across the collection.</p>
-                <button className="hp-view-all" onClick={() => browse()}>
+                <button className="hp-view-all store-view-all" onClick={() => browse()}>
                   View All Products <ArrowRight size={16} />
                 </button>
               </div>

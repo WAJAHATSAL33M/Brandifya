@@ -573,10 +573,10 @@ export default function Store() {
             </p>
             <div className="hp-promo-grid compact-promos">
               {[
-                { name: "Fashion", images: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"] },
-                { name: "Beauty", images: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"] },
-                { name: "Tech", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
-              ].map(c => <PromoBanner key={c.name} name={c.name} images={c.images} />)}
+                { name: "Fashion", description: "Everyday style, thoughtfully chosen.", images: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"] },
+                { name: "Beauty", description: "A little care for your daily routine.", images: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"] },
+                { name: "Tech", description: "Smart essentials for everyday life.", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
+              ].map(c => <PromoBanner key={c.name} name={c.name} images={c.images} description={c.description} />)}
             </div>
           </section>
           <section className="hp-best hp-pattern">

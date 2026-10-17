@@ -68,3 +68,20 @@ export const categoryDesigns: Record<
   },
 };
 
+
+/** Three category-specific frames for each collection hero. */
+export const categoryBanners: Record<string, string[]> = {
+  Fashion: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"],
+  Beauty: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"],
+  Tech: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"],
+  Home: ["/categories/home-decor.webp", "/products/featured1.webp", "/products/best4.webp"],
+  Kitchen: ["/categories/home.webp", "/products/featured4.webp", "/category-banners/kitchen-cookware.webp"],
+  Gadgets: ["/categories/gadgets.webp", "/products/featured2.webp", "/products/featured7.webp"],
+  Sports: ["/category-banners/sports-ball.webp", "/category-banners/sports-racket.webp", "/category-banners/sports-training.webp"],
+  Grocery: ["/categories/grocery.webp", "/category-banners/grocery-produce.webp", "/category-banners/grocery-pantry.webp"],
+  Watches: ["/categories/fitness.webp", "/products/best1.webp", "/products/featured2.webp"],
+  Accessories: ["/products/featured0.webp", "/products/deal0.webp", "/products/best2.webp"],
+  Footwear: ["/products/featured6.webp", "/products/best3.webp", "/promotions/fashion-3.webp"],
+};
+categoryBanners["Home & Living"] = categoryBanners.Home;
+categoryBanners["Sports & Fitness"] = categoryBanners.Sports;

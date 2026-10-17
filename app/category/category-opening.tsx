@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { useEffect, useRef } from "react";
+import PromoBanner from "../promo-banner";
 import { ArrowRight } from "lucide-react";
-import { categoryDesigns, categoryHref } from "../../lib/categories";
+import { categoryDesigns, categoryHref, categoryBanners } from "../../lib/categories";
 export default function CategoryOpening({
   name,
   count,
@@ -37,29 +38,13 @@ export default function CategoryOpening({
   };
   return (
     <>
-      <section
-        className={`category-hero ${design.dark ? "is-dark" : ""} ${!design.image ? "without-photo" : ""}`}
-        aria-label={`${name} collection`}
-      >
-        {design.image && (
-          <img
-            src={design.image}
-            alt=""
-            width={2172}
-            height={724}
-            fetchPriority="high"
-          />
-        )}
-        <div>
-          <h1>{name}</h1>
-          <p>{design.description}</p>
-          <a className="category-hero-action" href="#shop-results">
-            Explore the Collection
-            <ArrowRight size={17} />
-          </a>
-
-        </div>
-      </section>
+      <PromoBanner
+        name={name}
+        hero
+        description={design.description}
+        images={categoryBanners[name] || [design.image || collections.find(c => c.name === name)?.image || "/heroes/everyday.webp", "/heroes/home-tech.webp", "/heroes/fashion.webp"]}
+        contain={!['Fashion', 'Beauty', 'Tech'].includes(name)}
+      />
       <nav
         ref={rail}
         className="category-collections"

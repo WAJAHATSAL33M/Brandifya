@@ -1,9 +1,11 @@
 "use client";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type HTMLAttributes } from "react";
 import Link from "next/link";
 import { categoryHref } from "../lib/categories";
 
-export default function PromoBanner({ name, images }: { name: string; images: string[] }) {
+export default function PromoBanner({ name, images, description, hero = false, contain = false }: {
+  name: string; images: string[]; description?: string; hero?: boolean; contain?: boolean;
+}) {
   const [index, setIndex] = useState(0);
   const [instant, setInstant] = useState(false);
   const [paused, setPaused] = useState(false);
@@ -38,13 +40,15 @@ export default function PromoBanner({ name, images }: { name: string; images: st
     const first = requestAnimationFrame(() => { second = requestAnimationFrame(() => setInstant(false)); });
     return () => { cancelAnimationFrame(first); cancelAnimationFrame(second); };
   }, [instant]);
-  return <Link href={categoryHref(name)} aria-label={`Explore ${name}`} className="promo-banner"
-    onMouseEnter={() => { if (window.matchMedia("(hover: hover)").matches) setPaused(true); }}
-    onMouseLeave={() => setPaused(false)} onFocus={() => setFocused(true)} onBlur={() => setFocused(false)}
-    onClick={event => { if (suppressClick.current) { event.preventDefault(); suppressClick.current = false; } }}
-    onTouchStart={event => { suppressClick.current = false; setTouching(true); const point = event.touches[0]; touch.current = point ? { x: point.clientX, y: point.clientY } : null; }}
-    onTouchCancel={() => { setTouching(false); touch.current = null; }}
-    onTouchEnd={event => {
+  const interactions: HTMLAttributes<HTMLElement> = {
+    onMouseEnter: () => { if (window.matchMedia("(hover: hover)").matches) setPaused(true); },
+    onMouseLeave: () => setPaused(false),
+    onFocus: event => setFocused(event.currentTarget.matches(":focus-visible")),
+    onBlur: () => setFocused(false),
+    onClick: event => { if (suppressClick.current) { event.preventDefault(); suppressClick.current = false; } },
+    onTouchStart: event => { suppressClick.current = false; setTouching(true); const point = event.touches[0]; touch.current = point ? { x: point.clientX, y: point.clientY } : null; },
+    onTouchCancel: () => { setTouching(false); touch.current = null; },
+    onTouchEnd: event => {
       setTouching(false); const start = touch.current; touch.current = null;
       const end = event.changedTouches[0];
       if (!start || !end) return;
@@ -53,10 +57,19 @@ export default function PromoBanner({ name, images }: { name: string; images: st
         suppressClick.current = true;
         setIndex(current => dx < 0 ? Math.min(current + 1, images.length) : Math.max(0, current - 1));
       }
-    }}>
+    },
+  };
+  const content = <>
     <div className={`promo-image-track${instant ? " is-resetting" : ""}`} style={{ transform: `translateX(-${index * 100}%)` }} aria-hidden="true">
-      {[...images, images[0]].map((src, i) => <img key={`${src}-${i}`} src={src} alt="" width={600} height={300} loading="lazy" draggable={false} />)}
+      {[...images, images[0]].map((src, i) => <img key={`${src}-${i}`} className={contain ? "is-cutout" : undefined} src={src} alt="" width={hero ? 1200 : 600} height={hero ? 600 : 300} loading={hero && i === 0 ? "eager" : "lazy"} draggable={false} />)}
     </div>
-    <div className="promo-banner-copy"><h3>{name}</h3><span className="promo-explore">Explore</span></div>
-  </Link>;
+    <div className={hero ? "category-banner-copy" : "promo-banner-copy"}>
+      {hero ? <h1>{name}</h1> : <h3>{name}</h3>}
+      {description && <p className="promo-description">{description}</p>}
+      {!hero && <span className="promo-explore">Explore</span>}
+    </div>
+  </>;
+  return hero
+    ? <section className="category-hero category-banner" role="region" aria-roledescription="carousel" aria-label={`${name} collection`} tabIndex={0} {...interactions}>{content}</section>
+    : <Link href={categoryHref(name)} aria-label={`Explore ${name}`} className="promo-banner" {...interactions}>{content}</Link>;
 }

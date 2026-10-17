@@ -2058,3 +2058,33 @@
 }
 @media (hover: hover) { .compact-promos > .promo-banner:hover .promo-explore { background: #e94a00; transform: translateY(-2px); } }
 @media (prefers-reduced-motion: reduce) { .compact-promos .promo-image-track, .compact-promos .promo-explore { transition: none; } }
+
+/* Supporting copy beneath each homepage promotion heading. */
+.compact-promos .promo-banner-copy { max-width: 58%; }
+.compact-promos .promo-banner-copy h3 { margin-bottom: 8px; }
+.compact-promos .promo-description { font-size: 12px; line-height: 1.5; color: #545963; margin: 0 0 12px; max-width: 190px; }
+/* Compact category navigation and no divider above category search/results. */
+.hp.category-page .category-collections { padding: 12px 0 14px; gap: 8px; }
+.hp.category-page .category-collections > a { min-height: 48px; padding: 6px 10px; gap: 8px; }
+.hp.category-page .category-collections img { width: 32px; height: 32px; }
+.hp.category-page .shop-layout { border-top: 0; padding-top: 8px; }
+/* Shared two-second slideshow in every category hero, without a CTA button. */
+.hp.category-page .category-banner { background: #fff5ef; color: #101216; touch-action: pan-y; }
+.hp.category-page .category-banner > .promo-image-track {
+  position: absolute; inset: 0; z-index: -2; width: 100%; max-width: none; height: 100%;
+  display: flex; transition: transform .4s ease-in-out;
+}
+.hp.category-page .category-banner > .promo-image-track.is-resetting { transition: none; }
+.hp.category-page .category-banner .promo-image-track img { flex: 0 0 100%; width: 100%; min-width: 100%; height: 100%; object-fit: cover; object-position: right center; }
+.hp.category-page .category-banner .promo-image-track img.is-cutout { object-fit: contain; object-position: 92% center; padding: 24px 0 24px 48%; background: #fff5ef; }
+.hp.category-page .category-banner .category-banner-copy { position: relative; }
+.hp.category-page .category-banner .promo-description { margin-bottom: 0; }
+@media (max-width: 700px) {
+  .hp.category-page .category-collections { padding: 10px 0 12px; gap: 6px; }
+  .hp.category-page .category-collections > a { min-height: 44px; padding: 5px 8px; }
+  .hp.category-page .category-collections img { width: 28px; height: 28px; }
+}
+@media (prefers-reduced-motion: reduce) { .hp.category-page .category-banner > .promo-image-track { transition: none; } }
+.hp.category-page .category-banner:after {
+  background: linear-gradient(90deg, #fff5ef, rgba(255,245,239,.92) 34%, rgba(255,245,239,.12) 65%, transparent);
+}

@@ -2130,3 +2130,23 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
 @media (max-width: 700px) {
   body .store-view-all.store-view-all { min-height: 28px; padding: 5px 10px; gap: 4px; }
 }
+
+/* Preserve the journal grid on desktop; show one swipeable story on mobile. */
+.hp-blog-controls { display: none; }
+@media (max-width: 700px) {
+  .hp .hp-blog-slider .hp-blog-grid {
+    display: flex;
+    gap: 0;
+    max-width: 420px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    overscroll-behavior-x: contain;
+    scrollbar-width: none;
+  }
+  .hp-blog-slider .hp-blog-grid::-webkit-scrollbar { display: none; }
+  .hp .hp-blog-slider .hp-blog-card { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
+  .hp-blog-controls { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 16px; }
+  .hp-blog-controls button { display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: var(--orange); color: #fff; }
+  .hp-blog-controls span { font-size: 12px; color: #707580; }
+  .hp-blog-controls button:focus-visible { outline: 2px solid #b83800; outline-offset: 3px; }
+}

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMerchandising } from "../../use-merchandising";
 import { ProductBadge } from "../../product-card";
 import { categoryHref } from "../../../lib/categories";
-import { ArrowRight, Heart, Maximize2, ShoppingCart, X } from "lucide-react";
+import { ArrowRight, Maximize2, ShoppingCart, X } from "lucide-react";
 import { money, type Product } from "../../../lib/catalog";
 import { useStore } from "../../use-store";
 import {
@@ -201,19 +201,6 @@ export default function ProductPage({ product }: { product: Product }) {
                 <ShoppingCart size={20} aria-hidden="true" />
               </button>
             </div>
-            <button
-              className="commerce-product-save"
-              aria-pressed={store.saved.includes(p.id)}
-              onClick={() => store.favorite(p.id)}
-            >
-              <Heart
-                size={18}
-                fill={store.saved.includes(p.id) ? "currentColor" : "none"}
-              />
-              {store.saved.includes(p.id)
-                ? "Added to Favorites"
-                : "Add to Favorite"}
-            </button>
             {added && (
               <div className="commerce-added" role="status">
                 Added to your cart.

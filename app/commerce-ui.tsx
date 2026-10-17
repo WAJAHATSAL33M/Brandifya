@@ -31,12 +31,12 @@ export function CommerceHeader({ store }: { store: Store }) {
 }
 export function Breadcrumb({ label }: { label: string }) {
   return (
-    <nav className="commerce-breadcrumb" aria-label="Breadcrumb">
+    <nav className="commerce-breadcrumb commerce-breadcrumb-trail" aria-label="Breadcrumb">
       <Link href="/">Home</Link>
-      <ChevronRight size={13} />
+      <ChevronRight size={13} aria-hidden="true" />
       <Link href="/shop">Shop</Link>
-      <ChevronRight size={13} />
-      <span aria-current="page">{label}</span>
+      <ChevronRight size={13} aria-hidden="true" />
+      <span aria-current="page" title={label}>{label}</span>
     </nav>
   );
 }

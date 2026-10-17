@@ -1939,3 +1939,17 @@
   .hp .featured-carousel-viewport { scroll-snap-type: x mandatory; }
   .hp .featured-carousel-track .store-product-card { scroll-snap-align: start; }
 }
+
+/* Homepage category labels sit directly on the category cards. */
+.hp .hp-categories .hp-category > span:last-child {
+  background: transparent;
+  border-radius: 0;
+  font-size: 14px;
+  padding: 5px 2px;
+}
+@media (max-width: 700px) {
+  .hp .hp-categories .hp-category > span:last-child {
+    font-size: 13px;
+    padding: 4px 2px;
+  }
+}

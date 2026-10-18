@@ -2145,3 +2145,51 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .hp-blog-slider .hp-blog-grid::-webkit-scrollbar { display: none; }
   .hp .hp-blog-slider .hp-blog-card { flex: 0 0 100%; min-width: 0; scroll-snap-align: start; }
 }
+
+/* Compact product purchase row for phones, matching the cart quantity control. */
+@media (max-width: 700px) {
+  .hp .commerce-product-purchase {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 128px 46px;
+    gap: 6px;
+    align-items: stretch;
+    margin-bottom: 16px;
+  }
+  .hp .commerce-product-purchase > .commerce-primary {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    min-width: 0;
+    height: 46px;
+    min-height: 46px;
+    padding: 0 8px;
+    font-size: 16px !important;
+    white-space: nowrap;
+  }
+  .hp .commerce-product-purchase .commerce-quantity {
+    grid-column: 2;
+    grid-row: 1;
+    width: 128px;
+    height: 46px;
+    min-height: 46px;
+    gap: 2px;
+  }
+  .hp .commerce-product-purchase .commerce-quantity button {
+    min-width: 40px;
+    width: 40px;
+    height: 44px;
+    min-height: 44px;
+    padding: 0;
+  }
+  .hp .commerce-product-purchase .commerce-quantity span { min-width: 40px; font-size: 16px; }
+  .hp .commerce-product-purchase .commerce-quantity button svg { width: 18px; height: 18px; }
+  .hp .commerce-product-purchase .commerce-product-cart {
+    grid-column: 3;
+    grid-row: 1;
+    width: 46px;
+    height: 46px;
+    min-height: 46px;
+  }
+  .hp .commerce-product-copy > .commerce-product-facts { border: 0; margin: 16px 0; padding: 0; }
+  .hp .commerce-product-copy > details { border-top: 0; padding: 12px 0; }
+}

@@ -2244,14 +2244,14 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
 
   .hp .hp-categories,
   .hp .hp-featured { width: calc(100% - 28px); }
-  .hp .hp-categories { padding-top: 0; padding-bottom: 0; }
-  .hp .hp-featured { padding-top: 0; }
+  .hp .hp-categories { padding-top: 24px; padding-bottom: 0; }
+  .hp .hp-featured { padding-top: 24px; }
   .hp .hp-categories h2,
   .hp .hp-featured > h2 {
     font-size: 26px;
     letter-spacing: -.8px;
     line-height: 1.2;
-    margin: 0 0 8px;
+    margin: 0 0 12px;
     text-align: left;
   }
   .hp .category-carousel-track > .hp-category-grid { padding-bottom: 0; }

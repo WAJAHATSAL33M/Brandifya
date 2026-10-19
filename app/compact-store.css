@@ -2193,3 +2193,68 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .hp .commerce-product-copy > .commerce-product-facts { border: 0; margin: 16px 0; padding: 0; }
   .hp .commerce-product-copy > details { border-top: 0; padding: 12px 0; }
 }
+
+/* Mobile landing-page refinements from the annotated PDF. */
+@media (max-width: 700px) {
+  /* The search belongs to the page flow, so it leaves view with the header. */
+  .hp .store-header-landing { position: relative; }
+  .hp .store-header-landing .store-header-main {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) auto;
+    gap: 6px;
+    min-height: 66px;
+    width: calc(100% - 28px);
+  }
+  .hp .store-header-landing .store-header-toggle { min-width: 36px; padding: 6px; }
+  .hp .store-header-landing .hp-logo {
+    position: static;
+    transform: none;
+    width: min(100%, 150px);
+    justify-self: center;
+  }
+  .hp .store-header-landing .store-header-actions { gap: 2px; }
+  .hp .store-header-landing .store-header-actions > .store-account-link {
+    display: flex;
+    width: 66px;
+    min-height: 44px;
+    justify-content: center;
+    color: #ff5100;
+  }
+  .hp .store-header-landing .store-header-actions > .store-account-link svg { display: none; }
+  .hp .store-header-landing .store-header-actions > .store-account-link span {
+    display: inline;
+    white-space: normal;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.3;
+    font-weight: 600;
+  }
+  .hp .store-header-landing .store-header-search-toggle { display: none; }
+  .hp .store-header-landing .store-header-search {
+    display: flex;
+    width: calc(100% - 28px);
+    height: 42px;
+    margin: 0 auto 8px;
+    padding: 4px 4px 4px 10px;
+    gap: 8px;
+    border-color: #ff5100;
+  }
+  .hp .store-header-landing .store-header-search-submit { height: 32px; padding: 0 12px; }
+  .hp .store-header-landing .store-header-search-submit svg { display: none; }
+
+  .hp .hp-categories,
+  .hp .hp-featured { width: calc(100% - 28px); }
+  .hp .hp-categories { padding-top: 18px; padding-bottom: 20px; }
+  .hp .hp-featured { padding-top: 0; }
+  .hp .hp-categories h2,
+  .hp .hp-featured > h2 {
+    font-size: 26px;
+    letter-spacing: -.8px;
+    line-height: 1.2;
+    margin: 0 0 20px;
+    text-align: left;
+  }
+  .hp .category-carousel-track > .hp-category-grid { padding-bottom: 0; }
+  .hp .hp-categories .hp-category { display: flex; flex-direction: column; }
+  .hp .hp-categories .hp-category > span:last-child { margin-top: auto; padding-top: 4px; padding-bottom: 2px; }
+}

@@ -21,3 +21,15 @@
 /* Keep the three full-width banners, with a compact side-by-side mobile composition. */
 @media(max-width:700px){.home-hero-inner{min-height:0;width:calc(100% - 32px);padding:24px 0 16px;align-items:flex-start;text-align:left}.home-hero-copy{width:60%;margin:0;max-width:300px}.home-hero-copy h1{font-size:25px!important;letter-spacing:-.7px}.home-hero-copy p{display:none}.home-hero-action{margin-top:20px;height:42px;padding:0 17px;font-size:11px;gap:12px}.home-hero-images{inset:0}.home-hero-images img{object-position:right center}.home-hero:after{background:linear-gradient(90deg,#101216,rgba(16,18,22,.92) 32%,rgba(16,18,22,.15) 65%,transparent)}.home-hero-cream:after{background:linear-gradient(90deg,#fff5ef,rgba(255,245,239,.95) 32%,rgba(255,245,239,.12) 65%,transparent)}.home-hero-light:after{background:linear-gradient(90deg,#f4f4f2,rgba(244,244,242,.95) 32%,rgba(244,244,242,.12) 65%,transparent)}}
 @media(max-width:360px){.home-hero-inner{min-height:0}.home-hero-copy{width:62%}.home-hero-copy h1{font-size:23px!important}.home-hero-action{padding:0 14px;gap:8px;font-size:10px}}
+
+/* Inactive copy contributes to the mobile height, so slides never resize the hero. */
+.home-hero-slide-copy { display: none; }
+.home-hero-slide-copy.is-active { display: block; }
+@media (max-width: 700px) {
+  .home-hero-copy { display: grid; }
+  .home-hero-slide-copy,
+  .home-hero-slide-copy.is-active { display: block; grid-area: 1 / 1; min-width: 0; }
+  .home-hero-slide-copy { visibility: hidden; pointer-events: none; }
+  .home-hero-slide-copy.is-active { visibility: visible; pointer-events: auto; }
+  .home-hero-action { border-radius: 6px; gap: 8px; padding-inline: 12px; }
+}

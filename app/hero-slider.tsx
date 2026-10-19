@@ -58,8 +58,17 @@ export default function HeroSlider() {
     <div className="home-hero-images" aria-hidden="true">
       {slides.map((s, i) => <img key={s.image} className={index === i ? "is-active" : ""} src={s.image} alt="" width={2172} height={724} loading="eager" fetchPriority={i === 0 ? "high" : "auto"} draggable={false}/>)}
     </div>
-    <div className="home-hero-inner" key={index} role="group" aria-roledescription="slide" aria-label={`${index+1} of ${slides.length}: ${slide.label}`}>
-      <div className="home-hero-copy"><h1>{slide.title}<br/><em>{slide.emphasis}</em></h1><p>{slide.description}</p><Link className="home-hero-action" href={slide.href}>{slide.action}<span><ArrowRight size={18}/></span></Link></div>
+    <div className="home-hero-inner">
+      <div className="home-hero-copy">
+        {slides.map((item, i) => <div key={item.image}
+          className={`home-hero-slide-copy${i === index ? " is-active" : ""}`}
+          role="group" aria-roledescription="slide" aria-label={`${i+1} of ${slides.length}: ${item.label}`}
+          aria-hidden={i !== index} inert={i !== index}>
+          <h1>{item.title}<br/><em>{item.emphasis}</em></h1>
+          <p>{item.description}</p>
+          <Link className="home-hero-action" href={item.href}>{item.action}<span><ArrowRight size={18}/></span></Link>
+        </div>)}
+      </div>
     </div>
     <button className="home-hero-pause" onClick={() => setPaused(current => !current)}>{paused ? "Resume automatic banners" : "Pause automatic banners"}</button>
   </section>;

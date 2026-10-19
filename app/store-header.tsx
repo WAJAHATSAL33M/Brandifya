@@ -96,7 +96,7 @@ export default function StoreHeader(props: Props) {
   }, []);
   return (
     <header
-      className="store-header"
+      className={`store-header${pathname === "/" ? " store-header-landing" : ""}`}
       ref={root}
       onKeyDown={(e) => {
         if (e.key === "Escape") {
@@ -227,6 +227,7 @@ export default function StoreHeader(props: Props) {
           </button>
           <button
             ref={searchToggle}
+            className="store-header-search-toggle"
             aria-label="Search products"
             aria-expanded={searchOpen}
             aria-controls={`${id}-search`}

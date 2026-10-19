@@ -46,6 +46,11 @@ export default function Account() {
       id: string;
       key: string;
     } | null>(null);
+  useEffect(() => {
+    if (user && !loading && window.location.hash === "#orders") {
+      document.getElementById("orders")?.scrollIntoView({ block: "start" });
+    }
+  }, [user, loading]);
   async function load() {
     setLoading(true);
     try {
@@ -377,7 +382,7 @@ export default function Account() {
               their original delivery details.
             </p>
           </section>
-          <section className="management-panel">
+          <section className="management-panel" id="orders" style={{ scrollMarginTop: 96 }}>
             <h2>
               Your orders <small>({total})</small>
             </h2>

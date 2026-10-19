@@ -2215,14 +2215,14 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .hp .store-header-landing .store-header-actions { gap: 2px; }
   .hp .store-header-landing .store-header-actions > .store-account-link {
     display: flex;
-    width: 66px;
+    width: 36px;
     min-height: 44px;
     justify-content: center;
     color: #ff5100;
   }
-  .hp .store-header-landing .store-header-actions > .store-account-link svg { display: none; }
+  .hp .store-header-landing .store-header-actions > .store-account-link svg { display: block; }
   .hp .store-header-landing .store-header-actions > .store-account-link span {
-    display: inline;
+    display: none;
     white-space: normal;
     text-align: center;
     font-size: 11px;
@@ -2244,17 +2244,32 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
 
   .hp .hp-categories,
   .hp .hp-featured { width: calc(100% - 28px); }
-  .hp .hp-categories { padding-top: 18px; padding-bottom: 20px; }
+  .hp .hp-categories { padding-top: 0; padding-bottom: 0; }
   .hp .hp-featured { padding-top: 0; }
   .hp .hp-categories h2,
   .hp .hp-featured > h2 {
     font-size: 26px;
     letter-spacing: -.8px;
     line-height: 1.2;
-    margin: 0 0 20px;
+    margin: 0 0 8px;
     text-align: left;
   }
   .hp .category-carousel-track > .hp-category-grid { padding-bottom: 0; }
   .hp .hp-categories .hp-category { display: flex; flex-direction: column; }
   .hp .hp-categories .hp-category > span:last-child { margin-top: auto; padding-top: 4px; padding-bottom: 2px; }
+}
+
+/* Separate order-history shortcut from account access in the mobile landing header. */
+.store-header-orders { display: none; }
+@media (max-width: 700px) {
+  .hp .store-header-landing .store-header-orders {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    min-height: 44px;
+    flex-shrink: 0;
+    color: #101216;
+  }
+  .hp .store-header-landing .store-header-actions > .store-account-link { color: #101216; }
+  .hp .store-header-landing .store-header-orders:focus-visible { outline: 2px solid #ff5100; outline-offset: 2px; }
 }

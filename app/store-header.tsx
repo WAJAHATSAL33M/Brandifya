@@ -10,6 +10,7 @@ import {
   Heart,
   House,
   Menu,
+  PackageSearch,
   Search,
   ShoppingCart,
   X,
@@ -210,6 +211,9 @@ export default function StoreHeader(props: Props) {
           </nav>
         </div>
         <div className="store-header-actions">
+          <Link className="store-header-orders" href="/account#orders" aria-label="Your orders" title="Your orders" onClick={close}>
+            <PackageSearch size={23} aria-hidden="true" />
+          </Link>
           <AccountLink />
           <button
             className="store-header-wishlist"

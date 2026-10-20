@@ -2,11 +2,12 @@
 import { useEffect, useRef, type ReactNode } from "react";
 
 /** Native touch scrolling keeps momentum; autoplay advances the same scroll position. */
-export default function SwipeLoop({ children, className, label, advance = "continuous" }: {
+export default function SwipeLoop({ children, className, label, advance = "continuous", direction = "forward" }: {
   children: ReactNode;
   className: string;
   label: string;
   advance?: "continuous" | "card";
+  direction?: "forward" | "reverse";
 }) {
   const viewport = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -38,15 +39,17 @@ export default function SwipeLoop({ children, className, label, advance = "conti
           !hovering && !rail.contains(document.activeElement) && (rail.firstElementChild?.children.length || 0) > 1 && loopWidth > rail.clientWidth) {
         if (advance === "card") {
           if (now >= nextSlideAt) {
-            if (rail.scrollLeft >= loopWidth - 1) rail.scrollLeft -= loopWidth;
+            if (direction === "reverse" && rail.scrollLeft <= 1) rail.scrollLeft += loopWidth;
+            else if (direction === "forward" && rail.scrollLeft >= loopWidth - 1) rail.scrollLeft -= loopWidth;
             const card = group?.firstElementChild as HTMLElement | null;
             const gap = group ? parseFloat(getComputedStyle(group).columnGap) || 0 : 0;
             const step = (card?.getBoundingClientRect().width || 180) + gap;
-            rail.scrollTo({ left: (Math.round(rail.scrollLeft / step) + 1) * step, behavior: "smooth" });
+            rail.scrollTo({ left: (Math.round(rail.scrollLeft / step) + (direction === "reverse" ? -1 : 1)) * step, behavior: "smooth" });
             nextSlideAt = now + 1400;
           }
         } else {
-          position += elapsed * 0.028;
+          position += elapsed * 0.028 * (direction === "reverse" ? -1 : 1);
+          if (position < 0) position += loopWidth;
           if (position >= loopWidth) position -= loopWidth;
           rail.scrollLeft = position;
         }
@@ -66,6 +69,6 @@ export default function SwipeLoop({ children, className, label, advance = "conti
       rail.removeEventListener("touchcancel", touchEnd);
       rail.removeEventListener("wheel", pause);
     };
-  }, [advance]);
+  }, [advance, direction]);
   return <div ref={viewport} className={`${className} swipe-loop`} role="region" aria-label={label}>{children}</div>;
 }

@@ -2333,3 +2333,27 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .hp .commerce-product-copy h1 { font-size: 24px !important; }
   .hp .commerce-product-copy > .commerce-product-purchase { margin-top: 14px; }
 }
+
+/* Sale products share the featured carousel geometry and reverse its movement. */
+.hp .sale-products { padding-top: 32px; }
+.sale-products-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 18px; }
+.hp .sale-products-heading h2 { margin: 0; font-size: 28px; line-height: 1.2; }
+.sale-countdown { display: flex; align-items: center; gap: 10px; margin-left: auto; }
+.sale-countdown-caption { font-size: 12px; color: #545963; white-space: nowrap; }
+.sale-countdown-units { display: flex; gap: 5px; }
+.sale-countdown-unit { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 46px; min-height: 52px; padding: 6px; background: #101216; color: #fff; border-radius: 7px; }
+.sale-countdown-unit strong { font-size: 21px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.sale-countdown-unit small { font-size: 9px; line-height: 1.4; margin-top: 3px; }
+.sale-see-all { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 14px; min-height: 40px; border: 1px solid #ff5100; border-radius: 6px; color: #b33900; font-size: 12px; font-weight: 600; white-space: nowrap; }
+@media (max-width: 700px) {
+  .hp .sale-products { width: calc(100% - 28px); padding-top: 24px; }
+  .sale-products-heading { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; margin-bottom: 12px; }
+  .hp .sale-products-heading h2 { font-size: 24px; }
+  .sale-countdown { justify-self: end; gap: 5px; margin-left: 0; }
+  .sale-countdown-caption { font-size: 10px; }
+  .sale-countdown-units { gap: 3px; }
+  .sale-countdown-unit { min-width: 32px; min-height: 43px; padding: 5px 3px; border-radius: 5px; }
+  .sale-countdown-unit strong { font-size: 16px; }
+  .sale-countdown-unit small { font-size: 7px; margin-top: 2px; }
+  .sale-see-all { grid-column: 1 / -1; justify-self: end; padding: 6px 10px; min-height: 32px; font-size: 11px; }
+}

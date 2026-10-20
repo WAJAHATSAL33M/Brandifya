@@ -44,6 +44,7 @@ import HeroSlider from "./hero-slider";
 import PromoBanner from "./promo-banner";
 import BlogSlider from "./blog-slider";
 import SwipeLoop from "./swipe-loop";
+import SaleProducts from "./sale-products";
 import StoreHeader from "./store-header";
 import art from "../lib/home-art.json";
 import {
@@ -432,6 +433,7 @@ export default function Store() {
               </div>
             </SwipeLoop>
           </section>
+          <SaleProducts catalog={catalog} saved={saved} onSave={favorite} live={live} />
           <section id="shop" className="hp-featured hp-container">
             <h2>
               {savedOnly

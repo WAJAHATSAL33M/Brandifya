@@ -21,6 +21,9 @@ export type Product = {
 export const products: Product[] = [
   {
     id: 1,
+    promotionActive: true,
+    promotionStartsAt: "2026-10-20T00:00:00Z",
+    promotionEndsAt: "2026-10-27T23:59:59Z",
     badge: "Featured",
     name: "Vintage Leather Backpack with Classic Front Pockets for Everyday Essentials, Commuting, Travel and Casual Weekend Outings",
     category: "Accessories",
@@ -34,6 +37,9 @@ export const products: Product[] = [
   },
   {
     id: 2,
+    promotionActive: true,
+    promotionStartsAt: "2026-10-20T00:00:00Z",
+    promotionEndsAt: "2026-10-27T23:59:59Z",
     badge: "New",
     name: "Ceramic Aroma Diffuser in a Natural Finish for Everyday Home Styling, Relaxing Corners and Thoughtful Interior Arrangements",
     category: "Home",
@@ -85,8 +91,8 @@ export const products: Product[] = [
     id: 6,
     badge: "Countdown Timer",
     promotionActive: true,
-    promotionStartsAt: "2026-10-14T00:00:00Z",
-    promotionEndsAt: "2026-10-15T23:59:59Z",
+    promotionStartsAt: "2026-10-20T00:00:00Z",
+    promotionEndsAt: "2026-10-27T23:59:59Z",
     name: "Skincare Serum Set for Everyday Beauty Routines, Personal Care Collections and Thoughtfully Arranged Dressing Tables",
     category: "Beauty",
     price: 11900,

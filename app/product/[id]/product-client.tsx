@@ -161,18 +161,6 @@ export default function ProductPage({ product }: { product: Product }) {
                     : "In stock"}
               </p>
             )}
-            <dl className="commerce-product-facts">
-              {p.color && (
-                <div>
-                  <dt>Color</dt>
-                  <dd>{p.color}</dd>
-                </div>
-              )}
-              <div>
-                <dt>Product reference</dt>
-                <dd>{p.id < 0 ? `Sample ${Math.abs(p.id)}` : `BRD-${p.id}`}</dd>
-              </div>
-            </dl>
             <div className="commerce-product-purchase">
               <Quantity
                 value={amount}

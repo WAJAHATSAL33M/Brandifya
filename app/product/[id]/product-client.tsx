@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useMerchandising } from "../../use-merchandising";
 import { ProductBadge } from "../../product-card";
 import { categoryHref } from "../../../lib/categories";
-import { ArrowRight, Maximize2, ShoppingCart, X } from "lucide-react";
+import { ArrowRight, Maximize2, ShoppingCart, X, Timer, Zap, Package, Truck, ShieldCheck, Headphones, ChevronDown, ChevronRight } from "lucide-react";
 import { money, type Product } from "../../../lib/catalog";
 import { useStore } from "../../use-store";
 import {
@@ -21,15 +21,30 @@ export default function ProductPage({ product }: { product: Product }) {
     [amount, setAmount] = useState(1),
     [zoom, setZoom] = useState(false),
     [galleryImage, setGalleryImage] = useState(""),
-    [added, setAdded] = useState(false);
+    [added, setAdded] = useState(false),
+    [offerSeconds, setOfferSeconds] = useState(0);
   const close = useRef<HTMLButtonElement>(null),
     trigger = useRef<HTMLButtonElement>(null);
   const current = store.catalog.find((p) => p.id === product.id),
     p = current || product;
-  const { badge, lowStock, promotion, minutesLeft } = useMerchandising(
+  const { badge, lowStock, promotion } = useMerchandising(
     p,
     !!store.config?.live,
   );
+  useEffect(() => {
+    if (!promotion || !p.promotionEndsAt) { setOfferSeconds(0); return; }
+    const end = Date.parse(p.promotionEndsAt);
+    const tick = () => setOfferSeconds(Math.max(0, Math.ceil((end - Date.now()) / 1000)));
+    tick();
+    const timer = window.setInterval(tick, 1000);
+    return () => window.clearInterval(timer);
+  }, [promotion, p.promotionEndsAt]);
+  const offerTime = [
+    offerSeconds >= 86400 ? `${Math.floor(offerSeconds / 86400)}d` : '',
+    `${String(Math.floor(offerSeconds / 3600) % 24).padStart(2, '0')}h`,
+    `${String(Math.floor(offerSeconds / 60) % 60).padStart(2, '0')}m`,
+    `${String(offerSeconds % 60).padStart(2, '0')}s`,
+  ].filter(Boolean).join(' ');
   const max = current
     ? Math.max(
         0,
@@ -128,7 +143,7 @@ export default function ProductPage({ product }: { product: Product }) {
               </div>
             )}
           </div>
-          <div className="commerce-product-copy">
+          <div className="commerce-product-copy product-reference-copy">
             <Link
               className="commerce-product-category"
               href={categoryHref(p.category)}
@@ -147,10 +162,12 @@ export default function ProductPage({ product }: { product: Product }) {
                 Only {p.stock} left in stock
               </p>
             )}
-            {promotion && (
-              <p className="product-promotion-status">
-                Offer ends in {minutesLeft} min
-              </p>
+            {promotion && offerSeconds > 0 && (
+              <div className="product-offer-countdown" role="timer" aria-live="off">
+                <Timer aria-hidden="true" />
+                <span>Offer ends in <strong>{offerTime}</strong></span>
+                <ChevronRight aria-hidden="true" />
+              </div>
             )}
             {(store.loading || !current || p.stock < 1 || store.config?.live) && (
               <p className="commerce-availability">
@@ -169,24 +186,24 @@ export default function ProductPage({ product }: { product: Product }) {
                 name={p.name}
               />
               <button
-                className="commerce-primary"
-                disabled={store.loading || !!store.error || max < 1 || p.id < 1}
-                onClick={() => {
-                  if (store.add(p, amount)) window.location.assign("/cart");
-                }}
-              >
-                Buy Now
-              </button>
-              <button
                 className="commerce-product-cart"
-                aria-label="Add to Cart"
-                title="Add to Cart"
                 disabled={store.loading || !!store.error || max < 1 || p.id < 1}
                 onClick={() => {
                   if (store.add(p, amount)) setAdded(true);
                 }}
               >
                 <ShoppingCart size={20} aria-hidden="true" />
+                <span>Add to Cart</span>
+              </button>
+              <button
+                className="commerce-primary"
+                disabled={store.loading || !!store.error || max < 1 || p.id < 1}
+                onClick={() => {
+                  if (store.add(p, amount)) window.location.assign("/cart");
+                }}
+              >
+                <Zap size={20} fill="currentColor" aria-hidden="true" />
+                <span>Buy Now</span>
               </button>
             </div>
             {added && (
@@ -198,39 +215,46 @@ export default function ProductPage({ product }: { product: Product }) {
                 </Link>
               </div>
             )}
-            <details open>
-              <summary>Product details</summary>
-              <p>{p.description}</p>
-            </details>
-            {!!Object.keys(p.attributes || {}).length && (
-              <details open>
-                <summary>Specifications</summary>
-                <dl className="commerce-product-facts">
-                  {Object.entries(p.attributes || {}).map(([label, value]) => (
-                    <div key={label}>
-                      <dt>{label}</dt>
-                      <dd>{value}</dd>
-                    </div>
-                  ))}
-                </dl>
+            <div className="product-info-panels">
+              <details className="product-info-panel product-info-description">
+                <summary>
+                  <span className="product-info-icon"><Package aria-hidden="true" /></span>
+                  <span className="product-info-summary"><strong>Product Details</strong><span>{p.description}</span></span>
+                  <ChevronDown className="product-info-chevron" aria-hidden="true" />
+                </summary>
+                <div className="product-info-content">
+                  {!!Object.keys(p.attributes || {}).length ? <dl className="commerce-product-facts">
+                    {Object.entries(p.attributes || {}).map(([label, value]) => <div key={label}><dt>{label}</dt><dd>{value}</dd></div>)}
+                  </dl> : <p>Review the product images and description, or <Link href="/contact">ask our team</Link> for more information before ordering.</p>}
+                </div>
               </details>
-            )}
-            <details>
-              <summary>Delivery &amp; payment</summary>
-              <p>
-                {store.config?.live
-                  ? `Shipping is ${money(store.config.shippingMinor / 100)} per order. Delivery details are reviewed at checkout.`
-                  : "Explore this sample and save it for later. Live ordering will be available after store setup is complete."}
-              </p>
-            </details>
-            <details>
-              <summary>Need help choosing?</summary>
-              <p>
-                Have a question about this product?{" "}
-                <Link href="/contact">Contact Brande</Link> before placing your
-                order.
-              </p>
-            </details>
+              <details className="product-info-panel product-info-delivery">
+                <summary>
+                  <span className="product-info-icon"><Truck aria-hidden="true" /></span>
+                  <span className="product-info-summary"><strong>Delivery &amp; Payment</strong><span>Shipping options, delivery time and available payment methods.</span></span>
+                  <ChevronDown className="product-info-chevron" aria-hidden="true" />
+                </summary>
+                <div className="product-info-content"><p>{store.config?.live
+                  ? `Shipping is ${money(store.config.shippingMinor / 100)} per order. Confirm your delivery address and available payment method at checkout.`
+                  : "Live ordering will be available after store setup is complete. Contact our team to confirm delivery options and payment methods."}</p></div>
+              </details>
+              <details className="product-info-panel product-info-returns">
+                <summary>
+                  <span className="product-info-icon"><ShieldCheck aria-hidden="true" /></span>
+                  <span className="product-info-summary"><strong>Warranty &amp; Returns</strong><span>Return policy and warranty information.</span></span>
+                  <ChevronDown className="product-info-chevron" aria-hidden="true" />
+                </summary>
+                <div className="product-info-content"><p>Read our <Link href="/returns">return and refund policy</Link> for eligibility and the return process. Warranty coverage varies by product; <Link href="/contact">contact our team</Link> to confirm coverage before purchasing.</p></div>
+              </details>
+              <details className="product-info-panel product-info-help">
+                <summary>
+                  <span className="product-info-icon"><Headphones aria-hidden="true" /></span>
+                  <span className="product-info-summary"><strong>Need Help Choosing?</strong><span>Get help from our team.</span></span>
+                  <ChevronDown className="product-info-chevron" aria-hidden="true" />
+                </summary>
+                <div className="product-info-content"><p>Have a question about this product? <Link href="/contact">Contact Brand E</Link> before placing your order.</p></div>
+              </details>
+            </div>
           </div>
         </section>
         <ProductCards

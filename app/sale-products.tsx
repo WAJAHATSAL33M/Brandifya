@@ -1,7 +1,5 @@
 "use client";
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
 import type { Product } from '../lib/catalog';
 import { saleState, saleTimeLeft } from '../lib/sale-products';
 import ProductCard from './product-card';
@@ -14,12 +12,11 @@ export default function SaleProducts({ catalog, saved, onSave, live }: { catalog
   const time = deadline !== null && now !== null ? saleTimeLeft(deadline, now) : ['--', '--', '--', '--'];
   return <section className="hp-featured hp-container sale-products" aria-labelledby="sale-products-title">
     <div className="sale-products-heading">
-      <h2 id="sale-products-title">On Sale</h2>
+      <h2 id="sale-products-title">Sale</h2>
       {deadline !== null && <div className="sale-countdown" role="timer" aria-label="Time until the next sale offer ends" aria-live="off">
         <span className="sale-countdown-caption">Ends in</span>
         <div className="sale-countdown-units">{['Days', 'Hours', 'Minutes', 'Seconds'].map((label, i) => <span className="sale-countdown-unit" key={label}><strong>{time[i]}</strong><small>{label}</small></span>)}</div>
       </div>}
-      <Link className="sale-see-all" href="/shop">See all<ArrowRight size={16} aria-hidden="true" /></Link>
     </div>
     <SwipeLoop className="featured-carousel-viewport sale-carousel-viewport" label="Sale products" advance="card" direction="reverse">
       <div className="featured-carousel-track">

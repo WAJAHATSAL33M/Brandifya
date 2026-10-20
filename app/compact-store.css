@@ -2334,24 +2334,41 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .hp .commerce-product-copy > .commerce-product-purchase { margin-top: 14px; }
 }
 
-/* Sale products share the featured carousel geometry and reverse its movement. */
+/* Sale header follows the reference while keeping shared product cards. */
 .hp .sale-products { padding-top: 32px; }
-.sale-products-heading { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; margin-bottom: 18px; }
-.hp .sale-products-heading h2 { margin: 0; font-size: 28px; line-height: 1.2; }
-.sale-countdown { display: flex; align-items: center; gap: 10px; margin-left: auto; }
-.sale-countdown-caption { font-size: 12px; color: #545963; white-space: nowrap; }
+.sale-products-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 22px; }
+.sale-products-intro { min-width: 0; }
+.hp .sale-products-heading h2 { margin: 0; font-size: 36px; line-height: 1.1; letter-spacing: -.8px; }
+.hp .sale-products-heading h2 span { color: #ff5100; }
+.hp .sale-products-intro p { margin: 7px 0 0; color: #666c77; font-size: 14px; line-height: 1.4; }
+.sale-products-actions { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.sale-countdown { display: flex; align-items: stretch; gap: 5px; }
+.sale-countdown-caption { display: flex; align-items: center; justify-content: center; gap: 7px; padding: 0 13px; border-radius: 8px; background: #ff5100; color: #fff; font-size: 14px; font-weight: 600; white-space: nowrap; }
+.sale-countdown-caption svg { width: 26px; height: 26px; stroke-width: 1.8; }
 .sale-countdown-units { display: flex; gap: 5px; }
-.sale-countdown-unit { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 46px; min-height: 52px; padding: 6px; background: #101216; color: #fff; border-radius: 7px; }
-.sale-countdown-unit strong { font-size: 21px; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.sale-countdown-unit small { font-size: 9px; line-height: 1.4; margin-top: 3px; }
+.sale-countdown-unit { display: flex; flex-direction: column; align-items: center; justify-content: center; min-width: 53px; min-height: 62px; padding: 7px 6px; background: #101216; color: #fff; border-radius: 8px; }
+.sale-countdown-unit strong { font-size: 25px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.sale-countdown-unit small { font-size: 10px; line-height: 1.3; margin-top: 4px; }
+.sale-see-all { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: 54px; padding: 0 18px; border: 1.5px solid #ff5100; border-radius: 8px; color: #ff5100; font-size: 15px; font-weight: 600; white-space: nowrap; text-decoration: none; }
+.sale-see-all svg { width: 23px; height: 23px; }
+.sale-see-all:hover { background: #fff5ef; }
+.sale-see-all:focus-visible { outline: 2px solid #101216; outline-offset: 3px; }
+@media (max-width: 1000px) {
+  .sale-products-heading { flex-wrap: wrap; gap: 14px; }
+  .sale-products-actions { justify-content: space-between; width: 100%; }
+}
 @media (max-width: 700px) {
   .hp .sale-products { width: calc(100% - 28px); padding-top: 24px; }
-  .sale-products-heading { display: flex; flex-wrap: nowrap; justify-content: space-between; gap: 10px; margin-bottom: 12px; }
-  .hp .sale-products-heading h2 { font-size: 24px; }
-  .sale-countdown { gap: 5px; margin-left: auto; }
-  .sale-countdown-caption { font-size: 10px; }
-  .sale-countdown-units { gap: 3px; }
-  .sale-countdown-unit { min-width: 29px; min-height: 35px; padding: 4px 3px; border-radius: 5px; }
-  .sale-countdown-unit strong { font-size: 14px; }
-  .sale-countdown-unit small { font-size: 7px; margin-top: 1px; }
+  .sale-products-heading { gap: 12px; margin-bottom: 16px; }
+  .hp .sale-products-heading h2 { font-size: 28px; letter-spacing: -.5px; }
+  .hp .sale-products-intro p { margin-top: 4px; font-size: 12px; }
+  .sale-products-actions { gap: 8px; }
+  .sale-countdown, .sale-countdown-units { gap: 3px; }
+  .sale-countdown-caption { gap: 4px; padding: 0 7px; border-radius: 5px; font-size: 10px; }
+  .sale-countdown-caption svg { width: 18px; height: 18px; }
+  .sale-countdown-unit { min-width: 31px; min-height: 42px; padding: 5px 3px; border-radius: 5px; }
+  .sale-countdown-unit strong { font-size: 16px; }
+  .sale-countdown-unit small { font-size: 7px; margin-top: 2px; }
+  .sale-see-all { gap: 5px; min-height: 38px; padding: 0 9px; border-radius: 5px; font-size: 11px; }
+  .sale-see-all svg { width: 16px; height: 16px; }
 }

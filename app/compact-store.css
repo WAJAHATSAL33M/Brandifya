@@ -2372,3 +2372,51 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .sale-see-all { gap: 3px; min-height: clamp(32px, 8.2vw, 42px); padding: 0 5px; border-radius: 5px; font-size: clamp(9px, 2.3vw, 12px); }
   .sale-see-all svg { width: clamp(12px, 3.1vw, 17px); height: clamp(12px, 3.1vw, 17px); }
 }
+
+/* Reference badge geometry: flush-left ribbons and rectangular savings tags. */
+.hp .store-product-card > .store-card-badge {
+  left: 0;
+  top: 9px;
+  max-width: calc(60% - 8px);
+  min-height: 27px;
+  padding: 5px 11px 5px 9px;
+  border-radius: 0 18px 18px 0;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.25;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.store-card-badge-label { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.store-card-badge > svg { flex-shrink: 0; }
+.hp .store-product-card > .store-card-discount {
+  top: 9px;
+  right: 9px;
+  max-width: calc(36% - 8px);
+  min-height: 27px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+@media (max-width: 700px) {
+  .hp .store-product-card > .store-card-badge {
+    top: 7px;
+    min-height: 23px;
+    padding: 4px 8px 4px 6px;
+    gap: 3px;
+    font-size: 9px;
+  }
+  .store-card-badge-icon { width: 10px; height: 12px; }
+  .hp .store-product-card > .store-card-discount {
+    top: 7px;
+    right: 7px;
+    min-height: 23px;
+    padding: 4px 5px;
+    font-size: 9px;
+    border-radius: 3px;
+  }
+}

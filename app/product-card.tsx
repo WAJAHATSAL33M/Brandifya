@@ -2,7 +2,7 @@
 import { useMerchandising } from "./use-merchandising";
 import ProductPrice, { CardDiscount } from "./product-price";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, Zap } from "lucide-react";
 import { money, type Product } from "../lib/catalog";
 export function ProductBadge({ label }: { label: string }) {
   const kind = /sold out|out of stock/i.test(label)
@@ -26,7 +26,8 @@ export function ProductBadge({ label }: { label: string }) {
                   : "standard";
   return (
     <span className={`store-card-badge hp-badge badge-${kind}`} aria-label={kind === "timer" ? `Promotion ends in ${label}` : undefined}>
-      {label}
+      {kind === "sale" && <Zap className="store-card-badge-icon" size={12} fill="currentColor" aria-hidden="true" />}
+      <span className="store-card-badge-label">{label}</span>
       {kind === "trust" && (
         <Star size={11} fill="currentColor" aria-hidden="true" />
       )}

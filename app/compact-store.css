@@ -2483,3 +2483,18 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
   .product-info-content { padding: 0 13px 14px 63px; }
 }
 @media (prefers-reduced-motion: reduce) { .product-info-chevron { transition: none; } }
+
+/* One rectangular shape for action buttons throughout the storefront and admin. */
+button,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+[role="button"],
+a:is(.primary, .commerce-primary, .commerce-secondary, .home-hero-action,
+  .category-hero-action, .shop-opening-action, .store-header-view-all,
+  .hp-view-all, .store-view-all, .compact-view-all, .sale-see-all, .support-action),
+.promo-explore,
+.commerce-quantity,
+.quantity {
+  border-radius: 0 !important;
+}

@@ -2484,7 +2484,7 @@ body .store-view-all.store-view-all:focus-visible { outline: 2px solid #b83800; 
 }
 @media (prefers-reduced-motion: reduce) { .product-info-chevron { transition: none; } }
 
-/* One rectangular shape for action buttons throughout the storefront and admin. */
+/* Rectangular action buttons with consistent softly rounded corners. */
 button,
 input[type="button"],
 input[type="submit"],
@@ -2496,5 +2496,5 @@ a:is(.primary, .commerce-primary, .commerce-secondary, .home-hero-action,
 .promo-explore,
 .commerce-quantity,
 .quantity {
-  border-radius: 0 !important;
+  border-radius: 8px !important;
 }

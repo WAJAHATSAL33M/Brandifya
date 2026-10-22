@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { storeContact, storeContactMessage } from "../lib/store-contact";
 import { useEffect, useRef, useState } from "react";
-import { Mail, MapPin, Phone, ChevronRight, X, Check, ShoppingBag, Heart, Tags, BadgePercent, Package, FileText, RotateCcw, ShieldCheck, BookOpen, Ruler, CreditCard, CircleHelp, Cookie } from "lucide-react";
+import { Mail, MapPin, Phone, ChevronRight, X, Check, ShoppingBag, Heart, Tags, BadgePercent, Package, FileText, RotateCcw, ShieldCheck, BookOpen, Ruler, CreditCard, CircleHelp } from "lucide-react";
 const policies: Record<string,string> = {
   "Size Guide": "Product-specific measurements and fit guidance will be supplied with the final catalog.",
   "Gift Cards": "Gift cards are not currently available.",
@@ -68,7 +68,6 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
                 <Link href="/payments"><span className="footer-link-icon"><CreditCard size={15} aria-hidden="true" /></span><span>Payments</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
                 <Link href="/terms-and-conditions"><span className="footer-link-icon"><FileText size={15} aria-hidden="true" /></span><span>Terms & Conditions</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
                 <Link href="/faq"><span className="footer-link-icon"><CircleHelp size={15} aria-hidden="true" /></span><span>FAQs</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
-                <Link href="/cookies-policy"><span className="footer-link-icon"><Cookie size={15} aria-hidden="true" /></span><span>Cookies Policy</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
               </div>
             </div>
             <div className="hp-newsletter">

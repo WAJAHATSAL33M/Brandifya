@@ -1,5 +1,5 @@
 import { randomUUID } from "node:crypto";
-import { db } from "../../../lib/db";
+import { db, databaseConfigured } from "../../../lib/db";
 import {
   checkOrigin,
   sessionUser,
@@ -44,14 +44,14 @@ export async function GET(request: Request) {
           google: !!(
             process.env.GOOGLE_CLIENT_ID &&
             process.env.GOOGLE_CLIENT_SECRET &&
-            process.env.DATABASE_URL &&
+            databaseConfigured() &&
             process.env.STORE_URL
           ),
           facebook: !!(
             process.env.FACEBOOK_CLIENT_ID &&
             process.env.FACEBOOK_CLIENT_SECRET &&
             process.env.FACEBOOK_GRAPH_VERSION &&
-            process.env.DATABASE_URL &&
+            databaseConfigured() &&
             process.env.STORE_URL
           ),
         },
@@ -110,9 +110,9 @@ export async function POST(request: Request) {
         throw Error("Enter your full name.");
       const hash = await hashPassword(b.password);
       const id = randomUUID();
-      const rows =
-        await db()`INSERT INTO customers (id,name,email,password_hash) VALUES (${id},${b.name.trim()},${email},${hash}) ON CONFLICT(email) DO NOTHING RETURNING id`;
-      if (rows.length) await sendAccountLink(id, email, "verify");
+      await db()`INSERT INTO customers (id,name,email,password_hash) VALUES (${id},${b.name.trim()},${email},${hash}) ON DUPLICATE KEY UPDATE id=id`;
+      const created = await db()`SELECT id FROM customers WHERE email=${email}`;
+      if (created[0]?.id === id) await sendAccountLink(id, email, "verify");
       return Response.json({
         ok: true,
         message:
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
       {
         error:
           e instanceof Error &&
-          !/postgres|duplicate|constraint|relation|column/i.test(e.message)
+          !/mysql|database|postgres|duplicate|constraint|relation|column/i.test(e.message)
             ? e.message
             : "Account request could not be completed.",
       },
@@ -222,7 +222,7 @@ export async function PATCH(request: Request) {
       {
         error:
           e instanceof Error &&
-          !/postgres|duplicate|constraint/i.test(e.message)
+          !/mysql|database|postgres|duplicate|constraint/i.test(e.message)
             ? e.message
             : "Profile could not be saved.",
       },

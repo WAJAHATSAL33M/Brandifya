@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { randomUUID, timingSafeEqual } from "node:crypto";
-import { db } from "./db";
+import { db, databaseConfigured } from "./db";
 import { newToken, tokenHash } from "./auth-core";
 export function storeOrigin() {
   const value = process.env.STORE_URL;
@@ -49,7 +49,7 @@ export function publicProfile(u: Record<string, unknown>) {
 }
 export async function createSession(id: string) {
   const token = newToken();
-  await db()`INSERT INTO customer_sessions (token_hash,customer_id,expires_at) VALUES (${tokenHash(token)},${id},now()+interval '14 days')`;
+  await db()`INSERT INTO customer_sessions (token_hash,customer_id,expires_at) VALUES (${tokenHash(token)},${id},DATE_ADD(now(), INTERVAL 14 DAY))`;
   await db()`DELETE FROM customer_sessions WHERE expires_at<now()`;
   (await cookies()).set(sessionCookie(), token, {
     httpOnly: true,
@@ -74,8 +74,10 @@ export async function clearSession() {
 }
 export async function rateLimit(key: string, limit = 10) {
   const bucket = tokenHash(key + ":" + Math.floor(Date.now() / 600000));
-  const rows =
-    await db()`INSERT INTO auth_limits (key,count,expires_at) VALUES (${bucket},1,now()+interval '11 minutes') ON CONFLICT(key) DO UPDATE SET count=auth_limits.count+1 RETURNING count`;
+  const rows = await db().begin(async sql => {
+    await sql`INSERT INTO auth_limits (bucket_key,count,expires_at) VALUES (${bucket},1,DATE_ADD(now(), INTERVAL 11 MINUTE)) ON DUPLICATE KEY UPDATE count=count+1`;
+    return sql`SELECT count FROM auth_limits WHERE bucket_key=${bucket} FOR UPDATE`;
+  });
   if (Number(rows[0].count) > limit)
     throw Error("Too many attempts. Try again in ten minutes.");
   await db()`DELETE FROM auth_limits WHERE expires_at<now()`;
@@ -84,7 +86,7 @@ export function emailReady() {
   return !!(
     process.env.RESEND_API_KEY &&
     process.env.AUTH_FROM_EMAIL &&
-    process.env.DATABASE_URL &&
+    databaseConfigured() &&
     process.env.STORE_URL
   );
 }
@@ -95,7 +97,7 @@ export async function sendAccountLink(
 ) {
   if (!emailReady()) throw Error("Account email service is not available yet.");
   const token = newToken();
-  await db()`INSERT INTO account_tokens (token_hash,customer_id,purpose,email,expires_at) VALUES (${tokenHash(token)},${id},${purpose},${email},now()+interval '30 minutes')`;
+  await db()`INSERT INTO account_tokens (token_hash,customer_id,purpose,email,expires_at) VALUES (${tokenHash(token)},${id},${purpose},${email},DATE_ADD(now(), INTERVAL 30 MINUTE))`;
   const url =
     storeOrigin() + "/account/verify?token=" + encodeURIComponent(token);
   const r = await fetch("https://api.resend.com/emails", {
@@ -127,7 +129,7 @@ export async function oauthCustomer(
   email: string,
 ) {
   return await db().begin(async (sql) => {
-    await sql`SELECT pg_advisory_xact_lock(hashtext(${provider + ":" + subject}))`;
+    await sql.lock("oauth:" + provider + ":" + subject);
     const existing =
       await sql`SELECT customer_id FROM customer_identities WHERE provider=${provider} AND subject=${subject}`;
     if (existing.length) return String(existing[0].customer_id);

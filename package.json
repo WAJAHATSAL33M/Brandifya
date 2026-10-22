@@ -8,12 +8,16 @@
     "start": "next start --hostname 0.0.0.0",
     "typecheck": "tsc --noEmit",
     "test": "node --experimental-strip-types --test tests/*.test.ts",
-    "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs"
+    "db:setup": "node --env-file-if-exists=.env.local scripts/setup-db.mjs",
+    "build:hostinger": "npm run db:setup && next build",
+    "db:check": "node --env-file-if-exists=.env.local scripts/check-db.mjs",
+    "test:database": "node --experimental-strip-types --test tests/database.integration.ts",
+    "db:seed-demo": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/seed-demo.ts"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",
+    "mysql2": "^3.24.6",
     "next": "^15.5.9",
-    "postgres": "^3.4.9",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
@@ -22,5 +26,8 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "typescript": "^5.9.0"
+  },
+  "engines": {
+    "node": "22.x"
   }
 }

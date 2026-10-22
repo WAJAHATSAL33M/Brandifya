@@ -19,7 +19,7 @@ export async function GET(request: Request) {
       result.push({ ...o, items });
     }
     const summary =
-      await db()`SELECT count(*)::int AS total,count(*) FILTER (WHERE created_at::date=current_date)::int AS today,count(*) FILTER (WHERE status IN ('confirmed','paid','processing'))::int AS pending FROM orders`;
+      await db()`SELECT count(*) AS total,coalesce(sum(DATE(created_at)=current_date),0) AS today,coalesce(sum(status IN ('confirmed','paid','processing')),0) AS pending FROM orders`;
     return Response.json(
       { orders: result, summary: summary[0] },
       { headers: { "Cache-Control": "no-store" } },
@@ -72,7 +72,7 @@ export async function PATCH(request: Request) {
     return Response.json(
       {
         error:
-          e instanceof Error && !/postgres|column|relation/i.test(e.message)
+          e instanceof Error && !/mysql|database|postgres|column|relation/i.test(e.message)
             ? e.message
             : "Order update failed.",
       },

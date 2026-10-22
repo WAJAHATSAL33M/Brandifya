@@ -1,6 +1,6 @@
-import { db } from "../../../lib/db";
+import { db, databaseConfigured } from "../../../lib/db";
 export async function POST(request: Request) {
-  if (!process.env.DATABASE_URL)
+  if (!databaseConfigured())
     return Response.json(
       { error: "Newsletter signup is not yet available." },
       { status: 503 },
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         { error: "Enter a valid email and confirm consent." },
         { status: 400 },
       );
-    await db()`INSERT INTO newsletter (email) VALUES (${body.email.trim().toLowerCase()}) ON CONFLICT(email) DO NOTHING`;
+    await db()`INSERT INTO newsletter (email) VALUES (${body.email.trim().toLowerCase()}) ON DUPLICATE KEY UPDATE email=email`;
     return Response.json({ ok: true });
   } catch {
     return Response.json(

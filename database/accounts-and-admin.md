@@ -2,8 +2,8 @@
 
 ## Activate on the merchant deployment
 
-1. Set DATABASE_URL and a canonical HTTPS STORE_URL. HTTP is accepted only for local loopback development.
-2. Run npm run db:setup with that database configured. The schema adds customer sessions, email tokens, media storage, product galleries, specifications, tracking and customer_id on orders. No production database migration is run by the code-editing session.
+1. Set the Hostinger MySQL DB_HOST, DB_NAME, DB_USER and DB_PASSWORD variables (or a mysql:// DATABASE_URL) and a canonical HTTPS STORE_URL. HTTP is accepted only for local loopback development.
+2. Run npm run db:setup with that database configured. For a new MySQL database, the schema creates customer sessions, email tokens, media storage, product galleries, specifications, tracking and customer_id on orders. No production database migration is run by the code-editing session.
 3. Set a random ADMIN_API_TOKEN of at least 32 characters in deployment settings. Open /admin directly and enter it; the token stays only in page memory. Never put it in a NEXT_PUBLIC variable or public navigation.
 4. For verified email registration, recovery and email changes, set RESEND_API_KEY and AUTH_FROM_EMAIL using a verified sender. Without these, registration/recovery buttons are disabled and show their availability.
 5. Set GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET and authorize the exact callback STORE_URL/api/account/oauth/google. Configure the Google consent screen.
@@ -14,7 +14,7 @@
 
 - Add/edit title, category, description, color, active status, stock, price, regular comparison price, rating/counts, badge, scheduled promotions and custom specifications.
 - Specifications support SKU, dimensions, material and other descriptive text. They are not independently priced variant SKUs; create separate products for separately tracked variants.
-- Upload JPEG/PNG/WebP images and MP4 videos up to 20 MB, or enter HTTPS/local media URLs. Media bytes are persisted in PostgreSQL; database backup and capacity policies must include this table. Videos support byte-range responses.
+- Upload JPEG/PNG/WebP images and MP4 videos up to 20 MB, or enter HTTPS/local media URLs. Media bytes are persisted in MySQL; database backup and capacity policies must include this table. Videos support byte-range responses.
 - Product removal archives it from the storefront and retains order-item history. Restore it by editing its Published setting.
 - Orders paginate in batches of 100. Administrators see customer delivery details, order line items, creation time, totals, tracking and processing stages. Paid status remains controlled by payment confirmation; administrators cannot mark an unpaid order as paid.
 - Customer account records never expose password hashes or session tokens. Guest customer details appear with their orders.

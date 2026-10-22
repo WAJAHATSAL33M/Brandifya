@@ -1,8 +1,8 @@
 import { products, type Product } from "./catalog";
 import { referenceProducts } from "./reference-catalog";
-import { db } from "./db";
+import { db, databaseConfigured } from "./db";
 export async function findProduct(id: number): Promise<Product | undefined> {
-  if (!process.env.DATABASE_URL)
+  if (!databaseConfigured())
     return [...products, ...referenceProducts].find((p) => p.id === id);
   const rows =
     await db()`SELECT * FROM products WHERE id=${id} AND active=true`;
@@ -39,7 +39,7 @@ export async function findProduct(id: number): Promise<Product | undefined> {
 export async function categoryNames(): Promise<string[]> {
   const { categories } = await import("./catalog");
   const known = categories.filter((name) => name !== "All finds");
-  if (!process.env.DATABASE_URL)
+  if (!databaseConfigured())
     return [...new Set([...known, ...products.map((p) => p.category)])];
   try {
     const rows =

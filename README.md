@@ -1,3 +1,5 @@
+> **Hostinger Business/Cloud:** this release uses MySQL. Follow [the deployment guide](HOSTINGER-DEPLOYMENT.md). PostgreSQL records require a separate data migration; changing environment variables alone does not transfer them.
+
 # Brandifya / Brande
 
 A Next.js App Router general-store foundation styled from the supplied **Brande HOMEPAGE Final** design: orange (#ff5100), black, white, the supplied logo, promotional hero, category artwork, and product artwork. Product names match the sample imagery. Source promotional prices, ratings, sales counts, and service promises have not been presented as verified store claims.
@@ -20,13 +22,13 @@ Production: `npm run build && npm start`. Deploy as a Node.js Next.js app on a p
 - Keyboard-accessible dialogs, focus trapping, Escape dismissal, reduced-motion support, and small-screen layout rules.
 - Delivery form, cash on delivery, Stripe hosted checkout integration, webhook signature verification, order status page.
 - Server-side validation and database prices, atomic stock reservations, integer minor-unit totals, duplicate-request protection, and stock release on failed/expired Stripe sessions.
-- PostgreSQL schema, live catalog endpoint, product-management API, order-management API and `/admin` order interface.
+- MySQL schema, live catalog endpoint, product-management API, order-management API and `/admin` order interface.
 - Newsletter subscription persistence with explicit consent. Email campaigns/delivery are not connected.
 - Demo mode prevents orders and charges until explicitly configured.
 
 ## Launch configuration (required)
 
-1. Provision PostgreSQL. Set `DATABASE_URL`, then run `npm run db:setup`. This creates tables; it does **not** turn sample items into sellable inventory.
+1. Create a Hostinger MySQL database. Set `DB_HOST`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` (see `.env.example` and `HOSTINGER-DEPLOYMENT.md`), then run `npm run db:setup`. This creates tables; it does **not** turn sample items into sellable inventory.
 2. Set `STORE_URL` to the exact HTTPS deployment origin. Set `NEXT_PUBLIC_STORE_CURRENCY` (default PKR), `STORE_COUNTRY` (default PK), and `SHIPPING_MINOR` (integer in minor units). Public environment variables require a rebuild. The current shipping model is a fixed domestic fee. Product prices must include all applicable tax; no tax engine, international delivery zones, or carrier integrations are implemented.
 3. Generate a strong `ADMIN_API_TOKEN` of at least 32 characters. Use it at `/admin`. The token is never stored in browser local storage. Admin APIs accept `Authorization: Bearer TOKEN`. Treat this as merchant access for an initial store; organization accounts, MFA, and role-based staff permissions are future work.
 4. Upload verified product records using `POST /api/admin/products`. Request fields: `id` (positive integer), `name`, `priceMinor` (positive integer), `stock` (nonnegative integer), `category`, `image`, `color`, `description`, `active` (boolean). Categories: Home & Living, Fashion, Tech, Beauty, Accessories, Grocery, Sports & Fitness. Images accept bundled `/product-1.jpg` through `/product-8.jpg`, `/products/featured0.webp` through `featured7.webp`, `/products/deal0.webp` through `deal5.webp`, `/products/best0.webp` through `best5.webp`, or an Unsplash `photo-...` identifier. Add your own approved media workflow before expanding inventory. Every product currently has one SKU; size/color variants are not implemented.

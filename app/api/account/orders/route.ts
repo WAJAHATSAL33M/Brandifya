@@ -26,7 +26,7 @@ export async function GET(request: Request) {
       result.push({ ...o, items, events });
     }
     const counts =
-      await db()`SELECT count(*)::int AS count FROM orders WHERE customer_id=${u.id}`;
+      await db()`SELECT count(*) AS count FROM orders WHERE customer_id=${u.id}`;
     return Response.json(
       { orders: result, total: counts[0].count },
       { headers: { "Cache-Control": "no-store" } },
@@ -60,8 +60,8 @@ export async function POST(request: Request) {
     )
       throw Error("Invalid order confirmation.");
     const rows =
-      await db()`UPDATE orders SET customer_id=${u.id} WHERE id=${id} AND request_key=${key} AND customer_id IS NULL RETURNING id`;
-    return rows.length
+      await db()`UPDATE orders SET customer_id=${u.id} WHERE id=${id} AND request_key=${key} AND customer_id IS NULL`;
+    return rows.count > 0
       ? Response.json({ ok: true })
       : Response.json(
           {

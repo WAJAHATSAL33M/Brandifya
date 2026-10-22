@@ -1,15 +1,10 @@
-import postgres from "postgres";
-import { readFile } from "node:fs/promises";
-if (!process.env.DATABASE_URL)
-  throw new Error("Set DATABASE_URL before running db:setup");
-const sql = postgres(process.env.DATABASE_URL, { max: 1 });
+import mysql from 'mysql2/promise';
+import { readFile } from 'node:fs/promises';
+import { databaseOptions } from '../lib/database-config.mjs';
+const connection = await mysql.createConnection(databaseOptions());
 try {
-  await sql.unsafe(
-    await readFile(new URL("../database/schema.sql", import.meta.url), "utf8"),
-  );
-  console.log(
-    "Database schema ready. Products are deliberately not seeded as live inventory.",
-  );
-} finally {
-  await sql.end();
-}
+  const schema = await readFile(new URL('../database/schema.sql', import.meta.url), 'utf8');
+  // This is a trusted, repository-owned DDL file. Runtime query connections do not allow multi-statements.
+  for (const statement of schema.split(';').map(s => s.trim()).filter(Boolean)) await connection.query(statement);
+  console.log('MySQL schema ready. Existing data preserved; no demo inventory was published.');
+} finally { await connection.end(); }

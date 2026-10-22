@@ -1,6 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
-import { db } from "../../../../../lib/db";
+import { db, databaseConfigured } from "../../../../../lib/db";
 import {
   storeOrigin,
   createSession,
@@ -34,7 +34,7 @@ export async function GET(
     if (
       !client ||
       !secret ||
-      !process.env.DATABASE_URL ||
+      !databaseConfigured() ||
       (provider === "facebook" &&
         !/^v\d+\.\d+$/.test(process.env.FACEBOOK_GRAPH_VERSION || ""))
     )
@@ -50,7 +50,7 @@ export async function GET(
       const state = newToken(),
         verifier = newToken();
       await db()`DELETE FROM oauth_states WHERE expires_at<now()`;
-      await db()`INSERT INTO oauth_states (state_hash,provider,verifier,expires_at) VALUES (${tokenHash(state)},${provider},${verifier},now()+interval '10 minutes')`;
+      await db()`INSERT INTO oauth_states (state_hash,provider,verifier,expires_at) VALUES (${tokenHash(state)},${provider},${verifier},DATE_ADD(now(), INTERVAL 10 MINUTE))`;
       jar.set(cookie, state, {
         httpOnly: true,
         secure: origin.startsWith("https://"),
@@ -92,8 +92,11 @@ export async function GET(
       path: "/",
       maxAge: 0,
     });
-    const rows =
-      await db()`DELETE FROM oauth_states WHERE state_hash=${tokenHash(state)} AND provider=${provider} AND expires_at>now() RETURNING verifier`;
+    const rows = await db().begin(async sql => {
+      const rows = await sql`SELECT verifier FROM oauth_states WHERE state_hash=${tokenHash(state)} AND provider=${provider} AND expires_at>now() FOR UPDATE`;
+      if (rows.length) await sql`DELETE FROM oauth_states WHERE state_hash=${tokenHash(state)}`;
+      return rows;
+    });
     if (!rows.length || url.searchParams.has("error"))
       throw Error("Sign-in was cancelled or expired.");
     const code = url.searchParams.get("code");

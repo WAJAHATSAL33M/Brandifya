@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { randomUUID, createHash } from "node:crypto";
 import { sessionUser } from "../../../lib/auth";
-import { db, cancelOrder } from "../../../lib/db";
+import { db, cancelOrder, databaseConfigured } from "../../../lib/db";
 import {
   validateItems,
   validateCustomer,
@@ -12,7 +12,7 @@ export const runtime = "nodejs";
 export async function GET() {
   return NextResponse.json(
     {
-      live: process.env.STORE_LIVE === "true" && !!process.env.DATABASE_URL,
+      live: process.env.STORE_LIVE === "true" && !!databaseConfigured(),
       cod: process.env.ENABLE_COD === "true",
       stripe: !!process.env.STRIPE_SECRET_KEY,
       currency: process.env.NEXT_PUBLIC_STORE_CURRENCY || "PKR",
@@ -23,7 +23,7 @@ export async function GET() {
   );
 }
 export async function POST(request: Request) {
-  if (process.env.STORE_LIVE !== "true" || !process.env.DATABASE_URL)
+  if (process.env.STORE_LIVE !== "true" || !databaseConfigured())
     return NextResponse.json(
       {
         error:
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
   try {
     const result = await db().begin(async (sql) => {
       // A transaction-level lock serializes retries of the same request without a duplicate stock debit.
-      await sql`SELECT pg_advisory_xact_lock(hashtext(${body.requestKey}))`;
+      await sql.lock("checkout:" + body.requestKey);
       const previous =
         await sql`SELECT id,status,payment_method,stripe_session_id,request_fingerprint,currency,shipping_minor FROM orders WHERE request_key=${body.requestKey}`;
       if (previous.length) {

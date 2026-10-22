@@ -54,7 +54,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error:
-          e instanceof Error && !/postgres|relation/i.test(e.message)
+          e instanceof Error && !/mysql|database|postgres|relation/i.test(e.message)
             ? e.message
             : "Upload failed.",
       },

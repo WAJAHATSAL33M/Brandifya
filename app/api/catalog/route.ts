@@ -1,7 +1,7 @@
 import { products } from "../../../lib/catalog";
-import { db } from "../../../lib/db";
+import { db, databaseConfigured } from "../../../lib/db";
 export async function GET() {
-  if (!process.env.DATABASE_URL)
+  if (!databaseConfigured())
     return Response.json({ live: false, managed: false, products });
   try {
     const rows =

@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { storeContact, storeContactMessage } from "../lib/store-contact";
 import { useEffect, useRef, useState } from "react";
-import { Mail, MapPin, Phone, ChevronRight, X, Check } from "lucide-react";
+import { Mail, MapPin, Phone, ChevronRight, X, Check, ShoppingBag, Heart, Tags, BadgePercent, Package, FileText, RotateCcw, ShieldCheck, BookOpen, Ruler, CreditCard, CircleHelp, Cookie } from "lucide-react";
 const policies: Record<string,string> = {
   "Size Guide": "Product-specific measurements and fit guidance will be supplied with the final catalog.",
   "Gift Cards": "Gift cards are not currently available.",
@@ -47,31 +47,29 @@ export default function StoreFooter({live=false}:{live?:boolean}) {
                 <Phone /><span>{storeContact.phone}</span>
               </a>
             </div>
-            <div className="hp-footer-column">
-              <h3>Shopping</h3>
-              {[
-                ["Shop All", "/shop"],
-                ["Favorites", "/shop?saved=1"],
-                ["Shop by Brand", "/#brands"],
-                ["Offers", "/#deals"],
-                ["Track Order", "/order-tracking"],
-                ["Size Guide", "/size-guide"],
-                ["Payments", "/payments"],
-                ["FAQs", "/faq"],
-              ].map(([label, href]) => <Link key={href} href={href}><ChevronRight size={15}/>{label}</Link>)}
-            </div>
-            <div className="hp-footer-column">
-              <h3>Information</h3>
-              {[
-                ["Journal", "/blog"],
-                ["About Us", "/about"],
-                ["Contact Us", "/contact"],
-                ["Shipping", "/shipping"],
-                ["Returns & Refunds", "/returns"],
-                ["Privacy Policy", "/privacy-policy"],
-                ["Terms & Conditions", "/terms-and-conditions"],
-                ["Cookies Policy", "/cookies-policy"],
-              ].map(([label, href]) => <Link key={href} href={href}><ChevronRight size={15}/>{label}</Link>)}
+            <div className="footer-link-groups">
+              <div className="hp-footer-column"><h3>Shopping</h3>
+                <Link href="/shop"><span className="footer-link-icon"><ShoppingBag size={15} aria-hidden="true" /></span><span>Shop All</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/shop?saved=1"><span className="footer-link-icon"><Heart size={15} aria-hidden="true" /></span><span>Favorites</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/#brands"><span className="footer-link-icon"><Tags size={15} aria-hidden="true" /></span><span>Shop by Brand</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/#sale-products-title"><span className="footer-link-icon"><BadgePercent size={15} aria-hidden="true" /></span><span>Offers</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/order-tracking"><span className="footer-link-icon"><Package size={15} aria-hidden="true" /></span><span>Track Order</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+              </div>
+              <div className="hp-footer-column"><h3>Information</h3>
+                <Link href="/about"><span className="footer-link-icon"><FileText size={15} aria-hidden="true" /></span><span>About Us</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/contact"><span className="footer-link-icon"><Phone size={15} aria-hidden="true" /></span><span>Contact Us</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/shipping"><span className="footer-link-icon"><Package size={15} aria-hidden="true" /></span><span>Shipping</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/returns"><span className="footer-link-icon"><RotateCcw size={15} aria-hidden="true" /></span><span>Returns & Refunds</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/privacy-policy"><span className="footer-link-icon"><ShieldCheck size={15} aria-hidden="true" /></span><span>Privacy Policy</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+              </div>
+              <div className="hp-footer-column"><h3>Support</h3>
+                <Link href="/blog"><span className="footer-link-icon"><BookOpen size={15} aria-hidden="true" /></span><span>Journal</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/size-guide"><span className="footer-link-icon"><Ruler size={15} aria-hidden="true" /></span><span>Size Guide</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/payments"><span className="footer-link-icon"><CreditCard size={15} aria-hidden="true" /></span><span>Payments</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/terms-and-conditions"><span className="footer-link-icon"><FileText size={15} aria-hidden="true" /></span><span>Terms & Conditions</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/faq"><span className="footer-link-icon"><CircleHelp size={15} aria-hidden="true" /></span><span>FAQs</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+                <Link href="/cookies-policy"><span className="footer-link-icon"><Cookie size={15} aria-hidden="true" /></span><span>Cookies Policy</span><ChevronRight className="footer-link-arrow" size={13} aria-hidden="true" /></Link>
+              </div>
             </div>
             <div className="hp-newsletter">
               <h3>Subscribe.</h3>

@@ -16,7 +16,7 @@ export default function SaleProducts({ catalog, saved, onSave, live }: { catalog
     <div className="sale-products-heading">
       <div className="sale-products-intro">
         <h2 id="sale-products-title">On <span>Sale</span></h2>
-        <p>Limited time offers. Don’t miss out!</p>
+        <p>Limited time offer</p>
       </div>
       <div className="sale-products-actions">
       {deadline !== null && <div className="sale-countdown" role="timer" aria-label="Time until the next sale offer ends" aria-live="off">

@@ -393,11 +393,7 @@ export default function Store() {
 
         <main>
           <HeroSlider />
-          <section className="hp-categories hp-container">
-            <h2>Shop by Category</h2>
-            <p className="hp-subtitle">
-              Explore the essentials across our most-loved departments.
-            </p>
+          <section className="hp-categories hp-container" aria-label="Shop by Category">
             <SwipeLoop className="category-carousel-viewport" label="Shop by Category">
               <div className="category-carousel-track">
                 {[0, 1].map((copy) => (
@@ -569,16 +565,12 @@ export default function Store() {
             </div>
           </section>
           <section className="hp-promotions hp-container">
-            <h2>Style, Care &amp; Tech for a Brighter You</h2>
-            <p className="hp-subtitle">
-              Discover top brands, exclusive offers and everything you need in
-              one place.
-            </p>
+            <h2>Style, Care &amp; Tech for a <span className="promo-heading-highlight">Brighter You</span></h2>
             <div className="hp-promo-grid compact-promos">
               {[
                 { name: "Fashion", description: "Everyday style, thoughtfully chosen.", images: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"] },
                 { name: "Beauty", description: "A little care for your daily routine.", images: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"] },
-                { name: "Tech", description: "Smart essentials for everyday life.", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
+                { name: "Technology", description: "Smart essentials for everyday life.", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
               ].map(c => <PromoBanner key={c.name} name={c.name} images={c.images} description={c.description} />)}
             </div>
           </section>

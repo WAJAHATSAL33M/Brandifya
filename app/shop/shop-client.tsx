@@ -15,6 +15,8 @@ import {
   Menu,
   X,
   SlidersHorizontal,
+  ArrowDownUp,
+  ChevronDown,
   Plus,
   Minus,
   Check,
@@ -555,6 +557,7 @@ export default function Shop({ category }: { category?: string } = {}) {
                 <form className="category-product-search" role="search" onSubmit={e => e.preventDefault()}>
                   <Search size={18} aria-hidden="true" />
                   <input type="search" aria-label={`Search ${category} products`} placeholder={`Search ${category}…`} maxLength={200} value={filters.query} onChange={e => update("query", e.target.value)} />
+                  <button className="category-search-submit" type="submit">Search</button>
                   {filters.query && <button type="button" aria-label="Clear category search" onClick={() => update("query", "")}><X size={18} /></button>}
                 </form>
               ) : (
@@ -566,10 +569,10 @@ export default function Shop({ category }: { category?: string } = {}) {
                   onClick={() => setFiltersOpen(true)}
                 >
                   <SlidersHorizontal size={17} />
-                  Filters{activeCount > 0 && <span>{activeCount}</span>}
+                  Filters{activeCount > 0 && <span>{activeCount}</span>}<ChevronDown size={16} aria-hidden="true" />
                 </button>
                 <label className="shop-sort">
-                  Sort by
+                  <ArrowDownUp size={18} aria-hidden="true" /><span>Sort by</span>
                   <select
                     value={filters.sort}
                     aria-label="Sort products"

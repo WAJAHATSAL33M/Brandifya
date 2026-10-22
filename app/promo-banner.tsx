@@ -71,5 +71,5 @@ export default function PromoBanner({ name, images, description, hero = false, c
   </>;
   return hero
     ? <section className="category-hero category-banner" role="region" aria-roledescription="carousel" aria-label={`${name} collection`} tabIndex={0} {...interactions}>{content}</section>
-    : <Link href={categoryHref(name)} aria-label={`Explore ${name}`} className="promo-banner" {...interactions}>{content}</Link>;
+    : <Link href={categoryHref(name === "Technology" ? "Tech" : name)} aria-label={`Explore ${name}`} className="promo-banner" {...interactions}>{content}</Link>;
 }

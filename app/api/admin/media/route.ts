@@ -54,11 +54,39 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error:
-          e instanceof Error && !/mysql|database|postgres|relation/i.test(e.message)
+          e instanceof Error &&
+          !/mysql|database|postgres|relation/i.test(e.message)
             ? e.message
             : "Upload failed.",
       },
       { status: 400 },
+    );
+  }
+}
+
+export async function GET(request: Request) {
+  if (!(await adminAuthorized(request)))
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  try {
+    const offset = Math.min(
+      1000000,
+      Math.max(
+        0,
+        Math.floor(
+          Number(new URL(request.url).searchParams.get("offset")) || 0,
+        ),
+      ),
+    );
+    const media =
+      await db()`SELECT id,mime_type,created_at,OCTET_LENGTH(content) AS size FROM product_media ORDER BY created_at DESC LIMIT 48 OFFSET ${offset}`;
+    return Response.json(
+      { media: media.map((m) => ({ ...m, url: "/api/media/" + m.id })) },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  } catch {
+    return Response.json(
+      { error: "Media library unavailable." },
+      { status: 503 },
     );
   }
 }

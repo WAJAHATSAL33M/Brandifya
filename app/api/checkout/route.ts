@@ -129,6 +129,8 @@ export async function POST(request: Request) {
       for (const line of lines) {
         await sql`INSERT INTO order_items (order_id,product_id,name,price_minor,quantity) VALUES (${id},${line.id},${line.name},${line.price_minor},${line.quantity})`;
         await sql`UPDATE products SET stock=stock-${line.quantity} WHERE id=${line.id}`;
+        const balance=await sql`SELECT stock FROM products WHERE id=${line.id}`;
+        await sql`INSERT INTO inventory_movements(product_id,delta,stock_after,reason,reference,actor) VALUES(${line.id},${-line.quantity},${balance[0].stock},'Order placed',${id},'checkout')`;
       }
       return {
         order: {

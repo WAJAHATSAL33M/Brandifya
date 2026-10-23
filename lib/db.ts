@@ -70,7 +70,12 @@ export async function cancelOrder(id: string) {
     const orders = await sql`SELECT id FROM orders WHERE id=${id} AND status='awaiting_payment' FOR UPDATE`;
     if (!orders.length) return;
     await sql`UPDATE orders SET status='cancelled', updated_at=now() WHERE id=${id} AND status='awaiting_payment'`;
+    await sql`INSERT INTO order_events(order_id,status) VALUES(${id},'cancelled')`;
     const items = await sql`SELECT product_id,quantity FROM order_items WHERE order_id=${id} ORDER BY product_id`;
-    for (const item of items) await sql`UPDATE products SET stock=stock+${item.quantity} WHERE id=${item.product_id}`;
+    for (const item of items) {
+      await sql`UPDATE products SET stock=stock+${item.quantity} WHERE id=${item.product_id}`;
+      const balance=await sql`SELECT stock FROM products WHERE id=${item.product_id}`;
+      await sql`INSERT INTO inventory_movements(product_id,delta,stock_after,reason,reference,actor) VALUES(${item.product_id},${item.quantity},${balance[0].stock},'Payment cancelled / expired',${id},'checkout')`;
+    }
   });
 }

@@ -145,3 +145,7 @@ Open `/admin` directly for product editing, inventory, uploads, order processing
 
 Before live activation, apply the additive database schema and configure email and social providers as described in [Account and admin setup](database/accounts-and-admin.md). Products from the configured database can be previewed while `STORE_LIVE=false`; this does not enable checkout.
 
+
+## Inventory, orders and journal workspace
+
+The private `/admin` workspace now includes overview metrics, SKU/cost/location/reorder management, stock adjustment history, supplier purchase orders and receiving, searchable order fulfilment with notes/tracking/printing, and a rich journal editor with drafts, schedules, media, SEO fields and revisions. Apply `database/admin-workspace.sql` to existing installations before deploying. See [ADMIN-WORKSPACE.md](ADMIN-WORKSPACE.md) for setup, supported workflows and limits.

@@ -46,13 +46,13 @@ Stripe card checkout requires `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`; w
 
 Choose either method:
 
-**hPanel/phpMyAdmin:** Select your new database, open **Import**, and upload `database/schema.sql` from this repository. It creates all 15 tables. Do not select `database/schema.postgresql.sql`; that file is an archive of the former engine's schema, not a MySQL import.
+**hPanel/phpMyAdmin:** Select your new database, open **Import**, and upload `database/schema.sql` from this repository. It creates all 22 tables. Do not select `database/schema.postgresql.sql`; that file is an archive of the former engine's schema, not a MySQL import.
 
 **Node command:** With the database environment configured, run `npm run db:setup` from the project directory. `npm run build:hostinger` also runs this command. For local execution copy `.env.example` to `.env.local` and enter private test values there. `.env.local` is ignored by Git.
 
 The setup file uses `CREATE TABLE IF NOT EXISTS`: rerunning preserves existing records. It creates missing tables; it does not repair an incompatible pre-existing table or convert another application's schema. DDL is not transactional on MySQL. If setup is interrupted, fix the reported cause and rerun it. Use MySQL 8+ or MariaDB 10.6+ with InnoDB.
 
-Run `npm run db:check` to check connectivity and all 15 tables. If hPanel offers no shell, importing in phpMyAdmin and opening `/api/health` after deployment provides a second route. A successful health response is `{"ok":true,"database":"connected"}`. A 503 response means setup is not complete; it does not expose credentials.
+Run `npm run db:check` to check connectivity and all 22 tables. If hPanel offers no shell, importing in phpMyAdmin and opening `/api/health` after deployment provides a second route. A successful health response is `{"ok":true,"database":"connected"}`. A 503 response means setup is not complete; it does not expose credentials.
 
 ## 5. Deploy and enter inventory
 
@@ -101,3 +101,7 @@ For later code updates, pull/deploy `main`, install with `npm ci`, run the setup
 - Hostinger MySQL connection and local host: https://www.hostinger.com/support/connecting-a-hostinger-mysql-database-to-a-node-js-application/
 - phpMyAdmin import: https://www.hostinger.com/support/1884149-how-to-import-a-database-with-phpmyadmin-in-hostinger/
 - MySQL2 driver: https://sidorares.github.io/node-mysql2/docs
+
+## Admin workspace upgrade
+
+For an existing database, import `database/admin-workspace.sql` before deploying the upgraded inventory/order/journal workspace, or run `npm run db:setup`. See `ADMIN-WORKSPACE.md` for features, publishing controls, migration order and verification. No new environment variables are required.

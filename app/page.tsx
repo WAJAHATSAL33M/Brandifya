@@ -51,7 +51,7 @@ import {
   categoryTiles,
   dealProducts,
   bestProducts,
-  journalPosts,
+  journalPosts as initialJournalPosts,
   type ReferenceProduct,
 } from "../lib/home-content";
 function Art({
@@ -108,6 +108,8 @@ const photo = (id: string, w = 800) =>
     ? id
     : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=85`;
 export default function Store() {
+  const [journalPosts,setJournalPosts]=useState<typeof initialJournalPosts>([]);
+  useEffect(()=>{let active=true;fetch('/api/journal').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{if(active)setJournalPosts(d.posts)}).catch(()=>{if(active)setJournalPosts([])});return()=>{active=false}},[]);
   const [catalog, setCatalog] = useState<Product[]>(products),
     [live, setLive] = useState(false),
     [managed, setManaged] = useState(false);

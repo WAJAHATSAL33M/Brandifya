@@ -35,7 +35,7 @@ test('MySQL persistence, parameter binding, rollback, request serialization and 
     const summary=await sql`SELECT count(*) AS total,coalesce(sum(DATE(created_at)=current_date),0) AS today,coalesce(sum(status IN ('confirmed','paid','processing')),0) AS pending FROM orders`;
     assert.equal(typeof summary[0].total,'number');assert.ok(summary[0].today>=1);
   } finally {
-    await sql`DELETE FROM order_items WHERE order_id=${order}`;await sql`DELETE FROM orders WHERE id=${order}`;
+    await sql`DELETE FROM order_events WHERE order_id=${order}`;await sql`DELETE FROM inventory_movements WHERE product_id=${product}`;await sql`DELETE FROM order_items WHERE order_id=${order}`;await sql`DELETE FROM orders WHERE id=${order}`;
     await sql`DELETE FROM customers WHERE id=${customer}`;await sql`DELETE FROM product_media WHERE id=${media}`;await sql`DELETE FROM products WHERE id=${product}`;
     await closeDatabase();
   }

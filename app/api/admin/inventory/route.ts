@@ -28,6 +28,7 @@ export async function POST(request: Request) {
       id = integer(b.id, "product", 1),
       actor = (await adminUser())!.username;
     await db().begin(async (sql) => {
+      await sql.lock("catalog-write");
       const rows =
         await sql`SELECT stock FROM products WHERE id=${id} FOR UPDATE`;
       if (!rows.length) throw Error("Product not found.");
@@ -46,6 +47,12 @@ export async function POST(request: Request) {
           location = text(b.location, "location", 120),
           cost = integer(b.costMinor, "cost"),
           level = integer(b.reorderLevel, "reorder level", 0, 1000000);
+        if (sku) {
+          const duplicate =
+            await sql`SELECT product_id FROM product_inventory WHERE sku=${sku} AND product_id!=${id} FOR UPDATE`;
+          if (duplicate.length)
+            throw Error("This SKU is already assigned to another product.");
+        }
         await sql`INSERT INTO product_inventory(product_id,sku,supplier,location,cost_minor,reorder_level) VALUES(${id},${sku},${supplier},${location},${cost},${level}) ON DUPLICATE KEY UPDATE sku=VALUES(sku),supplier=VALUES(supplier),location=VALUES(location),cost_minor=VALUES(cost_minor),reorder_level=VALUES(reorder_level),updated_at=now()`;
       } else throw Error("Invalid inventory action.");
     });

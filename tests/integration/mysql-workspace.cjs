@@ -15,7 +15,10 @@ const project = process.cwd(),
   );
   const options = databaseOptions({ ...process.env, DATABASE_URL: uri });
   console.log("Connecting to test database…");
-  const connection = await mysql.createConnection({ ...options, bigNumberStrings: false });
+  const connection = await mysql.createConnection({
+    ...options,
+    bigNumberStrings: false,
+  });
   try {
     const [tables] = await connection.query("SHOW TABLES");
     console.log("Test database connected; validating empty schema.");
@@ -74,7 +77,10 @@ const project = process.cwd(),
       setTimeout(() => reject(Error("App startup timed out")), 20000).unref();
     });
     const origin = appEnv.STORE_URL;
-    const authConn = await mysql.createConnection({ ...options, bigNumberStrings: false });
+    const authConn = await mysql.createConnection({
+      ...options,
+      bigNumberStrings: false,
+    });
     const admin = await require(
       project + "/tests/integration/admin-access.cjs",
     )(origin, appEnv.ADMIN_SETUP_TOKEN, authConn);
@@ -150,7 +156,10 @@ const project = process.cwd(),
     );
     assert.equal(new Set(results.map((r) => r.body.orderId)).size, 1);
     const order = results[0].body.orderId;
-    const conn = testConnection = await mysql.createConnection({ ...options, bigNumberStrings: false });
+    const conn = (testConnection = await mysql.createConnection({
+      ...options,
+      bigNumberStrings: false,
+    }));
     assert.equal(
       (
         await conn.query("SELECT stock FROM products WHERE id=?", [product])
@@ -319,6 +328,11 @@ const project = process.cwd(),
       product,
       order,
     );
+    await require(project + "/tests/integration/admin-catalog.cjs")(
+      origin,
+      admin,
+      conn,
+    );
     const reset = spawnSync(
       "node",
       ["--experimental-strip-types", "scripts/reset-admin.ts"],
@@ -346,7 +360,7 @@ const project = process.cwd(),
       "PASS live API health, admin create/edit/archive, catalog, concurrent COD checkout, stock, login/session/profile, guest order claim/history, order dashboard/status, customer aggregate, binary upload/ranges and newsletter deduplication",
     );
   } finally {
-    if(testConnection)await testConnection.end().catch(()=>{});
+    if (testConnection) await testConnection.end().catch(() => {});
     app.kill();
     if (appLogs) process.stderr.write(appLogs);
   }

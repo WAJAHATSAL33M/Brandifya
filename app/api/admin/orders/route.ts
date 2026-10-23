@@ -47,8 +47,16 @@ export async function GET(request: Request) {
       await db()`SELECT count(*) AS total,coalesce(sum(DATE(created_at)=current_date),0) AS today,coalesce(sum(status IN ('confirmed','paid','processing')),0) AS pending FROM orders`;
     const revenue =
       await db()`SELECT currency,coalesce(sum(CASE WHEN status='delivered' THEN total_minor ELSE 0 END),0) AS delivered_minor,coalesce(sum(CASE WHEN status!='cancelled' THEN total_minor ELSE 0 END),0) AS ordered_minor FROM orders GROUP BY currency`;
+    const daily =
+      await db()`SELECT DATE(created_at) AS day,count(*) AS count FROM orders WHERE created_at>=DATE_SUB(current_date,INTERVAL 13 DAY) GROUP BY DATE(created_at) ORDER BY day`;
     return Response.json(
-      { orders: result, summary: summary[0], total: counts[0].total, revenue },
+      {
+        orders: result,
+        summary: summary[0],
+        total: counts[0].total,
+        revenue,
+        daily,
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {

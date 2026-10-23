@@ -5,7 +5,12 @@ export async function GET() {
     return Response.json({ live: false, managed: false, products });
   try {
     const rows =
-      await db()`SELECT * FROM products WHERE active=true ORDER BY id`;
+      await db()`SELECT p.*,b.name AS brand_name,d.tag_ids FROM products p LEFT JOIN product_details d ON d.product_id=p.id LEFT JOIN catalog_terms b ON b.id=d.brand_id AND b.active=true WHERE p.active=true ORDER BY p.id`;
+    const tagRows =
+      await db()`SELECT id,name FROM catalog_terms WHERE kind='tag' AND active=true`;
+    const tagNames = new Map(
+      tagRows.map((t) => [Number(t.id), String(t.name)]),
+    );
     return Response.json(
       {
         live: process.env.STORE_LIVE === "true",
@@ -13,6 +18,10 @@ export async function GET() {
         products: rows.map((p) => ({
           id: p.id,
           name: p.name,
+          brand: p.brand_name || undefined,
+          tags: Array.isArray(p.tag_ids)
+            ? p.tag_ids.map((id: number) => tagNames.get(id)).filter(Boolean)
+            : [],
           category: p.category,
           price: p.price_minor / 100,
           originalPrice:

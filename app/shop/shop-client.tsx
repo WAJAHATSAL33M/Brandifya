@@ -48,7 +48,12 @@ const initial = {
 type Filters = typeof initial;
 function fromUrl(category?: string): Filters {
   const p = new URLSearchParams(window.location.search);
-  if (category) return { ...initial, categories: [category], query: (p.get("q") || "").slice(0, 200) };
+  if (category)
+    return {
+      ...initial,
+      categories: [category],
+      query: (p.get("q") || "").slice(0, 200),
+    };
   const price = (key: string) => {
     const value = p.get(key) || "";
     return value && /^\d+(\.\d{1,2})?$/.test(value) ? value : "";
@@ -66,7 +71,13 @@ function fromUrl(category?: string): Filters {
       : "featured",
   };
 }
-export default function Shop({ category }: { category?: string } = {}) {
+export default function Shop({
+  category,
+  categoryDesign,
+}: {
+  category?: string;
+  categoryDesign?: { image?: string; description?: string };
+} = {}) {
   const [catalog, setCatalog] = useState<Product[]>([]),
     [live, setLive] = useState(false),
     [loading, setLoading] = useState(true),
@@ -264,7 +275,7 @@ export default function Shop({ category }: { category?: string } = {}) {
         .filter(
           (p) =>
             (!filters.query ||
-              `${p.name} ${p.category} ${p.color}`
+              `${p.name} ${p.category} ${p.color} ${p.brand || ""} ${(p.tags || []).join(" ")}`
                 .toLowerCase()
                 .includes(filters.query.trim().toLowerCase())) &&
             (!filters.categories.length ||
@@ -343,7 +354,10 @@ export default function Shop({ category }: { category?: string } = {}) {
         wishlistActive={filters.saved}
         onWishlist={() => {
           if (category) window.location.assign("/shop?saved=1");
-          else { update("saved", !filters.saved); scrollResults(); }
+          else {
+            update("saved", !filters.saved);
+            scrollResults();
+          }
         }}
         onBag={() => window.location.assign("/cart")}
         query={filters.query}
@@ -366,6 +380,7 @@ export default function Shop({ category }: { category?: string } = {}) {
         </nav>
         {category ? (
           <CategoryOpening
+            managedDesign={categoryDesign}
             name={category}
             count={categoryCounts[category] || 0}
             loading={loading}
@@ -414,138 +429,143 @@ export default function Shop({ category }: { category?: string } = {}) {
               onClick={() => setFiltersOpen(false)}
             />
           )}
-          {!category && (<aside
-            className={`shop-filters ${filtersOpen ? "is-open" : ""}`}
-            {...(filtersOpen
-              ? {
-                  role: "dialog",
-                  "aria-modal": true,
-                  "aria-labelledby": "filter-title",
-                  ref: dialogRef,
-                }
-              : { "aria-label": "Product filters" })}
-          >
-            <div className="shop-filter-heading">
-              <h2 id="filter-title">Filters</h2>
-              <button
-                className="shop-filter-close"
-                aria-label="Close filters"
-                onClick={() => setFiltersOpen(false)}
-              >
-                <X size={22} />
-              </button>
-              <button className="shop-reset" onClick={reset}>
-                Reset
-              </button>
-            </div>
-            {!category && (
-              <fieldset>
-                <legend>Category</legend>
-                {[
-                  ...new Set([
-                    ...Object.keys(categoryCounts),
-                    ...filters.categories,
-                  ]),
-                ].map((category) => (
-                  <label className="shop-check" key={category}>
-                    <input
-                      type="checkbox"
-                      checked={filters.categories.includes(category)}
-                      onChange={() => toggleCategory(category)}
-                    />
-                    <span>{category}</span>
-                  </label>
-                ))}
-              </fieldset>
-            )}
-            <fieldset>
-              <legend>
-                Price range <small>({currency})</small>
-              </legend>
-              <div className="shop-price-inputs">
-                <label>
-                  Min
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    placeholder="0"
-                    value={filters.min}
-                    aria-invalid={invalidRange}
-                    onChange={(e) => updatePrice("min", e.target.value)}
-                  />
-                </label>
-                <span>–</span>
-                <label>
-                  Max
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    min="0"
-                    step="0.01"
-                    placeholder="Any"
-                    value={filters.max}
-                    aria-invalid={invalidRange}
-                    onChange={(e) => updatePrice("max", e.target.value)}
-                  />
-                </label>
-              </div>
-              {invalidRange && (
-                <p className="shop-range-error" role="alert">
-                  Minimum price must not exceed the maximum.
-                </p>
-              )}
-            </fieldset>
-            <fieldset>
-              <legend>Color</legend>
-              <label className="shop-color-label">
-                Choose a color
-                <select
-                  aria-label="Filter by color"
-                  value={filters.color}
-                  onChange={(e) => update("color", e.target.value)}
+          {!category && (
+            <aside
+              className={`shop-filters ${filtersOpen ? "is-open" : ""}`}
+              {...(filtersOpen
+                ? {
+                    role: "dialog",
+                    "aria-modal": true,
+                    "aria-labelledby": "filter-title",
+                    ref: dialogRef,
+                  }
+                : { "aria-label": "Product filters" })}
+            >
+              <div className="shop-filter-heading">
+                <h2 id="filter-title">Filters</h2>
+                <button
+                  className="shop-filter-close"
+                  aria-label="Close filters"
+                  onClick={() => setFiltersOpen(false)}
                 >
-                  <option value="">All colors</option>
+                  <X size={22} />
+                </button>
+                <button className="shop-reset" onClick={reset}>
+                  Reset
+                </button>
+              </div>
+              {!category && (
+                <fieldset>
+                  <legend>Category</legend>
                   {[
                     ...new Set([
-                      ...colors,
-                      ...(filters.color ? [filters.color] : []),
+                      ...Object.keys(categoryCounts),
+                      ...filters.categories,
                     ]),
-                  ].map((color) => (
-                    <option key={color}>{color}</option>
+                  ].map((category) => (
+                    <label className="shop-check" key={category}>
+                      <input
+                        type="checkbox"
+                        checked={filters.categories.includes(category)}
+                        onChange={() => toggleCategory(category)}
+                      />
+                      <span>{category}</span>
+                    </label>
                   ))}
-                </select>
-              </label>
-            </fieldset>
-            <fieldset>
-              <legend>Availability</legend>
-              <label className="shop-check">
-                <input
-                  type="checkbox"
-                  checked={filters.stock}
-                  onChange={(e) => update("stock", e.target.checked)}
-                />
-                <span>In stock only</span>
-              </label>
-              <label className="shop-check">
-                <input
-                  type="checkbox"
-                  checked={filters.saved}
-                  onChange={(e) => update("saved", e.target.checked)}
-                />
-                <span>My favorites</span>
-                <Heart size={15} />
-              </label>
-            </fieldset>
-            <div className="shop-filter-apply">
-              <button className="primary" onClick={() => setFiltersOpen(false)}>
-                Show {results.length}{" "}
-                {results.length === 1 ? "product" : "products"}
-                <ArrowRight size={17} />
-              </button>
-            </div>
-          </aside>)}
+                </fieldset>
+              )}
+              <fieldset>
+                <legend>
+                  Price range <small>({currency})</small>
+                </legend>
+                <div className="shop-price-inputs">
+                  <label>
+                    Min
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      placeholder="0"
+                      value={filters.min}
+                      aria-invalid={invalidRange}
+                      onChange={(e) => updatePrice("min", e.target.value)}
+                    />
+                  </label>
+                  <span>–</span>
+                  <label>
+                    Max
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      min="0"
+                      step="0.01"
+                      placeholder="Any"
+                      value={filters.max}
+                      aria-invalid={invalidRange}
+                      onChange={(e) => updatePrice("max", e.target.value)}
+                    />
+                  </label>
+                </div>
+                {invalidRange && (
+                  <p className="shop-range-error" role="alert">
+                    Minimum price must not exceed the maximum.
+                  </p>
+                )}
+              </fieldset>
+              <fieldset>
+                <legend>Color</legend>
+                <label className="shop-color-label">
+                  Choose a color
+                  <select
+                    aria-label="Filter by color"
+                    value={filters.color}
+                    onChange={(e) => update("color", e.target.value)}
+                  >
+                    <option value="">All colors</option>
+                    {[
+                      ...new Set([
+                        ...colors,
+                        ...(filters.color ? [filters.color] : []),
+                      ]),
+                    ].map((color) => (
+                      <option key={color}>{color}</option>
+                    ))}
+                  </select>
+                </label>
+              </fieldset>
+              <fieldset>
+                <legend>Availability</legend>
+                <label className="shop-check">
+                  <input
+                    type="checkbox"
+                    checked={filters.stock}
+                    onChange={(e) => update("stock", e.target.checked)}
+                  />
+                  <span>In stock only</span>
+                </label>
+                <label className="shop-check">
+                  <input
+                    type="checkbox"
+                    checked={filters.saved}
+                    onChange={(e) => update("saved", e.target.checked)}
+                  />
+                  <span>My favorites</span>
+                  <Heart size={15} />
+                </label>
+              </fieldset>
+              <div className="shop-filter-apply">
+                <button
+                  className="primary"
+                  onClick={() => setFiltersOpen(false)}
+                >
+                  Show {results.length}{" "}
+                  {results.length === 1 ? "product" : "products"}
+                  <ArrowRight size={17} />
+                </button>
+              </div>
+            </aside>
+          )}
           <section
             id="shop-results"
             className="shop-results"
@@ -554,37 +574,60 @@ export default function Shop({ category }: { category?: string } = {}) {
           >
             <div className="shop-toolbar">
               {category ? (
-                <form className="category-product-search" role="search" onSubmit={e => e.preventDefault()}>
+                <form
+                  className="category-product-search"
+                  role="search"
+                  onSubmit={(e) => e.preventDefault()}
+                >
                   <Search size={18} aria-hidden="true" />
-                  <input type="search" aria-label={`Search ${category} products`} placeholder={`Search ${category}…`} maxLength={200} value={filters.query} onChange={e => update("query", e.target.value)} />
-                  <button className="category-search-submit" type="submit">Search</button>
-                  {filters.query && <button type="button" aria-label="Clear category search" onClick={() => update("query", "")}><X size={18} /></button>}
+                  <input
+                    type="search"
+                    aria-label={`Search ${category} products`}
+                    placeholder={`Search ${category}…`}
+                    maxLength={200}
+                    value={filters.query}
+                    onChange={(e) => update("query", e.target.value)}
+                  />
+                  <button className="category-search-submit" type="submit">
+                    Search
+                  </button>
+                  {filters.query && (
+                    <button
+                      type="button"
+                      aria-label="Clear category search"
+                      onClick={() => update("query", "")}
+                    >
+                      <X size={18} />
+                    </button>
+                  )}
                 </form>
               ) : (
-              <div>
-                <button
-                  className="shop-filter-trigger"
-                  aria-haspopup="dialog"
-                  aria-expanded={filtersOpen}
-                  onClick={() => setFiltersOpen(true)}
-                >
-                  <SlidersHorizontal size={17} />
-                  Filters{activeCount > 0 && <span>{activeCount}</span>}<ChevronDown size={16} aria-hidden="true" />
-                </button>
-                <label className="shop-sort">
-                  <ArrowDownUp size={18} aria-hidden="true" /><span>Sort by</span>
-                  <select
-                    value={filters.sort}
-                    aria-label="Sort products"
-                    onChange={(e) => update("sort", e.target.value)}
+                <div>
+                  <button
+                    className="shop-filter-trigger"
+                    aria-haspopup="dialog"
+                    aria-expanded={filtersOpen}
+                    onClick={() => setFiltersOpen(true)}
                   >
-                    <option value="featured">Featured</option>
-                    <option value="low">Price: low to high</option>
-                    <option value="high">Price: high to low</option>
-                    <option value="name">Name: A–Z</option>
-                  </select>
-                </label>
-              </div>
+                    <SlidersHorizontal size={17} />
+                    Filters{activeCount > 0 && <span>{activeCount}</span>}
+                    <ChevronDown size={16} aria-hidden="true" />
+                  </button>
+                  <label className="shop-sort">
+                    <ArrowDownUp size={18} aria-hidden="true" />
+                    <span>Sort by</span>
+                    <select
+                      value={filters.sort}
+                      aria-label="Sort products"
+                      onChange={(e) => update("sort", e.target.value)}
+                    >
+                      <option value="featured">Featured</option>
+                      <option value="low">Price: low to high</option>
+                      <option value="high">Price: high to low</option>
+                      <option value="name">Name: A–Z</option>
+                    </select>
+                  </label>
+                </div>
               )}
             </div>
             {!category && (activeCount > 0 || filters.query) && (
@@ -678,7 +721,10 @@ export default function Shop({ category }: { category?: string } = {}) {
                     <ArrowRight size={17} />
                   </Link>
                 ) : (
-                  <button className={category ? "primary" : "primary store-view-all"} onClick={reset}>
+                  <button
+                    className={category ? "primary" : "primary store-view-all"}
+                    onClick={reset}
+                  >
                     {category ? "Clear search" : "View all products"}
                     <ArrowRight size={17} />
                   </button>
@@ -908,4 +954,3 @@ export default function Shop({ category }: { category?: string } = {}) {
     </div>
   );
 }
-

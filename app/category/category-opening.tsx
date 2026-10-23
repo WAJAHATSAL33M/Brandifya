@@ -2,14 +2,20 @@ import Link from "next/link";
 import { useEffect, useRef } from "react";
 import PromoBanner from "../promo-banner";
 import { ArrowRight } from "lucide-react";
-import { categoryDesigns, categoryHref, categoryBanners } from "../../lib/categories";
+import {
+  categoryDesigns,
+  categoryHref,
+  categoryBanners,
+} from "../../lib/categories";
 export default function CategoryOpening({
   name,
   count,
   loading,
   failed,
   collections,
+  managedDesign,
 }: {
+  managedDesign?: { image?: string; description?: string };
   name: string;
   count: number;
   loading: boolean;
@@ -41,9 +47,19 @@ export default function CategoryOpening({
       <PromoBanner
         name={name}
         hero
-        description={design.description}
-        images={categoryBanners[name] || [design.image || collections.find(c => c.name === name)?.image || "/heroes/everyday.webp", "/heroes/home-tech.webp", "/heroes/fashion.webp"]}
-        contain={!['Fashion', 'Beauty', 'Tech'].includes(name)}
+        description={managedDesign?.description || design.description}
+        images={
+          managedDesign?.image
+            ? [managedDesign.image]
+            : categoryBanners[name] || [
+                design.image ||
+                  collections.find((c) => c.name === name)?.image ||
+                  "/heroes/everyday.webp",
+                "/heroes/home-tech.webp",
+                "/heroes/fashion.webp",
+              ]
+        }
+        contain={!["Fashion", "Beauty", "Tech"].includes(name)}
       />
       <nav
         ref={rail}
@@ -61,10 +77,7 @@ export default function CategoryOpening({
             aria-current={c.name === name ? "page" : undefined}
           >
             <img src={c.image} alt="" width={40} height={40} />
-            <span>
-              {c.name}
-
-            </span>
+            <span>{c.name}</span>
           </Link>
         ))}
       </nav>
@@ -74,4 +87,3 @@ export default function CategoryOpening({
     </>
   );
 }
-

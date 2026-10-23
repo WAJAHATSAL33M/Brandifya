@@ -5,12 +5,15 @@ export async function findProduct(id: number): Promise<Product | undefined> {
   if (!databaseConfigured())
     return [...products, ...referenceProducts].find((p) => p.id === id);
   const rows =
-    await db()`SELECT * FROM products WHERE id=${id} AND active=true`;
+    await db()`SELECT p.*,b.name AS brand_name,d.tag_ids,d.seo_title,d.seo_description FROM products p LEFT JOIN product_details d ON d.product_id=p.id LEFT JOIN catalog_terms b ON b.id=d.brand_id AND b.active=true WHERE p.id=${id} AND p.active=true`;
   const p = rows[0];
   return p
     ? {
         id: p.id,
         name: p.name,
+        brand: p.brand_name || undefined,
+        seoTitle: p.seo_title || undefined,
+        seoDescription: p.seo_description || undefined,
         category: p.category,
         price: p.price_minor / 100,
         originalPrice:
@@ -48,4 +51,11 @@ export async function categoryNames(): Promise<string[]> {
   } catch {
     return known;
   }
+}
+
+export async function managedCategory(slug: string) {
+  if (!databaseConfigured()) return null;
+  const rows =
+    await db()`SELECT name,slug,image,description FROM catalog_terms WHERE kind='category' AND active=true AND (slug=${slug} OR name=${slug}) LIMIT 1`;
+  return rows[0] || null;
 }

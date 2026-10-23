@@ -30,7 +30,7 @@ function sqlFor(transaction?: PoolConnection): StoreSql {
       const rows = result as RowDataPacket[];
       for (const row of rows) {
         for (const key of ["active", "promotion_active", "email_verified"]) if (key in row) row[key] = row[key] === true || row[key] === 1;
-        for (const key of ["customer", "media", "attributes"]) if (typeof row[key] === "string") row[key] = JSON.parse(row[key]);
+        for (const key of ["customer", "media", "attributes", "tag_ids"]) if (typeof row[key] === "string") row[key] = JSON.parse(row[key]);
         for (const key of ["count", "total", "today", "pending", "order_count"]) if (key in row) row[key] = Number(row[key]);
       }
       return Object.assign(rows, { count: rows.length }) as Rows;

@@ -1,7 +1,6 @@
 "use client";
+import { useCallback, useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
-import Operations from "./operations";
-import OrderWorkspace from "./order-workspace";
 import {
   LayoutDashboard,
   Package,
@@ -10,421 +9,377 @@ import {
   ShoppingCart,
   Users,
   BookOpen,
+  Tags,
+  Shapes,
+  Award,
+  Settings,
+  Menu,
+  X,
+  Search,
+  ExternalLink,
+  LogOut,
+  ChevronRight,
+  ShieldCheck,
+  ArrowUpRight,
+  Database,
+  CheckCircle2,
+  AlertCircle,
 } from "lucide-react";
+import Operations from "./operations";
+import OrderWorkspace from "./order-workspace";
+import ProductManager from "./product-manager";
+import TaxonomyManager from "./taxonomy-manager";
+import CustomerManager from "./customer-manager";
+import type { Row, AdminApi } from "./workspace-utils";
+import "../management.css";
 import "./workspace.css";
+import "./console.css";
 const BlogWorkspace = dynamic(() => import("./blog-editor"), {
   ssr: false,
-  loading: () => <p role="status">Loading article editor…</p>,
+  loading: () => (
+    <div className="console-loading" role="status">
+      Opening blog editor…
+    </div>
+  ),
 });
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import "../management.css";
-type Row = Record<string, any>;
-const empty = () => ({
-  id: null,
-  name: "",
-  description: "",
-  category: "Accessories",
-  color: "",
-  image: "",
-  price_minor: 0,
-  original_price_minor: null,
-  stock: 0,
-  active: false,
-  badge: "",
-  rating: null,
-  review_count: 0,
-  sold_count: 0,
-  promotion_active: false,
-  promotion_starts_at: "",
-  promotion_ends_at: "",
-  media: [],
-  attributes: {},
-});
-const localDate = (v: string) =>
-  v
-    ? new Date(new Date(v).getTime() - new Date(v).getTimezoneOffset() * 60000)
-        .toISOString()
-        .slice(0, 16)
-    : "";
+const sections = [
+  {
+    id: "overview",
+    label: "Overview",
+    group: "Manage",
+    icon: LayoutDashboard,
+    description: "Your store, at a glance.",
+  },
+  {
+    id: "orders",
+    label: "Orders",
+    group: "Manage",
+    icon: ShoppingCart,
+    description: "Keep every order moving forward.",
+  },
+  {
+    id: "products",
+    label: "Products",
+    group: "Catalog",
+    icon: Package,
+    description: "Create, organize and merchandise your catalog.",
+  },
+  {
+    id: "inventory",
+    label: "Inventory",
+    group: "Catalog",
+    icon: Boxes,
+    description: "Track stock, costs and replenishment.",
+  },
+  {
+    id: "purchases",
+    label: "Purchase orders",
+    group: "Catalog",
+    icon: Truck,
+    description: "Plan and receive supplier deliveries.",
+  },
+  {
+    id: "categories",
+    label: "Categories",
+    group: "Catalog",
+    icon: Shapes,
+    description: "Organize your products into clear collections.",
+  },
+  {
+    id: "brands",
+    label: "Brands",
+    group: "Catalog",
+    icon: Award,
+    description: "Manage the brands behind your products.",
+  },
+  {
+    id: "tags",
+    label: "Tags",
+    group: "Catalog",
+    icon: Tags,
+    description: "Create reusable labels for your catalog.",
+  },
+  {
+    id: "customers",
+    label: "Customers",
+    group: "People & content",
+    icon: Users,
+    description: "Find customer accounts and contact details.",
+  },
+  {
+    id: "blogs",
+    label: "Blogs",
+    group: "People & content",
+    icon: BookOpen,
+    description: "Write, edit and publish your store’s stories.",
+  },
+  {
+    id: "settings",
+    label: "Settings",
+    group: "Store",
+    icon: Settings,
+    description: "Account security and database readiness.",
+  },
+];
 export default function Admin() {
-  const [username, setUsername] = useState(""),
-    [password, setPassword] = useState(""),
-    [confirmPassword, setConfirmPassword] = useState(""),
-    [setupCode, setSetupCode] = useState(""),
+  const [user, setUser] = useState<Row | null>(null),
+    [checking, setChecking] = useState(true),
     [setupRequired, setSetupRequired] = useState(false),
     [setupAvailable, setSetupAvailable] = useState(false),
-    [checking, setChecking] = useState(true),
-    [identity, setIdentity] = useState<{
-      username: string;
-      role: string;
-    } | null>(null),
-    [securityOpen, setSecurityOpen] = useState(false),
-    [logged, setLogged] = useState(false),
-    [products, setProducts] = useState<Row[]>([]),
-    [orders, setOrders] = useState<Row[]>([]),
-    [customers, setCustomers] = useState<Row[]>([]),
-    [summary, setSummary] = useState<Row>({}),
-    [tab, setTab] = useState("overview"),
-    [editorDirty, setEditorDirty] = useState(false),
-    [query, setQuery] = useState(""),
-    [draft, setDraft] = useState<Row | null>(null),
-    [image, setImage] = useState(""),
-    [media, setMedia] = useState<Row[]>([]),
-    [attributes, setAttributes] = useState<{ name: string; value: string }[]>(
-      [],
-    ),
-    [error, setError] = useState(""),
-    [message, setMessage] = useState(""),
+    [view, setView] = useState("overview"),
+    [drawer, setDrawer] = useState(false),
+    [dirty, setDirty] = useState(false),
     [busy, setBusy] = useState(false),
-    [page, setPage] = useState(0);
-  async function api(url: string, method = "GET", body?: unknown) {
+    [error, setError] = useState(""),
+    [notice, setNotice] = useState(""),
+    [readiness, setReadiness] = useState<Row | null>(null),
+    [refresh, setRefresh] = useState(0),
+    [search, setSearch] = useState(""),
+    [productQuery, setProductQuery] = useState("");
+  const dirtyRef = useRef(false),
+    menuButton = useRef<HTMLButtonElement>(null),
+    drawerRef = useRef<HTMLElement>(null);
+  dirtyRef.current = dirty;
+  const api: AdminApi = useCallback(async (url, method = "GET", body) => {
     const r = await fetch(url, {
       method,
-      headers: {
-        ...(body ? { "Content-Type": "application/json" } : {}),
-      },
+      headers: body ? { "Content-Type": "application/json" } : {},
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
-    const d = await r.json();
-    if (r.status === 401 && url !== "/api/admin/session") {
-      clearDashboard();
+    let data;
+    try {
+      data = await r.json();
+    } catch {
+      throw Error(
+        "The server returned an unexpected response. Check that the latest deployment is running.",
+      );
     }
-    if (!r.ok) throw Error(d.error || "Request failed.");
-    return d;
-  }
-  function clearDashboard() {
-    setLogged(false);
-    setIdentity(null);
-    setProducts([]);
-    setOrders([]);
-    setCustomers([]);
-    setSummary({});
-    setDraft(null);
-    setSecurityOpen(false);
-    setImage("");
-    setMedia([]);
-    setAttributes([]);
-    setQuery("");
-    setPage(0);
-  }
+    if (r.status === 401 && url !== "/api/admin/session") {
+      setUser(null);
+      setDirty(false);
+      setReadiness(null);
+    }
+    if (!r.ok) throw Error(data.error || "This action could not be completed.");
+    return data;
+  }, []);
   useEffect(() => {
     let active = true;
-    (async () => {
-      try {
-        const data = await api("/api/admin/session");
-        if (!active) return;
-        setSetupRequired(data.setupRequired);
-        setSetupAvailable(data.setupAvailable);
-        setIdentity(data.user);
-        if (data.user) await load(0);
-      } catch (e) {
-        if (active) setError((e as Error).message);
-      } finally {
+    api("/api/admin/session")
+      .then((d) => {
+        if (active) {
+          setUser(d.user);
+          setSetupRequired(d.setupRequired);
+          setSetupAvailable(d.setupAvailable);
+        }
+      })
+      .catch((e) => {
+        if (active) setError(e.message);
+      })
+      .finally(() => {
         if (active) setChecking(false);
-      }
-    })();
+      });
+    const initial = new URLSearchParams(window.location.search).get("view");
+    if (sections.some((s) => s.id === initial)) setView(initial!);
     return () => {
       active = false;
     };
-  }, []);
-  async function signIn(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setBusy(true);
-    setError("");
-    setMessage("");
+  }, [api]);
+  const checkSetup = useCallback(async () => {
     try {
-      if (setupRequired && password !== confirmPassword)
-        throw Error("Passwords do not match.");
-      const data = await api("/api/admin/session", "POST", {
-        action: setupRequired ? "setup" : "login",
-        username,
-        password,
-        setupCode: setupRequired ? setupCode : undefined,
-      });
-      setIdentity(data.user);
-      setSetupRequired(false);
-      setPassword("");
-      setConfirmPassword("");
-      setSetupCode("");
-      setLogged(true);
-      await load(0);
+      setReadiness(await api("/api/admin/setup"));
     } catch (e) {
       setError((e as Error).message);
-    } finally {
-      setBusy(false);
     }
-  }
-  async function signOut() {
+  }, [api]);
+  useEffect(() => {
+    if (user) void checkSetup();
+  }, [user, checkSetup]);
+  useEffect(() => {
+    if (!drawer) return;
+    const original = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    drawerRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const key = (e: KeyboardEvent) => {
+      if (e.key === "Tab") {
+        const nodes = Array.from(
+            drawerRef.current?.querySelectorAll<HTMLButtonElement>(
+              "button:not(:disabled)",
+            ) || [],
+          ),
+          first = nodes[0],
+          last = nodes[nodes.length - 1];
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+      if (e.key === "Escape") {
+        setDrawer(false);
+        menuButton.current?.focus();
+      }
+    };
+    document.addEventListener("keydown", key);
+    return () => {
+      document.body.style.overflow = original;
+      document.removeEventListener("keydown", key);
+    };
+  }, [drawer]);
+  useEffect(() => {
+    const back = () => {
+      const next =
+        new URLSearchParams(location.search).get("view") || "overview";
+      if (sections.some((s) => s.id === next)) {
+        if (dirtyRef.current && !confirm("Discard unsaved changes?")) {
+          history.replaceState(null, "", "/admin?view=" + view);
+          return;
+        }
+        setDirty(false);
+        setView(next);
+      }
+    };
+    window.addEventListener("popstate", back);
+    const warn = (e: BeforeUnloadEvent) => {
+      if (dirtyRef.current) {
+        e.preventDefault();
+        e.returnValue = "";
+      }
+    };
+    window.addEventListener("beforeunload", warn);
+    return () => {
+      window.removeEventListener("popstate", back);
+      window.removeEventListener("beforeunload", warn);
+    };
+  }, [view]);
+  function navigate(next: string) {
+    if (!sections.some((s) => s.id === next)) return;
     if (
-      editorDirty &&
-      !confirm("Sign out and discard unsaved article changes?")
+      dirtyRef.current &&
+      !confirm("Discard unsaved changes? Save first to keep your work.")
     )
       return;
-    setEditorDirty(false);
+    dirtyRef.current = false;
+    setDirty(false);
+    if (next === view) setRefresh((r) => r + 1);
+    setView(next);
+    setDrawer(false);
+    setError("");
+    setNotice("");
+    history.replaceState(null, "", "/admin?view=" + next);
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }
+  async function login(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
     setBusy(true);
     setError("");
+    const f = Object.fromEntries(new FormData(e.currentTarget));
+    try {
+      if (setupRequired && f.password !== f.confirmPassword)
+        throw Error("Passwords do not match.");
+      const d = await api("/api/admin/session", "POST", {
+        ...f,
+        action: setupRequired ? "setup" : "login",
+      });
+      setUser(d.user);
+      setSetupRequired(false);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  async function logout() {
+    if (dirtyRef.current && !confirm("Sign out and discard unsaved changes?"))
+      return;
+    setBusy(true);
     try {
       await api("/api/admin/session", "POST", { action: "logout" });
-      clearDashboard();
-      setMessage("You have signed out.");
+      setUser(null);
+      setDirty(false);
+      setReadiness(null);
+      setNotice("You have signed out.");
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
-  async function changePassword(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const data = new FormData(e.currentTarget);
+  async function finishSetup() {
     setBusy(true);
     setError("");
     try {
-      if (data.get("newPassword") !== data.get("confirmPassword"))
-        throw Error("Passwords do not match.");
-      await api("/api/admin/session", "POST", {
-        action: "password",
-        currentPassword: data.get("currentPassword"),
-        newPassword: data.get("newPassword"),
-      });
-      clearDashboard();
-      setMessage("Password updated. Sign in again with your new password.");
+      const d = await api("/api/admin/setup", "POST", {});
+      setReadiness(d);
+      setRefresh((r) => r + 1);
+      setNotice(
+        d.ready
+          ? "Database setup is complete. Your workspace is ready."
+          : "Some tables are still unavailable. Check database permissions.",
+      );
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
-  async function load(next = page) {
-    setBusy(true);
-    setError("");
-    try {
-      const [p, o, c] = await Promise.all([
-        api("/api/admin/products"),
-        api("/api/admin/orders?offset=" + next * 100),
-        api("/api/admin/customers?offset=" + next * 100),
-      ]);
-      setProducts(p.products);
-      setOrders(o.orders);
-      setCustomers(c.customers);
-      setSummary(o.summary);
-      setLogged(true);
-      setPage(next);
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  function edit(p: Row) {
-    setDraft(p);
-    setImage(p.image || "");
-    setMedia(p.media || []);
-    setAttributes(
-      Object.entries(p.attributes || {}).map(([name, value]) => ({
-        name,
-        value: String(value),
-      })),
-    );
-    setError("");
-    setMessage("");
-  }
-  async function save(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!draft) return;
-    setBusy(true);
-    setError("");
-    setMessage("");
-    try {
-      const b = Object.fromEntries(new FormData(e.currentTarget));
-      const price = Number(b.price) * 100,
-        original = b.originalPrice ? Number(b.originalPrice) * 100 : null;
-      const data = {
-        id: draft.id,
-        name: b.name,
-        description: b.description,
-        category: b.category,
-        color: b.color,
-        image,
-        priceMinor: Math.round(price),
-        originalPriceMinor: original === null ? null : Math.round(original),
-        stock: Number(b.stock),
-        expectedStock: draft.id ? draft.stock : undefined,
-        active: b.active === "on",
-        badge: b.badge,
-        rating: b.rating === "" ? null : Number(b.rating),
-        reviewCount: Number(b.reviewCount),
-        soldCount: Number(b.soldCount),
-        promotionActive: b.promotionActive === "on",
-        promotionStartsAt: b.promotionStartsAt
-          ? new Date(String(b.promotionStartsAt)).toISOString()
-          : null,
-        promotionEndsAt: b.promotionEndsAt
-          ? new Date(String(b.promotionEndsAt)).toISOString()
-          : null,
-        media,
-        attributes: Object.fromEntries(
-          attributes
-            .filter((a) => a.name.trim())
-            .map((a) => [a.name.trim(), a.value]),
-        ),
-      };
-      await api("/api/admin/products", "POST", data);
-      setDraft(null);
-      await load();
-      setMessage("Product saved.");
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function upload(file: File | undefined, main: boolean) {
-    if (!file) return;
-    setBusy(true);
-    setError("");
-    try {
-      const form = new FormData();
-      form.set("file", file);
-      const r = await fetch("/api/admin/media", {
-          method: "POST",
-          body: form,
-        }),
-        d = await r.json();
-      if (!r.ok) throw Error(d.error);
-      if (main) {
-        if (d.type !== "image")
-          throw Error("Use an image for the main product photo.");
-        setImage(d.url);
-      } else {
-        if (media.length >= 12)
-          throw Error("A gallery supports up to 12 items.");
-        setMedia((current) => [
-          ...current,
-          { url: d.url, type: d.type, alt: "" },
-        ]);
-      }
-      setMessage("Uploaded. Save the product to attach the media.");
-    } catch (e) {
-      setError((e as Error).message);
-    } finally {
-      setBusy(false);
-    }
-  }
-  async function updateOrder(id: string, data: Row) {
-    setError("");
-    try {
-      await api("/api/admin/orders", "PATCH", { id, ...data });
-      await load();
-      setMessage("Order updated.");
-    } catch (e) {
-      setError((e as Error).message);
-    }
-  }
-  const filtered = (rows: Row[]) =>
-    rows.filter((p) =>
-      JSON.stringify(p).toLowerCase().includes(query.toLowerCase()),
-    );
-  return (
-    <div
-      className={
-        "hp management-admin " + (logged ? "admin-workspace-active" : "")
-      }
-    >
-      <main className="management-container">
-        <div className="management-heading">
-          <div>
-            <h1>Store workspace</h1>
-            <p>Brand E · Commerce & editorial</p>
-            {identity && (
-              <p className="admin-signed-in">
-                Signed in as <strong>{identity.username}</strong> ·{" "}
-                {identity.role}
-              </p>
-            )}
-          </div>
-          <div className="admin-header-actions">
-            <Link href="/">View store ↗</Link>
-            {logged && (
-              <>
-                <button
-                  type="button"
-                  aria-expanded={securityOpen}
-                  onClick={() => setSecurityOpen(!securityOpen)}
-                >
-                  Account security
-                </button>
-                <button type="button" onClick={signOut} disabled={busy}>
-                  Sign out
-                </button>
-              </>
-            )}
-          </div>
+  const active = sections.find((s) => s.id === view)!;
+  if (checking || !user)
+    return (
+      <div className="hp management-admin console-auth">
+        <div className="console-auth-brand">
+          <span className="console-brand-mark">BE</span>
+          <span>
+            Brand E <small>Store administration</small>
+          </span>
         </div>
-        {error && (
-          <p className="management-alert" role="alert">
-            {error}
+        <main className="console-auth-card">
+          <span className="console-icon-tile">
+            <ShieldCheck size={24} />
+          </span>
+          <h1>
+            {checking
+              ? "Welcome back"
+              : setupRequired
+                ? "Create your owner account"
+                : "Admin sign in"}
+          </h1>
+          <p>
+            {checking
+              ? "Checking your secure session…"
+              : setupRequired
+                ? "Use your private setup code to create the first owner account."
+                : "Your store operations, all in one place."}
           </p>
-        )}
-        {message && (
-          <p className="management-message" role="status">
-            {message}
-          </p>
-        )}
-        {checking ? (
-          <p role="status">Checking secure session…</p>
-        ) : !logged ? (
-          <section className="management-panel account-login admin-sign-in">
-            <span className="admin-login-mark" aria-hidden="true">
-              BE
-            </span>
-            <h2>
-              {setupRequired ? "Create your admin account" : "Admin sign in"}
-            </h2>
-            <p>
-              {setupRequired
-                ? "Set up the first store owner account using your private setup code."
-                : "Sign in to manage your store."}
+          {error && (
+            <p className="management-alert" role="alert">
+              {error}
             </p>
-            {setupRequired && !setupAvailable && (
-              <p className="management-alert">
-                Add ADMIN_SETUP_TOKEN in Hostinger, then restart the app to
-                enable initial setup.
-              </p>
-            )}
-            <form className="management-form" onSubmit={signIn}>
-              {setupRequired && (
-                <label>
-                  Setup code
-                  <input
-                    type="password"
-                    required
-                    minLength={32}
-                    maxLength={256}
-                    autoComplete="off"
-                    value={setupCode}
-                    onChange={(e) => setSetupCode(e.target.value)}
-                  />
-                </label>
-              )}
+          )}
+          {notice && (
+            <p className="management-message" role="status">
+              {notice}
+            </p>
+          )}
+          {!checking && (
+            <form onSubmit={login}>
               <label>
                 Username
                 <input
-                  type="text"
+                  name="username"
                   required
                   minLength={3}
                   maxLength={64}
-                  pattern="[a-zA-Z0-9][a-zA-Z0-9._\-]{2,63}"
+                  autoComplete="username"
                   autoCapitalize="none"
                   autoCorrect="off"
-                  autoComplete="username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
                 />
               </label>
               <label>
                 Password
                 <input
+                  name="password"
                   type="password"
                   required
                   minLength={setupRequired ? 12 : undefined}
@@ -432,69 +387,12 @@ export default function Admin() {
                   autoComplete={
                     setupRequired ? "new-password" : "current-password"
                   }
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                 />
               </label>
               {setupRequired && (
-                <label>
-                  Confirm password
-                  <input
-                    type="password"
-                    required
-                    minLength={12}
-                    maxLength={128}
-                    autoComplete="new-password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                  />
-                </label>
-              )}
-              <button
-                className="commerce-primary"
-                disabled={busy || (setupRequired && !setupAvailable)}
-              >
-                {busy
-                  ? "Please wait…"
-                  : setupRequired
-                    ? "Create admin account"
-                    : "Sign in"}
-              </button>
-            </form>
-          </section>
-        ) : (
-          <>
-            {securityOpen && (
-              <section className="management-panel admin-security-panel">
-                <h2>Change password</h2>
-                <p>
-                  Changing your password signs out all admin sessions for this
-                  account.
-                </p>
-                <form className="management-form" onSubmit={changePassword}>
+                <>
                   <label>
-                    Current password
-                    <input
-                      name="currentPassword"
-                      type="password"
-                      required
-                      maxLength={128}
-                      autoComplete="current-password"
-                    />
-                  </label>
-                  <label>
-                    New password
-                    <input
-                      name="newPassword"
-                      type="password"
-                      required
-                      minLength={12}
-                      maxLength={128}
-                      autoComplete="new-password"
-                    />
-                  </label>
-                  <label>
-                    Confirm new password
+                    Confirm password
                     <input
                       name="confirmPassword"
                       type="password"
@@ -504,625 +402,394 @@ export default function Admin() {
                       autoComplete="new-password"
                     />
                   </label>
-                  <button className="commerce-primary" disabled={busy}>
-                    {busy ? "Updating…" : "Update password"}
+                  <label>
+                    Private setup code
+                    <input
+                      name="setupCode"
+                      type="password"
+                      minLength={32}
+                      maxLength={256}
+                      required
+                      autoComplete="off"
+                    />
+                  </label>
+                  {!setupAvailable && (
+                    <p className="management-alert">
+                      Set ADMIN_SETUP_TOKEN in Hostinger and restart the app to
+                      enable setup.
+                    </p>
+                  )}
+                </>
+              )}
+              <button
+                className="console-primary"
+                disabled={busy || (setupRequired && !setupAvailable)}
+              >
+                {busy
+                  ? "Please wait…"
+                  : setupRequired
+                    ? "Create owner account"
+                    : "Sign in"}
+                <ArrowUpRight size={16} />
+              </button>
+            </form>
+          )}
+          <a href="/">← Return to store</a>
+          <div className="console-auth-security">
+            <ShieldCheck size={13} /> Private access · Encrypted sessions
+          </div>
+        </main>
+      </div>
+    );
+  const nav = (mobile = false) => (
+    <>
+      {["Manage", "Catalog", "People & content", "Store"].map((group) => (
+        <div className="console-nav-group" key={group}>
+          <small>{group}</small>
+          {sections
+            .filter((s) => s.group === group)
+            .map((s) => (
+              <button
+                type="button"
+                key={s.id}
+                aria-current={view === s.id ? "page" : undefined}
+                onClick={() => navigate(s.id)}
+              >
+                <s.icon size={18} />
+                <span>{s.label}</span>
+                {view === s.id && <ChevronRight size={13} />}
+              </button>
+            ))}
+        </div>
+      ))}
+    </>
+  );
+  return (
+    <div className="hp management-admin admin-workspace-active admin-console">
+      <header className="console-masthead">
+        <div className="console-top-brand">
+          <button
+            type="button"
+            className="console-menu-trigger"
+            ref={menuButton}
+            aria-label="Open navigation"
+            aria-expanded={drawer}
+            onClick={() => setDrawer(true)}
+          >
+            <Menu size={20} />
+          </button>
+          <span className="console-brand-mark">BE</span>
+          <strong>Brand E</strong>
+          <span className="console-admin-label">Admin</span>
+        </div>
+        <form
+          className="console-global-search"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (
+              dirtyRef.current &&
+              !confirm("Discard unsaved changes and search products?")
+            )
+              return;
+            setDirty(false);
+            dirtyRef.current = false;
+            setProductQuery(search);
+            navigate("products");
+            setRefresh((r) => r + 1);
+          }}
+        >
+          <Search size={16} />
+          <input
+            aria-label="Search products globally"
+            placeholder="Search your products…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <kbd>↵</kbd>
+        </form>
+        <div className="console-top-actions">
+          <a href="/" target="_blank" rel="noopener noreferrer">
+            <ExternalLink size={16} />
+            <span>View store</span>
+          </a>
+          <button
+            aria-label="Open account settings"
+            onClick={() => navigate("settings")}
+            className="console-avatar"
+          >
+            {String(user.username).slice(0, 2).toUpperCase()}
+          </button>
+        </div>
+      </header>
+      {drawer && (
+        <button
+          className="console-drawer-scrim"
+          aria-label="Close navigation"
+          onClick={() => {
+            setDrawer(false);
+            menuButton.current?.focus();
+          }}
+        />
+      )}
+      <aside
+        className={"console-sidebar " + (drawer ? "is-open" : "")}
+        ref={drawerRef}
+        aria-label="Store navigation"
+      >
+        <div className="console-drawer-heading">
+          <strong>Your workspace</strong>
+          <button
+            aria-label="Close navigation"
+            onClick={() => {
+              setDrawer(false);
+              menuButton.current?.focus();
+            }}
+          >
+            <X size={20} />
+          </button>
+        </div>
+        <nav aria-label="Admin sections">{nav()}</nav>
+        <div className="console-sidebar-footer">
+          <span className="console-avatar">
+            {String(user.username).slice(0, 2).toUpperCase()}
+          </span>
+          <span>
+            <strong>{user.username}</strong>
+            <small>{user.role} account</small>
+          </span>
+          <button onClick={logout} disabled={busy} aria-label="Sign out">
+            <LogOut size={17} />
+          </button>
+        </div>
+      </aside>
+      <main className="console-main">
+        <div className="console-page-header">
+          <div>
+            <div className="console-breadcrumb">
+              Workspace <ChevronRight size={11} /> {active.label}
+            </div>
+            <h1>{active.label}</h1>
+            <p>{active.description}</p>
+          </div>
+          <button
+            className={
+              "console-connection " + (readiness?.ready ? "ready" : "")
+            }
+            onClick={() => navigate("settings")}
+          >
+            {readiness?.ready ? (
+              <CheckCircle2 size={14} />
+            ) : (
+              <Database size={14} />
+            )}{" "}
+            {readiness
+              ? readiness.ready
+                ? "Store connected"
+                : "Setup needs attention"
+              : "Checking setup"}
+          </button>
+        </div>
+        {error && (
+          <p className="management-alert" role="alert">
+            {error}
+          </p>
+        )}
+        {notice && (
+          <p className="management-message" role="status">
+            {notice}
+          </p>
+        )}
+        {readiness && !readiness.ready && (
+          <section className="console-setup-banner">
+            <span className="console-icon-tile">
+              <AlertCircle size={20} />
+            </span>
+            <div>
+              <strong>Finish setting up your workspace</strong>
+              <p>
+                Some database tables are missing. Blogs, catalog and inventory
+                stay visible while you complete setup.
+              </p>
+              <div>
+                {readiness.groups.map((g: Row) => (
+                  <span key={g.name} className={g.ready ? "is-ready" : ""}>
+                    {g.ready ? "✓" : "○"} {g.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+            <button
+              className="console-primary"
+              disabled={busy}
+              onClick={finishSetup}
+            >
+              {busy ? "Preparing…" : "Finish database setup"}
+            </button>
+          </section>
+        )}
+        <div key={view + "-" + refresh} className="console-module-content">
+          {["overview", "inventory", "purchases"].includes(view) && (
+            <Operations
+              tab={view}
+              api={api}
+              onRefresh={async () => {}}
+              onNavigate={navigate}
+            />
+          )}
+          {view === "products" && (
+            <ProductManager
+              api={api}
+              onDirtyChange={setDirty}
+              initialQuery={productQuery}
+            />
+          )}
+          {["categories", "brands", "tags"].includes(view) && (
+            <TaxonomyManager
+              api={api}
+              kind={
+                view === "categories"
+                  ? "category"
+                  : view === "brands"
+                    ? "brand"
+                    : "tag"
+              }
+            />
+          )}
+          {view === "orders" && <OrderWorkspace api={api} />}
+          {view === "customers" && <CustomerManager api={api} />}
+          {view === "blogs" && (
+            <BlogWorkspace api={api} onDirtyChange={setDirty} />
+          )}
+          {view === "settings" && (
+            <div className="console-settings-grid">
+              <section className="management-panel">
+                <div className="console-card-title">
+                  <ShieldCheck size={18} />
+                  <h2>Account security</h2>
+                </div>
+                <p>
+                  Signed in as <strong>{user.username}</strong>. Changing your
+                  password ends every admin session for this account.
+                </p>
+                <form
+                  className="management-form"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    setBusy(true);
+                    setError("");
+                    const f = Object.fromEntries(new FormData(e.currentTarget));
+                    try {
+                      if (f.newPassword !== f.confirmPassword)
+                        throw Error("Passwords do not match.");
+                      await api("/api/admin/session", "POST", {
+                        action: "password",
+                        currentPassword: f.currentPassword,
+                        newPassword: f.newPassword,
+                      });
+                      setUser(null);
+                      setNotice("Password updated. Sign in again.");
+                    } catch (e) {
+                      setError((e as Error).message);
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  <label>
+                    Current password
+                    <input
+                      name="currentPassword"
+                      type="password"
+                      required
+                      autoComplete="current-password"
+                    />
+                  </label>
+                  <label>
+                    New password
+                    <input
+                      name="newPassword"
+                      type="password"
+                      minLength={12}
+                      maxLength={128}
+                      required
+                      autoComplete="new-password"
+                    />
+                  </label>
+                  <label>
+                    Confirm new password
+                    <input
+                      name="confirmPassword"
+                      type="password"
+                      minLength={12}
+                      maxLength={128}
+                      required
+                      autoComplete="new-password"
+                    />
+                  </label>
+                  <button className="console-primary" disabled={busy}>
+                    Update password
                   </button>
                 </form>
               </section>
-            )}
-            <div className="management-toolbar">
-              <div className="management-tabs">
-                {[
-                  "overview",
-                  "products",
-                  "inventory",
-                  "purchases",
-                  "orders",
-                  "customers",
-                  "blogs",
-                ].map((t) => (
-                  <button
-                    key={t}
-                    aria-pressed={tab === t}
-                    onClick={() => {
-                      if (
-                        editorDirty &&
-                        !confirm(
-                          "Discard unsaved article changes? Save your article before leaving to keep them.",
-                        )
-                      )
-                        return;
-                      setEditorDirty(false);
-                      setTab(t);
-                      setQuery("");
-                      setDraft(null);
-                    }}
-                  >
-                    {(() => {
-                      const Icon = (
-                        {
-                          overview: LayoutDashboard,
-                          products: Package,
-                          inventory: Boxes,
-                          purchases: Truck,
-                          orders: ShoppingCart,
-                          customers: Users,
-                          blogs: BookOpen,
-                        } as const
-                      )[t as "overview"];
-                      return <Icon size={19} />;
-                    })()}
-                    <span>
-                      {t === "blogs"
-                        ? "Journal"
-                        : t[0].toUpperCase() + t.slice(1)}
+              <section className="management-panel">
+                <div className="console-card-title">
+                  <Database size={18} />
+                  <h2>Workspace setup</h2>
+                </div>
+                <p>Check that the database supports all dashboard modules.</p>
+                {readiness?.groups.map((g: Row) => (
+                  <div className="console-setup-row" key={g.name}>
+                    <span>{g.name}</span>
+                    <span
+                      className={"admin-pill " + (g.ready ? "healthy" : "low")}
+                    >
+                      {g.ready ? "Ready" : "Needs setup"}
                     </span>
-                  </button>
+                  </div>
                 ))}
-              </div>
-              {["products", "customers"].includes(tab) && (
-                <label className="management-search">
-                  Search
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder="Search the loaded records"
-                  />
-                </label>
-              )}
-              <button disabled={busy} onClick={() => load()}>
-                Refresh
-              </button>
-            </div>
-            {["overview", "inventory", "purchases"].includes(tab) && (
-              <Operations
-                key={tab}
-                tab={tab}
-                api={api}
-                onRefresh={() => load()}
-                onNavigate={setTab}
-              />
-            )}
-            {tab === "blogs" && (
-              <BlogWorkspace api={api} onDirtyChange={setEditorDirty} />
-            )}
-            {tab === "orders" && <OrderWorkspace api={api} />}
-            {tab === "products" && (
-              <>
-                <div className="management-heading">
-                  <h2>
-                    Products <small>({products.length})</small>
-                  </h2>
+                <div className="admin-inline-actions">
+                  <button onClick={checkSetup}>Check again</button>
                   <button
-                    className="commerce-primary"
-                    onClick={() => edit(empty())}
+                    className="console-primary"
+                    disabled={busy}
+                    onClick={finishSetup}
                   >
-                    Add product
+                    Finish database setup
                   </button>
                 </div>
-                {draft ? (
-                  <section className="management-panel">
-                    <div className="management-heading">
-                      <h2>
-                        {draft.id ? "Edit product #" + draft.id : "New product"}
-                      </h2>
-                      <button onClick={() => setDraft(null)}>
-                        Close editor
-                      </button>
-                    </div>
-                    <form
-                      key={draft.id || "new"}
-                      className="management-form"
-                      onSubmit={save}
-                    >
-                      <div className="management-fields">
-                        <label>
-                          Product title
-                          <input
-                            name="name"
-                            required
-                            maxLength={200}
-                            defaultValue={draft.name}
-                          />
-                        </label>
-                        <label>
-                          Category
-                          <input
-                            name="category"
-                            required
-                            maxLength={100}
-                            defaultValue={draft.category}
-                            list="product-categories"
-                          />
-                          <datalist id="product-categories">
-                            {[
-                              "Home & Living",
-                              "Fashion",
-                              "Tech",
-                              "Beauty",
-                              "Accessories",
-                              "Grocery",
-                              "Sports & Fitness",
-                              "Watches",
-                              "Footwear",
-                            ].map((x) => (
-                              <option key={x}>{x}</option>
-                            ))}
-                          </datalist>
-                        </label>
-                      </div>
-                      <label>
-                        Description
-                        <textarea
-                          name="description"
-                          rows={5}
-                          maxLength={10000}
-                          defaultValue={draft.description}
-                        />
-                      </label>
-                      <div className="management-fields">
-                        <label>
-                          Current / sale price
-                          <input
-                            name="price"
-                            type="number"
-                            step=".01"
-                            min=".01"
-                            required
-                            defaultValue={draft.price_minor / 100}
-                          />
-                        </label>
-                        <label>
-                          Original price{" "}
-                          <small>Leave blank when not on sale</small>
-                          <input
-                            name="originalPrice"
-                            type="number"
-                            step=".01"
-                            min=".01"
-                            defaultValue={
-                              draft.original_price_minor
-                                ? draft.original_price_minor / 100
-                                : ""
-                            }
-                          />
-                        </label>
-                        <label>
-                          Stock quantity
-                          <input
-                            name="stock"
-                            type="number"
-                            min={0}
-                            step={1}
-                            required
-                            defaultValue={draft.stock}
-                          />
-                        </label>
-                        <label>
-                          Color / finish
-                          <input
-                            name="color"
-                            maxLength={100}
-                            defaultValue={draft.color}
-                          />
-                        </label>
-                        <label>
-                          Badge
-                          <input
-                            name="badge"
-                            maxLength={24}
-                            defaultValue={draft.badge}
-                            list="product-badges"
-                          />
-                          <datalist id="product-badges">
-                            {[
-                              "",
-                              "New Arrival",
-                              "Best Seller",
-                              "Top Rated",
-                              "Star Seller",
-                              "Featured",
-                              "Flash Sale",
-                              "Ends Soon",
-                              "Trending",
-                              "Lightning Deal",
-                              "Countdown Timer",
-                              "Few Left",
-                              "Almost Sold Out",
-                              "Early Bird Price",
-                              "Sold Out",
-                            ].map((x) => (
-                              <option key={x}>{x}</option>
-                            ))}
-                          </datalist>
-                        </label>
-                        <p className="management-muted">
-                          One badge appears on the product image. Countdown
-                          Timer, Flash Sale, Lightning Deal, Ends Soon and Early
-                          Bird Price require an enabled promotion with start/end
-                          dates. Few Left requires 1–3 units; Sold Out appears
-                          automatically at zero stock. Leave Badge blank to hide
-                          it.
-                        </p>
-                        <label>
-                          Rating
-                          <input
-                            name="rating"
-                            type="number"
-                            min={0}
-                            max={5}
-                            step=".1"
-                            defaultValue={draft.rating ?? ""}
-                          />
-                        </label>
-                        <label>
-                          Review count
-                          <input
-                            name="reviewCount"
-                            type="number"
-                            min={0}
-                            step={1}
-                            required
-                            defaultValue={draft.review_count || 0}
-                          />
-                        </label>
-                        <label>
-                          Sold count
-                          <input
-                            name="soldCount"
-                            type="number"
-                            min={0}
-                            step={1}
-                            required
-                            defaultValue={draft.sold_count || 0}
-                          />
-                        </label>
-                      </div>
-                      <label className="management-check">
-                        <input
-                          name="active"
-                          type="checkbox"
-                          defaultChecked={draft.active}
-                        />
-                        Published in the store
-                      </label>
-                      <fieldset>
-                        <legend>Images & videos</legend>
-                        <label>
-                          Main image URL
-                          <input
-                            required
-                            value={image}
-                            onChange={(e) => setImage(e.target.value)}
-                            maxLength={2000}
-                          />
-                        </label>
-                        <label>
-                          Upload main image
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp"
-                            disabled={busy}
-                            onChange={(e) => upload(e.target.files?.[0], true)}
-                          />
-                        </label>
-                        {image.startsWith("/") ||
-                        image.startsWith("https://") ? (
-                          <img
-                            className="management-product-preview"
-                            src={image}
-                            alt="Main product preview"
-                          />
-                        ) : null}
-                        <label>
-                          Upload gallery image or video
-                          <input
-                            type="file"
-                            accept="image/png,image/jpeg,image/webp,video/mp4"
-                            disabled={busy}
-                            onChange={(e) => upload(e.target.files?.[0], false)}
-                          />
-                        </label>
-                        <p className="management-muted">
-                          Up to 20 MB per upload. Gallery items support image or
-                          video, URL and image description. Remove an item from
-                          the list to detach it.
-                        </p>
-                        <div className="management-media-items">
-                          {media.map((m, i) => (
-                            <div className="management-media-item" key={i}>
-                              <label>
-                                Media type
-                                <select
-                                  value={m.type}
-                                  onChange={(e) =>
-                                    setMedia((rows) =>
-                                      rows.map((row, j) =>
-                                        j === i
-                                          ? { ...row, type: e.target.value }
-                                          : row,
-                                      ),
-                                    )
-                                  }
-                                >
-                                  <option value="image">Image</option>
-                                  <option value="video">Video</option>
-                                </select>
-                              </label>
-                              <label>
-                                Media URL
-                                <input
-                                  value={m.url}
-                                  required
-                                  maxLength={2000}
-                                  onChange={(e) =>
-                                    setMedia((rows) =>
-                                      rows.map((row, j) =>
-                                        j === i
-                                          ? { ...row, url: e.target.value }
-                                          : row,
-                                      ),
-                                    )
-                                  }
-                                />
-                              </label>
-                              <label>
-                                Description
-                                <input
-                                  value={m.alt}
-                                  maxLength={200}
-                                  onChange={(e) =>
-                                    setMedia((rows) =>
-                                      rows.map((row, j) =>
-                                        j === i
-                                          ? { ...row, alt: e.target.value }
-                                          : row,
-                                      ),
-                                    )
-                                  }
-                                />
-                              </label>
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setMedia((rows) =>
-                                    rows.filter((_, j) => j !== i),
-                                  )
-                                }
-                              >
-                                Remove media
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                        <button
-                          type="button"
-                          disabled={media.length >= 12}
-                          onClick={() =>
-                            setMedia((rows) => [
-                              ...rows,
-                              { type: "image", url: "", alt: "" },
-                            ])
-                          }
-                        >
-                          Add media URL
-                        </button>
-                      </fieldset>
-                      <fieldset>
-                        <legend>Promotion</legend>
-                        <label className="management-check">
-                          <input
-                            name="promotionActive"
-                            type="checkbox"
-                            defaultChecked={draft.promotion_active}
-                          />
-                          Enable scheduled promotion
-                        </label>
-                        <div className="management-fields">
-                          <label>
-                            Starts
-                            <input
-                              name="promotionStartsAt"
-                              type="datetime-local"
-                              defaultValue={localDate(
-                                draft.promotion_starts_at,
-                              )}
-                            />
-                          </label>
-                          <label>
-                            Ends
-                            <input
-                              name="promotionEndsAt"
-                              type="datetime-local"
-                              defaultValue={localDate(draft.promotion_ends_at)}
-                            />
-                          </label>
-                        </div>
-                      </fieldset>
-                      <fieldset>
-                        <legend>Specifications</legend>
-                        <p className="management-muted">
-                          Add details such as SKU, dimensions, material, sizes
-                          and care instructions.
-                        </p>
-                        {attributes.map((a, i) => (
-                          <div className="management-fields" key={i}>
-                            <label>
-                              Attribute
-                              <input
-                                value={a.name}
-                                maxLength={100}
-                                onChange={(e) =>
-                                  setAttributes((rows) =>
-                                    rows.map((r, j) =>
-                                      j === i
-                                        ? { ...r, name: e.target.value }
-                                        : r,
-                                    ),
-                                  )
-                                }
-                              />
-                            </label>
-                            <label>
-                              Value
-                              <input
-                                value={a.value}
-                                maxLength={1000}
-                                onChange={(e) =>
-                                  setAttributes((rows) =>
-                                    rows.map((r, j) =>
-                                      j === i
-                                        ? { ...r, value: e.target.value }
-                                        : r,
-                                    ),
-                                  )
-                                }
-                              />
-                            </label>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setAttributes((rows) =>
-                                  rows.filter((_, j) => j !== i),
-                                )
-                              }
-                            >
-                              Remove attribute
-                            </button>
-                          </div>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setAttributes((rows) => [
-                              ...rows,
-                              { name: "", value: "" },
-                            ])
-                          }
-                        >
-                          Add attribute
-                        </button>
-                      </fieldset>
-                      <button className="commerce-primary" disabled={busy}>
-                        {busy ? "Saving…" : "Save product"}
-                      </button>
-                    </form>
-                  </section>
-                ) : (
-                  <div className="management-table-wrap">
-                    <table className="management-table">
-                      <thead>
-                        <tr>
-                          <th>Product</th>
-                          <th>Category</th>
-                          <th>Price</th>
-                          <th>Stock</th>
-                          <th>Status</th>
-                          <th>Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filtered(products).map((p) => (
-                          <tr key={p.id}>
-                            <td>
-                              <strong>{p.name}</strong>
-                              <small>#{p.id}</small>
-                            </td>
-                            <td>{p.category}</td>
-                            <td>
-                              {p.currency} {p.price_minor / 100}
-                            </td>
-                            <td>{p.stock}</td>
-                            <td>
-                              {p.active ? "Published" : "Archived / draft"}
-                            </td>
-                            <td>
-                              <button onClick={() => edit(p)}>Edit</button>
-                              {p.active && (
-                                <button
-                                  disabled={busy}
-                                  onClick={async () => {
-                                    if (
-                                      !confirm(
-                                        "Remove this product from the shop? Past orders will be retained.",
-                                      )
-                                    )
-                                      return;
-                                    try {
-                                      await api(
-                                        "/api/admin/products",
-                                        "DELETE",
-                                        { id: p.id },
-                                      );
-                                      await load();
-                                      setMessage("Product archived.");
-                                    } catch (e) {
-                                      setError((e as Error).message);
-                                    }
-                                  }}
-                                >
-                                  Remove
-                                </button>
-                              )}
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                    {!products.length && (
-                      <p>No products yet. Add your first product.</p>
-                    )}
-                  </div>
-                )}
-              </>
-            )}
-            {tab === "customers" && (
-              <section className="management-panel">
-                <h2>Customer accounts</h2>
-                {filtered(customers).map((c) => (
-                  <details className="account-order" key={c.id}>
-                    <summary>
-                      {c.name} · {c.email} · {c.order_count} orders
-                    </summary>
-                    <dl className="management-details">
-                      {Object.entries(c).map(([k, v]) => (
-                        <div key={k}>
-                          <dt>{k.replaceAll("_", " ")}</dt>
-                          <dd>{String(v ?? "—")}</dd>
-                        </div>
-                      ))}
-                    </dl>
-                  </details>
-                ))}
-                {!customers.length && (
-                  <p>
-                    No customer accounts yet. Guest delivery details appear with
-                    their orders.
-                  </p>
-                )}
+                <small className="console-version">
+                  Admin workspace · 24 October 2026
+                </small>
+                <button
+                  className="console-signout"
+                  onClick={logout}
+                  disabled={busy}
+                >
+                  <LogOut size={15} /> Sign out
+                </button>
               </section>
-            )}
-            {tab === "customers" && (
-              <div className="management-heading">
-                <button
-                  disabled={busy || page === 0}
-                  onClick={() => load(page - 1)}
-                >
-                  Previous 100
-                </button>
-                <span>Page {page + 1}</span>
-                <button
-                  disabled={busy || customers.length < 100}
-                  onClick={() => load(page + 1)}
-                >
-                  Next 100
-                </button>
-              </div>
-            )}
-          </>
-        )}
+            </div>
+          )}
+        </div>
+        <footer className="console-footer">
+          Brand E Admin <span>Built for your everyday operations.</span>
+        </footer>
       </main>
+      <nav className="console-mobile-nav" aria-label="Quick navigation">
+        {["overview", "products", "inventory", "orders", "blogs"].map((id) => {
+          const s = sections.find((s) => s.id === id)!;
+          return (
+            <button
+              key={id}
+              aria-current={view === id ? "page" : undefined}
+              onClick={() => navigate(id)}
+            >
+              <s.icon size={19} />
+              <span>{s.label === "Overview" ? "Home" : s.label}</span>
+            </button>
+          );
+        })}
+      </nav>
     </div>
   );
 }

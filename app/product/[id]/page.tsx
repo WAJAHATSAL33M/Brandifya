@@ -8,8 +8,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params;
   const p = /^-?\d+$/.test(id) ? await findProduct(Number(id)) : undefined;
   return {
-    title: p ? `${p.name} | Brande` : "Product not found | Brande",
-    description: p?.description,
+    title: p
+      ? `${p.seoTitle || p.name} | Brande`
+      : "Product not found | Brande",
+    description: p?.seoDescription || p?.description,
   };
 }
 export default async function Page({ params }: Props) {

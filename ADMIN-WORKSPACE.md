@@ -6,7 +6,7 @@ Open `/admin` and sign in with your existing admin username and password. The wo
 
 1. Back up your existing MySQL database.
 2. In phpMyAdmin, select the store database and import `database/admin-workspace.sql`. This additive migration creates seven new tables and preserves products, accounts and orders. If admin accounts have not been enabled yet, import `database/admin-access.sql` as well. For a new database use `database/schema.sql`.
-3. Deploy the latest `main` branch with Node.js 22, `npm ci`, `npm run build:hostinger` and `npm start`. The build command also creates missing tables. The complete schema now has 22 tables.
+3. Deploy the latest `main` branch with Node.js 22, `npm ci`, `npm run build:hostinger` and `npm start`. The build command also creates missing tables. The complete schema now has 24 tables.
 4. Keep your existing database variables. `STORE_URL` must match the exact HTTPS origin used to open `/admin`, including `www` when applicable. No additional environment variables are required by this upgrade.
 5. Verify inventory, orders and journal publishing before accepting new orders. Stock operations and checkout require the new movement table, so apply the migration before switching to the new deployment.
 
@@ -22,7 +22,7 @@ Open `/admin` and sign in with your existing admin username and password. The wo
 
 ## Journal editor
 
-Choose **Journal → Import existing articles** once to bring the current store stories into the editor without duplicating them. Existing stories remain visible until explicitly managed. Drafting/trashing an imported story removes that managed version from the public journal. Renaming an imported story suppresses its old built-in URL. Existing links to that old slug will return 404; redirects are not created automatically.
+Choose **Blogs → Import existing articles** once to bring the current store stories into the editor without duplicating them. Existing stories remain visible until explicitly managed. Drafting/trashing an imported story removes that managed version from the public journal. Renaming an imported story suppresses its old built-in URL. Existing links to that old slug will return 404; redirects are not created automatically.
 
 Create or edit an article with:
 
@@ -39,3 +39,7 @@ This is a custom editor with familiar WordPress-style publishing controls. It do
 ## Verification
 
 `npm test` checks commerce/auth validation, blog sanitization, publication validation and CSV safety. `npm run build` checks production compilation and types. The isolated MySQL integration assertions in `tests/integration/admin-workspace.cjs` exercise transactional adjustments, duplicate purchase receipts/cancellations, order notes/search and article lifecycle/conflict checks. For a reproducible backend run, first build the app, set `TEST_DATABASE_URL` to a **new empty MySQL database ending in `_test`**, then run `npm run test:workspace`. The harness refuses non-test or non-empty databases, starts a local test app, creates test records and changes only that test database. Discard it afterwards. Never run fixtures against a production database.
+
+## Latest admin navigation and catalog upgrade
+
+See `ADMIN-CONSOLE.md` for the new sidebar/mobile navigation, direct Blogs link, managed Categories/Brands/Tags, product editor, owner-controlled database setup and activation steps. Existing installations also need `database/admin-catalog.sql` or the dashboard setup action.

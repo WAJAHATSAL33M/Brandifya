@@ -149,3 +149,5 @@ Before live activation, apply the additive database schema and configure email a
 ## Inventory, orders and journal workspace
 
 The private `/admin` workspace now includes overview metrics, SKU/cost/location/reorder management, stock adjustment history, supplier purchase orders and receiving, searchable order fulfilment with notes/tracking/printing, and a rich journal editor with drafts, schedules, media, SEO fields and revisions. Apply `database/admin-workspace.sql` to existing installations before deploying. See [ADMIN-WORKSPACE.md](ADMIN-WORKSPACE.md) for setup, supported workflows and limits.
+
+The latest private console adds a desktop sidebar, always-visible mobile Blogs navigation, managed Categories/Brands/Tags and a complete product editor for existing store features. See [ADMIN-CONSOLE.md](ADMIN-CONSOLE.md) for database readiness recovery and deployment instructions.

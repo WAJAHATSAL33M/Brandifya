@@ -29,6 +29,7 @@ export default function Operations({
     [purchases, setPurchases] = useState<Row[]>([]),
     [summary, setSummary] = useState<Row>({}),
     [revenue, setRevenue] = useState<Row[]>([]),
+    [daily, setDaily] = useState<Row[]>([]),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
@@ -42,15 +43,26 @@ export default function Operations({
     setError("");
     setBusy(true);
     try {
-      const [i, p, o] = await Promise.all([
+      const results = await Promise.allSettled([
         api("/api/admin/inventory"),
         api("/api/admin/purchases"),
         api("/api/admin/orders"),
       ]);
-      setData(i);
-      setPurchases(p.purchases);
-      setSummary(o.summary);
-      setRevenue(o.revenue || []);
+      const [i, p, o] = results;
+      if (i.status === "fulfilled") setData(i.value);
+      if (p.status === "fulfilled") setPurchases(p.value.purchases);
+      if (o.status === "fulfilled") {
+        setSummary(o.value.summary);
+        setRevenue(o.value.revenue || []);
+        setDaily(o.value.daily || []);
+      }
+      const failed = results.filter((r) => r.status === "rejected");
+      if (failed.length)
+        setError(
+          failed
+            .map((r) => (r as PromiseRejectedResult).reason.message)
+            .join(" "),
+        );
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -95,6 +107,11 @@ export default function Operations({
   );
   return (
     <section className="admin-module">
+      {busy && (
+        <p className="console-subtle-status" role="status">
+          Refreshing workspace data…
+        </p>
+      )}
       {error && (
         <p className="management-alert" role="alert">
           {error}
@@ -111,13 +128,10 @@ export default function Operations({
             <div>
               <span className="admin-kicker">YOUR STORE AT A GLANCE</span>
               <h2>
-                Everything you need.
+                Your operations, in focus.
                 <br />
-                One workspace.
               </h2>
-              <p>
-                Keep orders moving, stock healthy and your next story ready.
-              </p>
+              <p>A clear view of your orders, stock and next steps.</p>
               <button
                 className="commerce-primary"
                 onClick={() => onNavigate("orders")}
@@ -150,6 +164,49 @@ export default function Operations({
               );
             })}
           </div>
+          <section className="management-panel console-orders-chart">
+            <div className="console-card-title">
+              <h3>Order activity</h3>
+              <small>Last 14 days · All order statuses</small>
+            </div>
+            <div className="console-chart-total">
+              <strong>{daily.reduce((n, d) => n + Number(d.count), 0)}</strong>
+              <span>orders placed</span>
+            </div>
+            <div
+              className="console-chart-bars"
+              role="img"
+              aria-label={
+                "Orders in the last 14 days: " +
+                daily.reduce((n, d) => n + Number(d.count), 0)
+              }
+            >
+              {Array.from({ length: 14 }, (_, i) => {
+                const day = new Date();
+                day.setUTCDate(day.getUTCDate() - 13 + i);
+                const key = day.toISOString().slice(0, 10),
+                  record = daily.find(
+                    (d) => new Date(d.day).toISOString().slice(0, 10) === key,
+                  ),
+                  count = Number(record?.count || 0),
+                  max = Math.max(1, ...daily.map((d) => Number(d.count)));
+                return (
+                  <div key={key} title={key + ": " + count + " orders"}>
+                    <span
+                      style={{ height: Math.max(2, (count / max) * 95) + "%" }}
+                    />
+                    <small>
+                      {day.toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "short",
+                        timeZone: "UTC",
+                      })}
+                    </small>
+                  </div>
+                );
+              })}
+            </div>
+          </section>
           <div className="admin-two-column">
             <section className="management-panel">
               <div className="management-heading">

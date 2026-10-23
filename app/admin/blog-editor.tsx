@@ -258,7 +258,7 @@ export default function BlogWorkspace({
     <section className="admin-module">
       <div className="management-heading">
         <div>
-          <h2>Journal</h2>
+          <h2>Blog posts</h2>
           <p>Write, refine and publish your store’s stories.</p>
         </div>
         <div className="admin-inline-actions">

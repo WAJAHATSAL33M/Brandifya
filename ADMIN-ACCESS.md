@@ -23,6 +23,25 @@ If automatic repair is denied by database permissions, import `database/admin-ac
 
 Customer email signup intentionally requires email verification. Set `RESEND_API_KEY` and `AUTH_FROM_EMAIL` to a verified sender in Hostinger, alongside the correct MySQL connection and canonical HTTPS `STORE_URL`. Restart the app. Without these, email signup/recovery is unavailable; customer verification is never bypassed. Existing email/password accounts can still sign in.
 
-For Google sign-in, configure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from the merchant's Google OAuth web application. Register the exact redirect URI `https://YOUR-DOMAIN/api/account/oauth/google`, including the correct www/non-www hostname. For Facebook, configure its matching credentials, `FACEBOOK_GRAPH_VERSION` and `/api/account/oauth/facebook` redirect. Unconfigured social providers are hidden rather than shown as unusable buttons. OAuth accounts using an email already registered by another sign-in method must use their existing method; automatic account linking is intentionally not enabled.
+For Google sign-in, configure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from the merchant's Google OAuth web application. Register the exact redirect URI `https://YOUR-DOMAIN/api/account/oauth/google`, including the correct www/non-www hostname. For Facebook, configure its matching credentials, `FACEBOOK_GRAPH_VERSION` and `/api/account/oauth/facebook` redirect. Google and Apple remain visible with a clear availability notice when unconfigured; Facebook is hidden when unconfigured. OAuth accounts using an email already registered by another sign-in method must use their existing method; automatic account linking is intentionally not enabled.
 
 Customer dashboard: `/account`. Orders are scoped to the signed-in customer. The dashboard provides aggregate order counts, actual fulfillment milestones, event history and the carrier link when supplied by the store. No arrival estimate is invented. A guest order may be linked only using its saved order ID and private confirmation key. Import the full `database/schema.sql` before testing account and order flows.
+
+## Google and Apple buttons
+
+Both are visible on the email sign-in and signup screens. If a provider lacks its deployment credentials, its button is unavailable and the page explains that customers can use email. A new social customer account is created after successful provider verification; returning customers sign in with the same provider.
+
+**Google:** In Google Cloud, configure an OAuth web client, enable the consent screen and register `https://YOUR-DOMAIN/api/account/oauth/google` as an authorized redirect URI. Put `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in Hostinger, set the canonical `STORE_URL`, and restart. If the consent screen is in testing, add the customers who will test it as test users. Publish the consent configuration for public access when eligible.
+
+**Apple:** In Apple Developer → Certificates, Identifiers & Profiles, configure a primary App ID with Sign in with Apple. Create a Services ID for the website, associate it with that App ID, register the website domain and exact return URL `https://YOUR-DOMAIN/api/account/oauth/apple`, and create/download a Sign in with Apple `.p8` key. Web eligibility and account requirements are set by Apple: https://developer.apple.com/help/account/capabilities/configure-sign-in-with-apple-for-the-web .
+
+Add these private environment values in Hostinger, never GitHub:
+
+- `APPLE_CLIENT_ID`: the web Services ID (not the Team ID or App ID).
+- `APPLE_TEAM_ID`: Apple Developer team identifier.
+- `APPLE_KEY_ID`: the identifier of the downloaded Sign in with Apple key.
+- `APPLE_PRIVATE_KEY`: complete `.p8` PEM contents, including BEGIN/END lines. Actual newlines and literal `\n` sequences are supported.
+
+Restart the app. Apple requires a real HTTPS hostname; localhost and IP callbacks are unsupported. The server generates short-lived client secrets automatically. Apple callbacks use POST, browser-bound single-use state, a nonce and Apple's signed identity tokens. No extra SQL tables are needed beyond the existing complete schema. For Hide My Email delivery, register the outgoing email source in Apple's Private Email Relay configuration. Existing accounts are not automatically linked solely because emails match.
+
+Reference: https://developer.apple.com/documentation/signinwithapplerestapi/request-an-authorization-to-the-sign-in-with-apple-server. and https://developer.apple.com/documentation/signinwithapple/verifying-a-user .

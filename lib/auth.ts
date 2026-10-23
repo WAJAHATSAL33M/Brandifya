@@ -105,6 +105,7 @@ export async function oauthCustomer(
     const existing =
       await sql`SELECT customer_id FROM customer_identities WHERE provider=${provider} AND subject=${subject}`;
     if (existing.length) return String(existing[0].customer_id);
+    if (!email) throw Error("A verified email is required for a new account.");
     const id = randomUUID();
     await sql`INSERT INTO customers (id,name,email,email_verified) VALUES (${id},${name.slice(0, 120)},${email},true)`;
     await sql`INSERT INTO customer_identities (provider,subject,customer_id) VALUES (${provider},${subject},${id})`;

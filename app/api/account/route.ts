@@ -1,3 +1,4 @@
+import { appleConfigured } from "../../../lib/apple-auth";
 import { randomUUID } from "node:crypto";
 import { db, databaseConfigured } from "../../../lib/db";
 import {
@@ -48,6 +49,7 @@ export async function GET(request: Request) {
       {
         user: u ? publicProfile(u) : null,
         providers: {
+          apple: appleConfigured() && databaseConfigured(),
           email: emailReady(),
           google: !!(
             process.env.GOOGLE_CLIENT_ID &&

@@ -223,7 +223,8 @@
   display: grid;
   gap: 10px;
 }
-.customer-social a {
+.customer-social a,
+.customer-social button {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -1164,4 +1165,28 @@
 }
 .customer-dashboard-heading h1 {
   overflow-wrap: anywhere;
+}
+
+.customer-social .customer-apple {
+  background: #171717;
+  color: #fff;
+  border-color: #171717;
+}
+.customer-social .customer-apple:hover {
+  background: #303030;
+  border-color: #303030;
+}
+.customer-social button:disabled {
+  opacity: 1;
+  cursor: not-allowed;
+}
+.customer-social button:disabled:not(.customer-apple) {
+  background: #f8f8f8;
+  color: #555;
+}
+.customer-social-note {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--account-muted);
+  margin: 12px 0 0;
 }

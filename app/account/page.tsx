@@ -66,6 +66,19 @@ const date = (s: string) =>
     month: "short",
     year: "numeric",
   });
+function AppleMark() {
+  return (
+    <svg
+      width="20"
+      height="22"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      aria-hidden="true"
+    >
+      <path d="M17.1 12.5c0-2 1.6-3 1.7-3.1-1-1.5-2.6-1.7-3.2-1.7-1.4-.1-2.7.8-3.4.8-.7 0-1.8-.8-3-.8-1.6 0-3 .9-3.8 2.2-1.6 2.7-.4 6.7 1.1 8.9.7 1 1.6 2.2 2.7 2.1 1.1 0 1.5-.7 2.9-.7 1.3 0 1.7.7 2.9.7 1.2 0 2-1 2.7-2.1.8-1.2 1.2-2.4 1.2-2.5-.1 0-2.3-.9-2.3-3.8ZM14.8 6.3c.6-.8 1.1-1.9 1-3-.9 0-2 .6-2.7 1.4-.6.7-1.2 1.8-1 2.9 1 .1 2-.5 2.7-1.3Z" />
+    </svg>
+  );
+}
 function GoogleMark() {
   return (
     <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
@@ -131,6 +144,7 @@ export default function Account() {
     [providers, setProviders] = useState({
       email: false,
       google: false,
+      apple: false,
       facebook: false,
     }),
     [loading, setLoading] = useState(true),
@@ -180,7 +194,13 @@ export default function Account() {
     try {
       const d = await api("/api/account");
       setUser(d.user);
-      setProviders(d.providers);
+      setProviders({
+        email: false,
+        google: false,
+        apple: false,
+        facebook: false,
+        ...d.providers,
+      });
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -440,32 +460,70 @@ export default function Account() {
                 </div>
               ) : (
                 <>
-                  {["login", "signup"].includes(mode) &&
-                    (providers.google || providers.facebook) && (
-                      <>
-                        <div className="customer-social">
-                          {providers.google && (
-                            <a href="/api/account/oauth/google">
-                              <GoogleMark /> Continue with Google
-                            </a>
-                          )}
-                          {providers.facebook && (
-                            <a href="/api/account/oauth/facebook">
-                              <span
-                                className="customer-facebook"
-                                aria-hidden="true"
-                              >
-                                f
-                              </span>{" "}
-                              Continue with Facebook
-                            </a>
-                          )}
-                        </div>
-                        <div className="customer-divider">
-                          <span>or continue with email</span>
-                        </div>
-                      </>
-                    )}
+                  {["login", "signup"].includes(mode) && (
+                    <>
+                      <div className="customer-social">
+                        {providers.google ? (
+                          <a href="/api/account/oauth/google">
+                            <GoogleMark /> Continue with Google
+                          </a>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled
+                            aria-describedby="social-unavailable"
+                          >
+                            <GoogleMark /> Continue with Google
+                          </button>
+                        )}
+                        {providers.apple ? (
+                          <a
+                            className="customer-apple"
+                            href="/api/account/oauth/apple"
+                          >
+                            <AppleMark /> Continue with Apple
+                          </a>
+                        ) : (
+                          <button
+                            className="customer-apple"
+                            type="button"
+                            disabled
+                            aria-describedby="social-unavailable"
+                          >
+                            <AppleMark /> Continue with Apple
+                          </button>
+                        )}
+                        {providers.facebook && (
+                          <a href="/api/account/oauth/facebook">
+                            <span
+                              className="customer-facebook"
+                              aria-hidden="true"
+                            >
+                              f
+                            </span>{" "}
+                            Continue with Facebook
+                          </a>
+                        )}
+                      </div>
+                      {(!providers.google || !providers.apple) && (
+                        <p
+                          className="customer-social-note"
+                          id="social-unavailable"
+                        >
+                          {!providers.google && !providers.apple
+                            ? "Google and Apple sign-in are"
+                            : !providers.google
+                              ? "Google sign-in is"
+                              : "Apple sign-in is"}{" "}
+                          temporarily unavailable. Choose another available
+                          option, or shop as a guest.
+                        </p>
+                      )}
+                      <div className="customer-divider">
+                        <span>or continue with email</span>
+                      </div>
+                    </>
+                  )}
                   {unavailable && (
                     <div className="customer-note" role="status">
                       {mode === "signup"

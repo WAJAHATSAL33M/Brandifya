@@ -81,6 +81,24 @@ const project = process.cwd(),
     assert.equal(availabilityResponse.status, 200);
     const availability = await availabilityResponse.json();
     assert.equal(availability.user, null);
+    // Apple web sign-in requires a real HTTPS origin, not this local test origin.
+    assert.equal(availability.providers.apple, false);
+    const unavailableApple = await fetch(origin + "/api/account/oauth/apple", {
+      redirect: "manual",
+    });
+    assert.equal(unavailableApple.status, 303);
+    assert.match(unavailableApple.headers.get("location"), /error=apple/);
+    const rejectedAppleCallback = await fetch(
+      origin + "/api/account/oauth/apple",
+      {
+        method: "POST",
+        redirect: "manual",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "state=untrusted&code=untrusted",
+      },
+    );
+    assert.equal(rejectedAppleCallback.status, 303);
+    assert.match(rejectedAppleCallback.headers.get("location"), /error=apple/);
     assert.equal((await fetch(origin + "/api/account/orders")).status, 401);
     if (!appEnv.RESEND_API_KEY || !appEnv.AUTH_FROM_EMAIL) {
       assert.equal(availability.providers.email, false);

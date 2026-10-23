@@ -1,8 +1,27 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  LayoutDashboard,
+  LifeBuoy,
+  LogOut,
+  Mail,
+  MapPin,
+  Package,
+  RefreshCw,
+  ShieldCheck,
+  ShoppingBag,
+  Truck,
+  UserRound,
+} from "lucide-react";
 import SupportFrame from "../support-frame";
-import "../management.css";
+import "./account.css";
 type Profile = {
   id: string;
   name: string;
@@ -27,6 +46,86 @@ type Order = {
   items: { name: string; quantity: number; price_minor: number }[];
   events: { status: string; created_at: string }[];
 };
+type Mode = "login" | "signup" | "reset" | "resend";
+const labels: Record<string, string> = {
+  awaiting_payment: "Awaiting payment",
+  confirmed: "Confirmed",
+  paid: "Payment received",
+  processing: "Preparing your order",
+  shipped: "On the way",
+  delivered: "Delivered",
+  cancelled: "Cancelled",
+};
+const money = (n: number, currency: string) =>
+  new Intl.NumberFormat("en-PK", { style: "currency", currency }).format(
+    n / 100,
+  );
+const date = (s: string) =>
+  new Date(s).toLocaleDateString("en-PK", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
+function GoogleMark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 48 48" aria-hidden="true">
+      <path
+        fill="#4285F4"
+        d="M43.6 24.5c0-1.5-.1-2.9-.4-4.3H24v8.2h11c-.5 2.6-1.9 4.8-4.1 6.3v5.2h6.6c3.8-3.6 6.1-8.9 6.1-15.4Z"
+      />
+      <path
+        fill="#34A853"
+        d="M24 44c5.5 0 10.1-1.8 13.5-4.9l-6.6-5.2c-1.8 1.2-4.1 1.9-6.9 1.9-5.3 0-9.8-3.6-11.4-8.4H5.8v5.4A20.4 20.4 0 0 0 24 44Z"
+      />
+      <path
+        fill="#FBBC05"
+        d="M12.6 27.4a12 12 0 0 1 0-7.6v-5.4H5.8a20.1 20.1 0 0 0 0 18.4l6.8-5.4Z"
+      />
+      <path
+        fill="#EA4335"
+        d="M24 11.4c3 0 5.6 1 7.7 3l5.8-5.7A19.7 19.7 0 0 0 24 3.2 20.4 20.4 0 0 0 5.8 14.4l6.8 5.4C14.2 15 18.7 11.4 24 11.4Z"
+      />
+    </svg>
+  );
+}
+function Progress({ order }: { order: Order }) {
+  const steps = ["Order placed", "Preparing", "Shipped", "Delivered"],
+    index =
+      order.status === "delivered"
+        ? 3
+        : order.status === "shipped"
+          ? 2
+          : order.status === "processing"
+            ? 1
+            : 0;
+  if (order.status === "cancelled")
+    return (
+      <p className="customer-note">
+        This order was cancelled. Contact us if you need help.
+      </p>
+    );
+  if (order.status === "awaiting_payment")
+    return (
+      <p className="customer-note">
+        Payment is pending. Your order will be confirmed once payment is
+        received.
+      </p>
+    );
+  return (
+    <ol className="customer-progress" aria-label="Delivery progress">
+      {steps.map((step, i) => (
+        <li
+          key={step}
+          className={i <= index ? "complete" : ""}
+          aria-current={i === index ? "step" : undefined}
+        >
+          <span>{i < index ? <Check size={12} /> : i + 1}</span>
+          <small>{step}</small>
+        </li>
+      ))}
+    </ol>
+  );
+}
 export default function Account() {
   const [user, setUser] = useState<Profile | null>(null),
     [providers, setProviders] = useState({
@@ -35,28 +134,51 @@ export default function Account() {
       facebook: false,
     }),
     [loading, setLoading] = useState(true),
-    [mode, setMode] = useState("login"),
+    [mode, setMode] = useState<Mode>("login"),
+    [view, setView] = useState("overview"),
     [error, setError] = useState(""),
     [message, setMessage] = useState(""),
     [busy, setBusy] = useState(false),
+    [showPassword, setShowPassword] = useState(false),
+    [sent, setSent] = useState(false),
+    [email, setEmail] = useState(""),
     [orders, setOrders] = useState<Order[]>([]),
+    [ordersLoading, setOrdersLoading] = useState(false),
+    [ordersError, setOrdersError] = useState(""),
     [total, setTotal] = useState(0),
+    [summary, setSummary] = useState({ active: 0, delivered: 0 }),
     [offset, setOffset] = useState(0),
+    [refresh, setRefresh] = useState(0),
     [recentOrder, setRecentOrder] = useState<{
       id: string;
       key: string;
     } | null>(null);
-  useEffect(() => {
-    if (user && !loading && window.location.hash === "#orders") {
-      document.getElementById("orders")?.scrollIntoView({ block: "start" });
+  const feedback = useRef<HTMLDivElement>(null);
+  async function api(url: string, method = "GET", body?: unknown) {
+    const r = await fetch(url, {
+      method,
+      cache: "no-store",
+      ...(body
+        ? {
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body),
+          }
+        : {}),
+    });
+    let d;
+    try {
+      d = await r.json();
+    } catch {
+      throw Error("We couldn’t reach the account service. Please try again.");
     }
-  }, [user, loading]);
+    if (!r.ok)
+      throw Error(d.error || "Something went wrong. Please try again.");
+    return d;
+  }
   async function load() {
     setLoading(true);
     try {
-      const r = await fetch("/api/account", { cache: "no-store" }),
-        d = await r.json();
-      if (!r.ok) throw Error(d.error);
+      const d = await api("/api/account");
       setUser(d.user);
       setProviders(d.providers);
     } catch (e) {
@@ -68,36 +190,62 @@ export default function Account() {
   useEffect(() => {
     load();
     try {
-      const recent = JSON.parse(
+      const r = JSON.parse(
         localStorage.getItem("brandifya-last-order") || "null",
       );
-      if (typeof recent?.id === "string" && typeof recent?.key === "string")
-        setRecentOrder(recent);
+      if (typeof r?.id === "string" && typeof r?.key === "string")
+        setRecentOrder(r);
     } catch {}
+    if (location.hash === "#orders") setView("orders");
     if (new URLSearchParams(location.search).has("error"))
       setError(
-        "Social sign-in could not be completed. Try again, or use your existing sign-in method.",
+        "Social sign-in was not completed. Try again or sign in with email. If you already use email, use that sign-in method.",
       );
   }, []);
   useEffect(() => {
     if (!user) return;
     let active = true;
-    fetch("/api/account/orders?offset=" + offset, { cache: "no-store" })
-      .then(async (r) => {
-        const d = await r.json();
-        if (!r.ok) throw Error(d.error);
+    setOrdersLoading(true);
+    setOrdersError("");
+    api("/api/account/orders?offset=" + offset)
+      .then((d) => {
         if (active) {
           setOrders(d.orders);
           setTotal(d.total);
+          setSummary(d.summary || { active: 0, delivered: 0 });
         }
       })
       .catch((e) => {
-        if (active) setError(e.message);
+        if (active) setOrdersError(e.message);
+      })
+      .finally(() => {
+        if (active) setOrdersLoading(false);
       });
     return () => {
       active = false;
     };
-  }, [user, offset]);
+  }, [user, offset, refresh]);
+  useEffect(() => {
+    if (error || message) feedback.current?.focus();
+  }, [error, message]);
+  function switchMode(next: Mode) {
+    setMode(next);
+    setError("");
+    setMessage("");
+    setSent(false);
+    setShowPassword(false);
+  }
+  function navigate(next: string) {
+    setView(next);
+    setError("");
+    setMessage("");
+    if (next !== "profile") setOffset(0);
+    history.replaceState(
+      null,
+      "",
+      "/account" + (next === "overview" ? "" : "#" + next),
+    );
+  }
   async function submit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setBusy(true);
@@ -105,18 +253,16 @@ export default function Account() {
     setMessage("");
     try {
       const b = Object.fromEntries(new FormData(e.currentTarget));
-      const r = await fetch("/api/account", {
-        method: user ? "PATCH" : "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(user ? b : { ...b, action: mode }),
-      });
-      const d = await r.json();
-      if (!r.ok) throw Error(d.error);
+      const d = await api(
+        "/api/account",
+        user ? "PATCH" : "POST",
+        user ? b : { ...b, action: mode },
+      );
       if (d.user) {
         setUser(d.user);
         window.dispatchEvent(new Event("brande-account"));
-      }
-      setMessage(d.message || "Signed in.");
+      } else if (!user) setSent(true);
+      setMessage(d.message || "Welcome back. You’re signed in.");
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -126,383 +272,789 @@ export default function Account() {
   async function logout() {
     setBusy(true);
     try {
-      const r = await fetch("/api/account", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action: "logout" }),
-      });
-      if (!r.ok) throw Error("Sign out failed.");
+      await api("/api/account", "POST", { action: "logout" });
       setUser(null);
-      window.dispatchEvent(new Event("brande-account"));
       setOrders([]);
+      setTotal(0);
+      setOffset(0);
+      setView("overview");
       setMessage("");
+      setError("");
+      switchMode("login");
+      window.dispatchEvent(new Event("brande-account"));
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setBusy(false);
     }
   }
+  async function claim() {
+    if (!recentOrder) return;
+    setBusy(true);
+    setError("");
+    try {
+      await api("/api/account/orders", "POST", recentOrder);
+      setRecentOrder(null);
+      setOffset(0);
+      setRefresh((n) => n + 1);
+      setMessage("Your guest order is now linked to your account.");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  const authTitle =
+    mode === "signup"
+      ? "Create your account"
+      : mode === "reset"
+        ? "Forgot your password?"
+        : mode === "resend"
+          ? "Verify your email"
+          : "Welcome back";
+  const unavailable =
+    ["signup", "reset", "resend"].includes(mode) && !providers.email;
   return (
     <SupportFrame>
-      <header className="support-hero">
-        <h1>{user ? "Your account" : "Welcome to Brande"}</h1>
-        <p>
-          {user
-            ? "Your orders, delivery details and profile in one place."
-            : "Sign in or create an account to follow your orders and manage your details."}
-        </p>
-      </header>
-      {error && (
-        <p className="management-alert" role="alert">
-          {error}
-        </p>
-      )}
-      {message && (
-        <p className="management-message" role="status">
-          {message}
-        </p>
-      )}
-      {loading ? (
-        <p role="status">Loading your account…</p>
-      ) : !user ? (
-        <section className="account-login management-panel">
-          <div className="management-tabs" aria-label="Account options">
-            <button
-              type="button"
-              aria-pressed={mode === "login"}
-              onClick={() => setMode("login")}
-            >
-              Sign in
-            </button>
-            <button
-              type="button"
-              aria-pressed={mode === "signup"}
-              onClick={() => setMode("signup")}
-            >
-              Create account
-            </button>
-          </div>
-          <h2>
-            {mode === "signup"
-              ? "Create your account"
-              : mode === "reset"
-                ? "Reset your password"
-                : mode === "resend"
-                  ? "Confirm your email"
-                  : "Sign in"}
-          </h2>
-          <form onSubmit={submit} className="management-form">
-            {mode === "signup" && (
-              <label>
-                Full name
-                <input
-                  name="name"
-                  required
-                  maxLength={120}
-                  autoComplete="name"
-                />
-              </label>
-            )}
-            <label>
-              Email
-              <input
-                name="email"
-                type="email"
-                required
-                maxLength={254}
-                autoComplete="email"
-              />
-            </label>
-            {["login", "signup"].includes(mode) && (
-              <label>
-                Password
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  minLength={mode === "signup" ? 12 : undefined}
-                  maxLength={128}
-                  autoComplete={
-                    mode === "signup" ? "new-password" : "current-password"
-                  }
-                />
-                {mode === "signup" && (
-                  <small>
-                    Use at least 12 characters. We’ll email a confirmation link.
-                  </small>
-                )}
-              </label>
-            )}
-            <button
-              className="commerce-primary"
-              disabled={
-                busy ||
-                (["signup", "reset", "resend"].includes(mode) &&
-                  !providers.email)
-              }
-            >
-              {busy
-                ? "Please wait…"
-                : mode === "signup"
-                  ? "Create account"
-                  : mode === "reset"
-                    ? "Send reset link"
-                    : mode === "resend"
-                      ? "Send confirmation link"
-                      : "Sign in"}
-            </button>
-          </form>
-          <div className="account-help">
-            <button onClick={() => setMode("reset")}>Forgot password?</button>
-            <button onClick={() => setMode("resend")}>
-              Resend confirmation
-            </button>
-          </div>
-          {!providers.email && (
-            <p className="management-muted">
-              Email registration and password recovery are not available yet.
+      <div className="customer-area">
+        <div ref={feedback} tabIndex={-1} className="customer-feedback">
+          {error && (
+            <p className="customer-alert" role="alert">
+              {error}
             </p>
           )}
-          <div className="account-social">
-            <a
-              href={providers.google ? "/api/account/oauth/google" : undefined}
-              aria-disabled={!providers.google}
-            >
-              Continue with Google
-              {!providers.google && <small>Available soon</small>}
-            </a>
-            <a
-              href={
-                providers.facebook ? "/api/account/oauth/facebook" : undefined
-              }
-              aria-disabled={!providers.facebook}
-            >
-              Continue with Facebook
-              {!providers.facebook && <small>Available soon</small>}
-            </a>
-          </div>
-          <p className="management-muted">
-            By creating an account, you agree to our{" "}
-            <Link href="/terms-and-conditions">Terms</Link> and acknowledge our{" "}
-            <Link href="/privacy-policy">Privacy Policy</Link>.
-          </p>
-        </section>
-      ) : (
-        <div className="account-layout">
-          <section className="management-panel">
-            <div className="management-heading">
-              <h2>Your profile</h2>
-              <button onClick={logout} disabled={busy}>
-                Sign out
-              </button>
-            </div>
-            <form
-              key={user.email}
-              onSubmit={submit}
-              className="management-form"
-            >
-              <label>
-                Full name
-                <input
-                  name="name"
-                  required
-                  maxLength={120}
-                  defaultValue={user.name}
-                  autoComplete="name"
-                />
-              </label>
-              <label>
-                Email
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  maxLength={254}
-                  defaultValue={user.email}
-                  autoComplete="email"
-                />
-              </label>
-              <label>
-                Current password{" "}
-                <small>For email changes on password accounts</small>
-                <input
-                  name="currentPassword"
-                  type="password"
-                  autoComplete="current-password"
-                />
-              </label>
-              <label>
-                Phone
-                <input
-                  name="phone"
-                  type="tel"
-                  maxLength={30}
-                  defaultValue={user.phone}
-                  autoComplete="tel"
-                />
-              </label>
-              <label>
-                Address
-                <textarea
-                  name="address"
-                  maxLength={300}
-                  defaultValue={user.address}
-                  autoComplete="street-address"
-                />
-              </label>
-              <div className="management-fields">
-                <label>
-                  City
-                  <input name="city" maxLength={120} defaultValue={user.city} />
-                </label>
-                <label>
-                  Postal code
-                  <input
-                    name="postalCode"
-                    maxLength={20}
-                    defaultValue={user.postalCode}
-                  />
-                </label>
-              </div>
-              <label>
-                Country code
-                <input
-                  name="country"
-                  maxLength={2}
-                  defaultValue={user.country}
-                  placeholder="PK"
-                />
-              </label>
-              <button className="commerce-primary" disabled={busy}>
-                {busy ? "Saving…" : "Save profile"}
-              </button>
-            </form>
-            <p className="management-muted">
-              Profile updates apply to future checkouts. Existing orders retain
-              their original delivery details.
+          {message && (
+            <p className="customer-success" role="status">
+              {message}
             </p>
-          </section>
-          <section className="management-panel" id="orders" style={{ scrollMarginTop: 96 }}>
-            <h2>
-              Your orders <small>({total})</small>
-            </h2>
-            {recentOrder && !orders.some((o) => o.id === recentOrder.id) && (
-              <div className="management-message">
+          )}
+        </div>
+        {loading ? (
+          <div className="customer-loading" role="status">
+            <RefreshCw className="customer-spin" /> Loading your account…
+          </div>
+        ) : !user ? (
+          <div className="customer-auth-layout">
+            <aside className="customer-welcome">
+              <span className="customer-brand">
+                Brand E <span>YOUR EVERYDAY, UPGRADED.</span>
+              </span>
+              <div>
+                <span className="customer-symbol">
+                  <ShoppingBag size={36} />
+                </span>
+                <h1>
+                  A little more
+                  <br />
+                  you. All in one place.
+                </h1>
                 <p>
-                  Have a recent guest order in this browser? Link order{" "}
-                  {recentOrder.id.slice(0, 8)} to your account using its saved
-                  confirmation.
+                  Your next find, your delivery updates, your own space at Brand
+                  E.
                 </p>
+              </div>
+              <ul>
+                <li>
+                  <Package />
+                  <span>
+                    <strong>Every order, together</strong>
+                    <small>See your purchases and order details.</small>
+                  </span>
+                </li>
+                <li>
+                  <Truck />
+                  <span>
+                    <strong>Follow your delivery</strong>
+                    <small>Stay updated from confirmation to arrival.</small>
+                  </span>
+                </li>
+                <li>
+                  <ShieldCheck />
+                  <span>
+                    <strong>Your details, in your control</strong>
+                    <small>Manage your profile and delivery address.</small>
+                  </span>
+                </li>
+              </ul>
+              <Link href="/shop">
+                Explore the store <ArrowRight size={17} />
+              </Link>
+            </aside>
+            <section
+              className="customer-auth-card"
+              aria-labelledby="auth-title"
+            >
+              <Link href="/" className="customer-back">
+                <ArrowLeft size={15} /> Back to store
+              </Link>
+              <div className="customer-auth-tabs" aria-label="Account options">
                 <button
-                  type="button"
                   disabled={busy}
-                  onClick={async () => {
-                    setBusy(true);
-                    setError("");
-                    try {
-                      const r = await fetch("/api/account/orders", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify(recentOrder),
-                      });
-                      const d = await r.json();
-                      if (!r.ok) throw Error(d.error);
-                      setRecentOrder(null);
-                      await load();
-                      setOffset(0);
-                      setMessage("Guest order linked to your account.");
-                    } catch (e) {
-                      setError((e as Error).message);
-                    } finally {
-                      setBusy(false);
-                    }
-                  }}
+                  aria-pressed={mode === "login"}
+                  onClick={() => switchMode("login")}
                 >
-                  Link recent guest order
+                  Sign in
+                </button>
+                <button
+                  disabled={busy}
+                  aria-pressed={mode === "signup"}
+                  onClick={() => switchMode("signup")}
+                >
+                  Create account
                 </button>
               </div>
-            )}
-            {!orders.length && (
-              <p>
-                No orders linked to this account yet. Sign in before placing a
-                new order to see it here.
+              <h2 id="auth-title">{sent ? "Check your inbox" : authTitle}</h2>
+              <p className="customer-intro">
+                {sent
+                  ? "Your next step is in your email. Check your spam folder too."
+                  : mode === "signup"
+                    ? "A few details, then you’re one step closer to your next find."
+                    : mode === "reset"
+                      ? "Enter your email and we’ll send a secure reset link."
+                      : mode === "resend"
+                        ? "Request a fresh confirmation link for your account."
+                        : "Sign in to follow your orders and pick up where you left off."}
               </p>
-            )}
-            {orders.map((o) => (
-              <article className="account-order" key={o.id}>
-                <div className="management-heading">
-                  <h3>Order {o.id.slice(0, 8)}</h3>
-                  <span className="management-status">
-                    {o.status.replaceAll("_", " ")}
-                  </span>
-                </div>
-                <p>
-                  <time dateTime={o.created_at}>
-                    {new Date(o.created_at).toLocaleDateString()}
-                  </time>{" "}
-                  ·{" "}
-                  {new Intl.NumberFormat("en-PK", {
-                    style: "currency",
-                    currency: o.currency,
-                  }).format(o.total_minor / 100)}
-                </p>
-                <details>
-                  <summary>View order details</summary>
-                  <ul>
-                    {o.items.map((i, j) => (
-                      <li key={j}>
-                        {i.name} × {i.quantity} —{" "}
-                        {new Intl.NumberFormat("en-PK", {
-                          style: "currency",
-                          currency: o.currency,
-                        }).format((i.price_minor * i.quantity) / 100)}
-                      </li>
-                    ))}
-                  </ul>
+              {sent ? (
+                <div className="customer-inbox">
+                  <Mail size={36} />
+                  <strong>{email}</strong>
                   <p>
-                    {o.customer.name}
-                    <br />
-                    {o.customer.address}, {o.customer.city}
-                    <br />
-                    {o.customer.phone}
+                    Links expire after 30 minutes. Once your email is confirmed,
+                    return here to sign in.
                   </p>
-                  <p>Updated {new Date(o.updated_at).toLocaleString()}</p>
-                  {o.events.map((event, j) => (
-                    <p key={j}>
-                      {event.status} ·{" "}
-                      {new Date(event.created_at).toLocaleString()}
-                    </p>
-                  ))}
-                  {o.tracking_number && <p>Tracking: {o.tracking_number}</p>}
-                  {o.tracking_url && (
-                    <a
-                      href={o.tracking_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
+                  <button
+                    className="customer-primary"
+                    onClick={() => switchMode("login")}
+                  >
+                    Return to sign in <ArrowRight size={17} />
+                  </button>
+                  {mode !== "reset" && (
+                    <button
+                      className="customer-text"
+                      onClick={() => switchMode("resend")}
                     >
-                      Track delivery ↗
-                    </a>
+                      Need another confirmation link?
+                    </button>
                   )}
-                </details>
-              </article>
-            ))}
-            <div className="management-heading">
-              <button
-                disabled={offset === 0}
-                onClick={() => setOffset(Math.max(0, offset - 20))}
-              >
-                Previous
-              </button>
-              <button
-                disabled={offset + 20 >= total}
-                onClick={() => setOffset(offset + 20)}
-              >
-                Next
-              </button>
+                </div>
+              ) : (
+                <>
+                  {["login", "signup"].includes(mode) &&
+                    (providers.google || providers.facebook) && (
+                      <>
+                        <div className="customer-social">
+                          {providers.google && (
+                            <a href="/api/account/oauth/google">
+                              <GoogleMark /> Continue with Google
+                            </a>
+                          )}
+                          {providers.facebook && (
+                            <a href="/api/account/oauth/facebook">
+                              <span
+                                className="customer-facebook"
+                                aria-hidden="true"
+                              >
+                                f
+                              </span>{" "}
+                              Continue with Facebook
+                            </a>
+                          )}
+                        </div>
+                        <div className="customer-divider">
+                          <span>or continue with email</span>
+                        </div>
+                      </>
+                    )}
+                  {unavailable && (
+                    <div className="customer-note" role="status">
+                      {mode === "signup"
+                        ? "Account registration is temporarily unavailable."
+                        : "Account emails are temporarily unavailable."}{" "}
+                      You can still shop and check out as a guest.{" "}
+                      <Link href="/contact">Contact us for help</Link>.
+                    </div>
+                  )}
+                  <form
+                    key={mode}
+                    onSubmit={submit}
+                    className="customer-form"
+                    aria-busy={busy}
+                  >
+                    {mode === "signup" && (
+                      <label htmlFor="customer-name">
+                        Full name
+                        <input
+                          id="customer-name"
+                          name="name"
+                          required
+                          maxLength={120}
+                          autoComplete="name"
+                          placeholder="Your full name"
+                          disabled={busy}
+                        />
+                      </label>
+                    )}
+                    <label htmlFor="customer-email">
+                      Email address
+                      <input
+                        id="customer-email"
+                        name="email"
+                        type="email"
+                        required
+                        maxLength={254}
+                        autoComplete="email"
+                        autoCapitalize="none"
+                        spellCheck={false}
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="you@example.com"
+                        disabled={busy}
+                      />
+                    </label>
+                    {["login", "signup"].includes(mode) && (
+                      <label htmlFor="customer-password">
+                        <span className="customer-label-row">
+                          Password
+                          {mode === "login" && (
+                            <button
+                              type="button"
+                              className="customer-text"
+                              disabled={busy}
+                              onClick={() => switchMode("reset")}
+                            >
+                              Forgot password?
+                            </button>
+                          )}
+                        </span>
+                        <span className="customer-password">
+                          <input
+                            id="customer-password"
+                            aria-label="Password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            required
+                            minLength={mode === "signup" ? 12 : undefined}
+                            maxLength={128}
+                            autoComplete={
+                              mode === "signup"
+                                ? "new-password"
+                                : "current-password"
+                            }
+                            aria-describedby={
+                              mode === "signup" ? "password-help" : undefined
+                            }
+                            disabled={busy}
+                          />
+                          <button
+                            type="button"
+                            aria-label={
+                              showPassword ? "Hide password" : "Show password"
+                            }
+                            aria-pressed={showPassword}
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? (
+                              <EyeOff size={19} />
+                            ) : (
+                              <Eye size={19} />
+                            )}
+                          </button>
+                        </span>
+                        {mode === "signup" && (
+                          <small id="password-help">
+                            Use 12 or more characters. A memorable phrase works
+                            well.
+                          </small>
+                        )}
+                      </label>
+                    )}
+                    {mode === "signup" && (
+                      <p className="customer-terms">
+                        By creating an account, you agree to our{" "}
+                        <Link href="/terms-and-conditions">Terms</Link> and
+                        acknowledge our{" "}
+                        <Link href="/privacy-policy">Privacy Policy</Link>.
+                        We’ll email you a verification link.
+                      </p>
+                    )}
+                    <button
+                      className="customer-primary"
+                      disabled={busy || unavailable}
+                    >
+                      {busy ? (
+                        <>
+                          <RefreshCw size={17} className="customer-spin" />{" "}
+                          Please wait…
+                        </>
+                      ) : (
+                        <>
+                          {mode === "signup"
+                            ? "Create account"
+                            : mode === "reset"
+                              ? "Send reset link"
+                              : mode === "resend"
+                                ? "Send confirmation link"
+                                : "Sign in"}
+                          <ArrowRight size={17} />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                  <div className="customer-auth-help">
+                    {mode === "login" ? (
+                      <>
+                        <span>Still waiting for your verification email?</span>
+                        <button
+                          className="customer-text"
+                          onClick={() => switchMode("resend")}
+                        >
+                          Resend confirmation
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        className="customer-text"
+                        onClick={() => switchMode("login")}
+                      >
+                        <ArrowLeft size={14} /> Back to sign in
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+              <div className="customer-auth-footer">
+                <ShieldCheck size={15} /> Your account details stay private.
+              </div>
+            </section>
+          </div>
+        ) : (
+          <>
+            <header className="customer-dashboard-heading">
+              <div>
+                <p>Your Brand E account</p>
+                <h1>Hello, {user.name.split(" ")[0]}.</h1>
+                <span>Good to see you. Here’s everything you need.</span>
+              </div>
+              <Link className="customer-secondary" href="/shop">
+                Continue shopping <ArrowRight size={17} />
+              </Link>
+            </header>
+            <div className="customer-dashboard">
+              <aside className="customer-sidebar">
+                <div className="customer-identity">
+                  <span>{user.name.charAt(0).toUpperCase()}</span>
+                  <div>
+                    <strong>{user.name}</strong>
+                    <small>{user.email}</small>
+                  </div>
+                </div>
+                <nav aria-label="Account navigation">
+                  {[
+                    {
+                      id: "overview",
+                      label: "Overview",
+                      icon: LayoutDashboard,
+                    },
+                    { id: "orders", label: "Orders & tracking", icon: Package },
+                    {
+                      id: "profile",
+                      label: "Profile & address",
+                      icon: UserRound,
+                    },
+                  ].map(({ id, label, icon: Icon }) => (
+                    <button
+                      key={id}
+                      aria-current={view === id ? "page" : undefined}
+                      onClick={() => navigate(id)}
+                    >
+                      <Icon size={19} />
+                      {label}
+                      <ChevronRight size={15} />
+                    </button>
+                  ))}
+                </nav>
+                <Link href="/contact">
+                  <LifeBuoy size={18} /> Need a hand?
+                </Link>
+                <button onClick={logout} disabled={busy}>
+                  <LogOut size={18} /> Sign out
+                </button>
+              </aside>
+              <div className="customer-dashboard-body">
+                {view !== "profile" ? (
+                  <>
+                    {view === "overview" && (
+                      <div className="customer-stats">
+                        <article>
+                          <Package />
+                          <span>Total orders</span>
+                          <strong>{ordersLoading ? "—" : total}</strong>
+                        </article>
+                        <article>
+                          <Truck />
+                          <span>In progress</span>
+                          <strong>
+                            {ordersLoading ? "—" : summary.active}
+                          </strong>
+                        </article>
+                        <article>
+                          <Check />
+                          <span>Delivered</span>
+                          <strong>
+                            {ordersLoading ? "—" : summary.delivered}
+                          </strong>
+                        </article>
+                      </div>
+                    )}
+                    <section className="customer-panel" id="orders">
+                      <div className="customer-section-heading">
+                        <div>
+                          <h2>
+                            {view === "overview"
+                              ? "Recent orders"
+                              : "Orders & tracking"}
+                          </h2>
+                          <p>Follow your order from our store to your door.</p>
+                        </div>
+                        <button
+                          className="customer-icon-button"
+                          aria-label="Refresh orders"
+                          disabled={ordersLoading}
+                          onClick={() => setRefresh((n) => n + 1)}
+                        >
+                          <RefreshCw
+                            size={18}
+                            className={ordersLoading ? "customer-spin" : ""}
+                          />
+                        </button>
+                      </div>
+                      {recentOrder &&
+                        !orders.some((o) => o.id === recentOrder.id) && (
+                          <div className="customer-claim">
+                            <Package size={22} />
+                            <div>
+                              <strong>Ordered as a guest?</strong>
+                              <p>
+                                Link the recent order saved in this browser to
+                                see it here.
+                              </p>
+                            </div>
+                            <button
+                              className="customer-secondary"
+                              disabled={busy}
+                              onClick={claim}
+                            >
+                              Link order
+                            </button>
+                          </div>
+                        )}
+                      {ordersError ? (
+                        <div className="customer-alert" role="alert">
+                          {ordersError}{" "}
+                          <button
+                            className="customer-text"
+                            onClick={() => setRefresh((n) => n + 1)}
+                          >
+                            Try again
+                          </button>
+                        </div>
+                      ) : ordersLoading ? (
+                        <p className="customer-loading" role="status">
+                          Loading your orders…
+                        </p>
+                      ) : !orders.length ? (
+                        <div className="customer-empty">
+                          <ShoppingBag size={40} />
+                          <h3>Your next find is waiting</h3>
+                          <p>
+                            Orders placed while signed in will appear here with
+                            delivery updates.
+                          </p>
+                          <Link className="customer-primary" href="/shop">
+                            Explore products <ArrowRight size={17} />
+                          </Link>
+                        </div>
+                      ) : (
+                        orders.map((o) => (
+                          <article className="customer-order" key={o.id}>
+                            <div className="customer-order-top">
+                              <div>
+                                <h3>Order #{o.id.slice(0, 8).toUpperCase()}</h3>
+                                <time dateTime={o.created_at}>
+                                  Placed {date(o.created_at)}
+                                </time>
+                              </div>
+                              <span
+                                className={
+                                  "customer-order-status status-" + o.status
+                                }
+                              >
+                                {labels[o.status] || o.status}
+                              </span>
+                            </div>
+                            <Progress order={o} />
+                            <div className="customer-order-bottom">
+                              <span>
+                                {o.items.reduce((n, i) => n + i.quantity, 0)}{" "}
+                                items <b>{money(o.total_minor, o.currency)}</b>
+                              </span>
+                              {o.tracking_url && (
+                                <a
+                                  className="customer-secondary"
+                                  href={o.tracking_url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                >
+                                  <Truck size={16} /> Track delivery
+                                </a>
+                              )}
+                            </div>
+                            <details>
+                              <summary>
+                                Order details <ChevronRight size={15} />
+                              </summary>
+                              <ul className="customer-items">
+                                {o.items.map((i, j) => (
+                                  <li key={j}>
+                                    <span>
+                                      {i.name}
+                                      <small>Quantity: {i.quantity}</small>
+                                    </span>
+                                    <strong>
+                                      {money(
+                                        i.price_minor * i.quantity,
+                                        o.currency,
+                                      )}
+                                    </strong>
+                                  </li>
+                                ))}
+                              </ul>
+                              <div className="customer-order-detail-grid">
+                                <div>
+                                  <h4>
+                                    <MapPin size={15} /> Delivery address
+                                  </h4>
+                                  <p>
+                                    {o.customer.name}
+                                    <br />
+                                    {o.customer.address}, {o.customer.city}
+                                    <br />
+                                    {o.customer.phone}
+                                  </p>
+                                </div>
+                                <div>
+                                  <h4>
+                                    <Truck size={15} /> Delivery updates
+                                  </h4>
+                                  {o.tracking_number && (
+                                    <p>
+                                      Tracking number:{" "}
+                                      <strong>{o.tracking_number}</strong>
+                                    </p>
+                                  )}
+                                  <ol className="customer-events">
+                                    {o.events.map((event, j) => (
+                                      <li key={j}>
+                                        <strong>
+                                          {labels[event.status] || event.status}
+                                        </strong>
+                                        <time dateTime={event.created_at}>
+                                          {date(event.created_at)} ·{" "}
+                                          {new Date(
+                                            event.created_at,
+                                          ).toLocaleTimeString("en-PK", {
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                          })}
+                                        </time>
+                                      </li>
+                                    ))}
+                                  </ol>
+                                  {!o.events.length && (
+                                    <p>No additional updates yet.</p>
+                                  )}
+                                </div>
+                              </div>
+                              <p className="customer-updated">
+                                Last updated {date(o.updated_at)}.{" "}
+                                <Link href="/contact">
+                                  Need help with this order?
+                                </Link>
+                              </p>
+                            </details>
+                          </article>
+                        ))
+                      )}
+                      {total > 20 && (
+                        <div className="customer-pagination">
+                          <button
+                            className="customer-secondary"
+                            disabled={ordersLoading || offset === 0}
+                            onClick={() => setOffset(Math.max(0, offset - 20))}
+                          >
+                            Previous
+                          </button>
+                          <span>
+                            {offset + 1}–{Math.min(offset + 20, total)} of{" "}
+                            {total}
+                          </span>
+                          <button
+                            className="customer-secondary"
+                            disabled={ordersLoading || offset + 20 >= total}
+                            onClick={() => setOffset(offset + 20)}
+                          >
+                            Next
+                          </button>
+                        </div>
+                      )}
+                    </section>
+                    {view === "overview" && (
+                      <div className="customer-shortcuts">
+                        <button onClick={() => navigate("profile")}>
+                          <MapPin />
+                          <span>
+                            <strong>Your delivery details</strong>
+                            <small>
+                              Keep your address and phone up to date.
+                            </small>
+                          </span>
+                          <ChevronRight />
+                        </button>
+                        <Link href="/contact">
+                          <LifeBuoy />
+                          <span>
+                            <strong>We’re here to help</strong>
+                            <small>
+                              Questions about an order? Talk to our team.
+                            </small>
+                          </span>
+                          <ChevronRight />
+                        </Link>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <section className="customer-panel">
+                    <div className="customer-section-heading">
+                      <div>
+                        <h2>Profile & delivery address</h2>
+                        <p>Keep your details ready for your next order.</p>
+                      </div>
+                      <UserRound size={24} />
+                    </div>
+                    <form
+                      key={user.email}
+                      onSubmit={submit}
+                      className="customer-form customer-profile-form"
+                      aria-busy={busy}
+                    >
+                      <div className="customer-field-grid">
+                        <label>
+                          Full name
+                          <input
+                            name="name"
+                            required
+                            maxLength={120}
+                            defaultValue={user.name}
+                            autoComplete="name"
+                          />
+                        </label>
+                        <label>
+                          Phone number
+                          <input
+                            name="phone"
+                            type="tel"
+                            maxLength={30}
+                            defaultValue={user.phone}
+                            autoComplete="tel"
+                          />
+                        </label>
+                      </div>
+                      <label>
+                        Email address
+                        <input
+                          name="email"
+                          type="email"
+                          required
+                          maxLength={254}
+                          defaultValue={user.email}
+                          autoComplete="email"
+                        />
+                      </label>
+                      <label>
+                        Current password{" "}
+                        <small>
+                          Only needed when changing the email on a password
+                          account.
+                        </small>
+                        <input
+                          name="currentPassword"
+                          type="password"
+                          autoComplete="current-password"
+                        />
+                      </label>
+                      <label>
+                        Street address
+                        <textarea
+                          name="address"
+                          maxLength={300}
+                          defaultValue={user.address}
+                          autoComplete="street-address"
+                          rows={2}
+                        />
+                      </label>
+                      <div className="customer-field-grid">
+                        <label>
+                          City
+                          <input
+                            name="city"
+                            maxLength={120}
+                            defaultValue={user.city}
+                            autoComplete="address-level2"
+                          />
+                        </label>
+                        <label>
+                          Postal code
+                          <input
+                            name="postalCode"
+                            maxLength={20}
+                            defaultValue={user.postalCode}
+                            autoComplete="postal-code"
+                          />
+                        </label>
+                      </div>
+                      <label>
+                        Country code
+                        <input
+                          name="country"
+                          maxLength={2}
+                          pattern="[A-Z]{2}"
+                          defaultValue={user.country}
+                          placeholder="PK"
+                          autoComplete="country"
+                        />
+                        <small>
+                          Two capital letters, for example PK for Pakistan.
+                        </small>
+                      </label>
+                      <p className="customer-note">
+                        Changes apply to future checkouts. Contact us to update
+                        delivery details on an existing order. Email changes
+                        require confirmation.
+                      </p>
+                      <button className="customer-primary" disabled={busy}>
+                        {busy ? "Saving…" : "Save changes"}
+                        <Check size={17} />
+                      </button>
+                    </form>
+                  </section>
+                )}
+              </div>
             </div>
-          </section>
-        </div>
-      )}
+          </>
+        )}
+      </div>
     </SupportFrame>
   );
 }

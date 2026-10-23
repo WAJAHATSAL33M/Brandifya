@@ -18,3 +18,11 @@ Redeploy the latest `main` and restart the app. Open `/admin`. If the database i
 If automatic repair is denied by database permissions, import `database/admin-access.sql` into the same database configured for the app. This file now includes all four authentication prerequisites.
 
 `STORE_URL` must be the exact public HTTPS origin used to open the site. Connection, credential and database-name errors now show separate instructions. If `DATABASE_URL` is present, it overrides `DB_HOST`, `DB_NAME`, `DB_USER` and `DB_PASSWORD`; remove an outdated URL or update it. Restart after changing environment variables. Never paste private values into GitHub or support screenshots.
+
+## Customer signup and social sign-in
+
+Customer email signup intentionally requires email verification. Set `RESEND_API_KEY` and `AUTH_FROM_EMAIL` to a verified sender in Hostinger, alongside the correct MySQL connection and canonical HTTPS `STORE_URL`. Restart the app. Without these, email signup/recovery is unavailable; customer verification is never bypassed. Existing email/password accounts can still sign in.
+
+For Google sign-in, configure `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` from the merchant's Google OAuth web application. Register the exact redirect URI `https://YOUR-DOMAIN/api/account/oauth/google`, including the correct www/non-www hostname. For Facebook, configure its matching credentials, `FACEBOOK_GRAPH_VERSION` and `/api/account/oauth/facebook` redirect. Unconfigured social providers are hidden rather than shown as unusable buttons. OAuth accounts using an email already registered by another sign-in method must use their existing method; automatic account linking is intentionally not enabled.
+
+Customer dashboard: `/account`. Orders are scoped to the signed-in customer. The dashboard provides aggregate order counts, actual fulfillment milestones, event history and the carrier link when supplied by the store. No arrival estimate is invented. A guest order may be linked only using its saved order ID and private confirmation key. Import the full `database/schema.sql` before testing account and order flows.

@@ -35,6 +35,14 @@ export async function GET(request: Request) {
             { status: 400 },
           );
     }
+    // Detect missing customer tables before presenting an apparently working form.
+    if (!databaseConfigured()) throw Error("Accounts unavailable");
+    await Promise.all([
+      db()`SELECT id FROM customers LIMIT 1`,
+      db()`SELECT token_hash FROM customer_sessions LIMIT 1`,
+      db()`SELECT bucket_key FROM auth_limits LIMIT 1`,
+      db()`SELECT token_hash FROM account_tokens LIMIT 1`,
+    ]);
     const u = await sessionUser();
     return Response.json(
       {
@@ -111,12 +119,21 @@ export async function POST(request: Request) {
       const hash = await hashPassword(b.password);
       const id = randomUUID();
       await db()`INSERT INTO customers (id,name,email,password_hash) VALUES (${id},${b.name.trim()},${email},${hash}) ON DUPLICATE KEY UPDATE id=id`;
-      const created = await db()`SELECT id FROM customers WHERE email=${email}`;
-      if (created[0]?.id === id) await sendAccountLink(id, email, "verify");
+      const created =
+        await db()`SELECT id,password_hash,email_verified FROM customers WHERE email=${email}`;
+      const account = created[0];
+      // Allow a genuine retry after a delivery failure without replacing credentials.
+      if (
+        account?.id === id ||
+        (account &&
+          !account.email_verified &&
+          (await verifyPassword(b.password, account.password_hash)))
+      )
+        await sendAccountLink(String(account.id), email, "verify");
       return Response.json({
         ok: true,
         message:
-          "If this address can be registered, a confirmation link has been sent. Check your inbox.",
+          "If this address can be registered, a confirmation link has been sent. Check your inbox. If you already have a verified account, sign in instead.",
       });
     }
     const rows = await db()`SELECT * FROM customers WHERE email=${email}`;
@@ -159,7 +176,9 @@ export async function POST(request: Request) {
       {
         error:
           e instanceof Error &&
-          !/mysql|database|postgres|duplicate|constraint|relation|column/i.test(e.message)
+          !/mysql|database|postgres|duplicate|constraint|relation|column/i.test(
+            e.message,
+          )
             ? e.message
             : "Account request could not be completed.",
       },

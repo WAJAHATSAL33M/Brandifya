@@ -1,3 +1,4 @@
+import { safeMediaUrl } from "../../../../lib/auth-core";
 import { db } from "../../../../lib/db";
 import { sessionUser, checkOrigin, rateLimit } from "../../../../lib/auth";
 export async function GET(request: Request) {
@@ -17,18 +18,33 @@ export async function GET(request: Request) {
     );
     const orders =
       await db()`SELECT id,status,payment_method,currency,total_minor,shipping_minor,customer,created_at,updated_at,tracking_number,tracking_url FROM orders WHERE customer_id=${u.id} ORDER BY created_at DESC LIMIT 20 OFFSET ${Math.floor(offset)}`;
-    const result = [];
-    for (const o of orders) {
-      const items =
-        await db()`SELECT product_id,name,price_minor,quantity FROM order_items WHERE order_id=${o.id}`;
-      const events =
-        await db()`SELECT status,created_at FROM order_events WHERE order_id=${o.id} ORDER BY created_at`;
-      result.push({ ...o, items, events });
-    }
+    const result = await Promise.all(
+      orders.map(async (o) => {
+        const [items, events] = await Promise.all([
+          db()`SELECT product_id,name,price_minor,quantity FROM order_items WHERE order_id=${o.id}`,
+          db()`SELECT status,created_at FROM order_events WHERE order_id=${o.id} ORDER BY created_at`,
+        ]);
+        return {
+          ...o,
+          tracking_url: safeMediaUrl(o.tracking_url) ? o.tracking_url : "",
+          items,
+          events,
+        };
+      }),
+    );
     const counts =
       await db()`SELECT count(*) AS count FROM orders WHERE customer_id=${u.id}`;
+    const summary =
+      await db()`SELECT coalesce(sum(status IN ('awaiting_payment','confirmed','paid','processing','shipped')),0) AS active_count,coalesce(sum(status='delivered'),0) AS delivered_count FROM orders WHERE customer_id=${u.id}`;
     return Response.json(
-      { orders: result, total: counts[0].count },
+      {
+        orders: result,
+        total: counts[0].count,
+        summary: {
+          active: Number(summary[0].active_count),
+          delivered: Number(summary[0].delivered_count),
+        },
+      },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {

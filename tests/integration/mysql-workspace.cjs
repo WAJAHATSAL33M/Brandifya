@@ -77,6 +77,26 @@ const project = process.cwd(),
       setTimeout(() => reject(Error("App startup timed out")), 20000).unref();
     });
     const origin = appEnv.STORE_URL;
+    const availabilityResponse = await fetch(origin + "/api/account");
+    assert.equal(availabilityResponse.status, 200);
+    const availability = await availabilityResponse.json();
+    assert.equal(availability.user, null);
+    assert.equal((await fetch(origin + "/api/account/orders")).status, 401);
+    if (!appEnv.RESEND_API_KEY || !appEnv.AUTH_FROM_EMAIL) {
+      assert.equal(availability.providers.email, false);
+      const unavailableSignup = await fetch(origin + "/api/account", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: origin },
+        body: JSON.stringify({
+          action: "signup",
+          name: "Unavailable signup",
+          email: "unavailable@example.com",
+          password: "test-password-123",
+        }),
+      });
+      assert.equal(unavailableSignup.status, 400);
+      assert.match((await unavailableSignup.json()).error, /not configured/);
+    }
     const authConn = await mysql.createConnection({
       ...options,
       bigNumberStrings: false,
@@ -231,6 +251,11 @@ const project = process.cwd(),
         .total,
       1,
     );
+    const history = (
+      await request("/api/account/orders", { headers: userHeaders })
+    ).body;
+    assert.equal(history.summary.active, 1);
+    assert.equal(history.summary.delivered, 0);
     const dashboard = (await request("/api/admin/orders", { headers: admin }))
       .body;
     assert.equal(dashboard.summary.total, 1);

@@ -126,6 +126,7 @@ export default function Admin() {
     [checking, setChecking] = useState(true),
     [setupRequired, setSetupRequired] = useState(false),
     [setupAvailable, setSetupAvailable] = useState(false),
+    [repairRequired, setRepairRequired] = useState(false),
     [view, setView] = useState("overview"),
     [drawer, setDrawer] = useState(false),
     [dirty, setDirty] = useState(false),
@@ -170,6 +171,7 @@ export default function Admin() {
           setUser(d.user);
           setSetupRequired(d.setupRequired);
           setSetupAvailable(d.setupAvailable);
+          setRepairRequired(Boolean(d.repairRequired));
         }
       })
       .catch((e) => {
@@ -276,6 +278,15 @@ export default function Admin() {
     setError("");
     const f = Object.fromEntries(new FormData(e.currentTarget));
     try {
+      if (repairRequired) {
+        await api("/api/admin/session", "POST", {action:"prepare", setupCode:f.setupCode});
+        const state = await api("/api/admin/session");
+        setRepairRequired(Boolean(state.repairRequired));
+        setSetupRequired(state.setupRequired);
+        setSetupAvailable(state.setupAvailable);
+        setNotice("Admin tables are ready. " + (state.setupRequired ? "Create your owner account below." : "Sign in with your existing username and password."));
+        return;
+      }
       if (setupRequired && f.password !== f.confirmPassword)
         throw Error("Passwords do not match.");
       const d = await api("/api/admin/session", "POST", {
@@ -341,14 +352,18 @@ export default function Admin() {
           <h1>
             {checking
               ? "Welcome back"
-              : setupRequired
+              : repairRequired
+                ? "Repair admin access"
+                : setupRequired
                 ? "Create your owner account"
                 : "Admin sign in"}
           </h1>
           <p>
             {checking
               ? "Checking your secure session…"
-              : setupRequired
+              : repairRequired
+                ? "Some admin tables are missing. Use your private setup code to create them safely. Existing accounts and store data are preserved."
+                : setupRequired
                 ? "Use your private setup code to create the first owner account."
                 : "Your store operations, all in one place."}
           </p>
@@ -364,6 +379,7 @@ export default function Admin() {
           )}
           {!checking && (
             <form onSubmit={login}>
+              {!repairRequired && <>
               <label>
                 Username
                 <input
@@ -389,6 +405,7 @@ export default function Admin() {
                   }
                 />
               </label>
+              </>}
               {setupRequired && (
                 <>
                   <label>
@@ -402,6 +419,10 @@ export default function Admin() {
                       autoComplete="new-password"
                     />
                   </label>
+                </>
+              )}
+              {(setupRequired || repairRequired) && (
+                <>
                   <label>
                     Private setup code
                     <input
@@ -423,11 +444,13 @@ export default function Admin() {
               )}
               <button
                 className="console-primary"
-                disabled={busy || (setupRequired && !setupAvailable)}
+                disabled={busy || ((setupRequired || repairRequired) && !setupAvailable)}
               >
                 {busy
                   ? "Please wait…"
-                  : setupRequired
+                  : repairRequired
+                    ? "Repair admin access"
+                    : setupRequired
                     ? "Create owner account"
                     : "Sign in"}
                 <ArrowUpRight size={16} />

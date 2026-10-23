@@ -1,25 +1,47 @@
 import { randomUUID } from 'node:crypto';
 import { db, databaseConfigured } from '../../../../lib/db';
 import { adminUser, createAdminSession, clearAdminSession, validSetupCode, normalizeAdminUsername } from '../../../../lib/admin-auth';
-import { checkOrigin } from '../../../../lib/store-origin';
+import { storeOrigin, checkOrigin } from '../../../../lib/store-origin';
+import { prepareAdminAccess, databaseErrorCode, adminDatabaseMessage } from '../../../../lib/admin-bootstrap';
+import { databaseOptions } from '../../../../lib/database-config.mjs';
 import { rateLimit } from '../../../../lib/rate-limit';
 import { hashPassword, verifyPassword } from '../../../../lib/auth-core';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const headers={'Cache-Control':'no-store'};
 export async function GET() {
-  if(!databaseConfigured())return Response.json({error:'Connect the store database before setting up admin access.'},{status:503,headers});
+  try { storeOrigin(); } catch {
+    return Response.json({error:'Set STORE_URL in Hostinger to the exact HTTPS address of this store, then restart the app.'},{status:503,headers});
+  }
+  if(!databaseConfigured())return Response.json({error:'Connect the store database: set DB_NAME, DB_USER and DB_PASSWORD in Hostinger, then restart the app.'},{status:503,headers});
+  try { databaseOptions(); } catch {
+    return Response.json({error:'Invalid MySQL configuration. Check DATABASE_URL (mysql://), DB_PORT and DB_SSL in Hostinger. DATABASE_URL overrides the separate DB settings.'},{status:503,headers});
+  }
+  const setupAvailable=Boolean((process.env.ADMIN_SETUP_TOKEN || process.env.ADMIN_API_TOKEN || '').length>=32);
   try {
+    await db()`SELECT id FROM admin_users LIMIT 1`;
+    await db()`SELECT token_hash FROM admin_sessions LIMIT 1`;
+    await db()`SELECT bucket_key FROM auth_limits LIMIT 1`;
+    await db()`SELECT lock_key FROM transaction_locks LIMIT 1`;
     const user=await adminUser();
     const rows=await db()`SELECT id FROM admin_users LIMIT 1`;
-    return Response.json({user,setupRequired:!rows.length,setupAvailable:Boolean((process.env.ADMIN_SETUP_TOKEN || process.env.ADMIN_API_TOKEN || '').length>=32)},{headers});
-  }catch{return Response.json({error:'Admin access is not ready. Import database/admin-access.sql and check the database connection.'},{status:503,headers})}
+    return Response.json({user,setupRequired:!rows.length,setupAvailable},{headers});
+  } catch(error) {
+    if(databaseErrorCode(error)==='ER_NO_SUCH_TABLE') return Response.json({user:null,repairRequired:true,setupRequired:false,setupAvailable},{headers});
+    return Response.json({error:adminDatabaseMessage(error)},{status:503,headers});
+  }
 }
 export async function POST(request:Request) {
   try {checkOrigin(request)} catch {return Response.json({error:'Invalid request origin.'},{status:403,headers})}
   try {
     const text=await request.text();if(text.length>5000)return Response.json({error:'Request too large.'},{status:413,headers});
     const body=JSON.parse(text);
+    if(body.action==='prepare') {
+      // The private deployment secret is checked BEFORE any schema mutation.
+      if(!validSetupCode(body.setupCode))return Response.json({error:'Setup code is incorrect or unavailable.'},{status:401,headers});
+      await prepareAdminAccess();
+      return Response.json({ok:true},{headers});
+    }
     if(body.action==='logout'){await clearAdminSession();return Response.json({ok:true},{headers})}
     if(body.action==='password') {
       const user=await adminUser();if(!user)return Response.json({error:'Sign in again.'},{status:401,headers});
@@ -58,7 +80,7 @@ export async function POST(request:Request) {
     return Response.json({user:{id:user.id,username:user.username,role:user.role}},{headers});
   }catch(error){
     const message=error instanceof Error?error.message:'';
-    const publicMessage=/^(Use a (username|password)|Current password is incorrect|Admin setup is already complete|Too many attempts)/.test(message)?message:'Admin request could not be completed. Check database setup and try again.';
+    const publicMessage=/^(Use a (username|password)|Current password is incorrect|Admin setup is already complete|Too many attempts)/.test(message)?message:adminDatabaseMessage(error);
     return Response.json({error:publicMessage},{status:/Too many attempts/.test(message)?429:400,headers});
   }
 }

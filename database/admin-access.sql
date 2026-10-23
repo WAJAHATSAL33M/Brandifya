@@ -17,3 +17,9 @@ CREATE TABLE IF NOT EXISTS admin_sessions (
  INDEX admin_session_expiry_idx (expires_at),
  FOREIGN KEY (admin_id) REFERENCES admin_users(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Required for login throttling and atomic first-owner creation.
+CREATE TABLE IF NOT EXISTS auth_limits (
+ bucket_key CHAR(64) PRIMARY KEY, count INT NOT NULL, expires_at DATETIME(3) NOT NULL, INDEX limits_expiry_idx (expires_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+CREATE TABLE IF NOT EXISTS transaction_locks (lock_key CHAR(64) PRIMARY KEY) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

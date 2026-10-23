@@ -1,29 +1,11 @@
 import { cookies } from "next/headers";
-import { randomUUID, timingSafeEqual } from "node:crypto";
+import { randomUUID } from "node:crypto";
 import { db, databaseConfigured } from "./db";
 import { newToken, tokenHash } from "./auth-core";
-export function storeOrigin() {
-  const value = process.env.STORE_URL;
-  if (!value) throw Error("Store URL is not configured.");
-  const url = new URL(value);
-  if (
-    url.protocol !== "https:" &&
-    !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
-  )
-    throw Error("Account access requires an HTTPS store URL.");
-  return url.origin;
-}
-export function checkOrigin(request: Request) {
-  if (request.headers.get("origin") !== storeOrigin())
-    throw Error("Invalid request origin.");
-}
-export function adminAuthorized(request: Request) {
-  const token = process.env.ADMIN_API_TOKEN;
-  if (!token || token.length < 32) return false;
-  const a = Buffer.from(request.headers.get("authorization") || ""),
-    b = Buffer.from("Bearer " + token);
-  return a.length === b.length && timingSafeEqual(a, b);
-}
+import { storeOrigin } from "./store-origin";
+export { storeOrigin, checkOrigin } from "./store-origin";
+export { adminAuthorized } from "./admin-auth";
+export { rateLimit } from "./rate-limit";
 const secure = () => storeOrigin().startsWith("https://");
 export const sessionCookie = () =>
   secure() ? "__Host-brande-session" : "brande-session";
@@ -71,16 +53,6 @@ export async function clearSession() {
     path: "/",
     maxAge: 0,
   });
-}
-export async function rateLimit(key: string, limit = 10) {
-  const bucket = tokenHash(key + ":" + Math.floor(Date.now() / 600000));
-  const rows = await db().begin(async sql => {
-    await sql`INSERT INTO auth_limits (bucket_key,count,expires_at) VALUES (${bucket},1,DATE_ADD(now(), INTERVAL 11 MINUTE)) ON DUPLICATE KEY UPDATE count=count+1`;
-    return sql`SELECT count FROM auth_limits WHERE bucket_key=${bucket} FOR UPDATE`;
-  });
-  if (Number(rows[0].count) > limit)
-    throw Error("Too many attempts. Try again in ten minutes.");
-  await db()`DELETE FROM auth_limits WHERE expires_at<now()`;
 }
 export function emailReady() {
   return !!(

@@ -1,7 +1,7 @@
 import { db } from "../../../../lib/db";
 import { adminAuthorized } from "../../../../lib/auth";
 export async function GET(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const offset = Math.max(

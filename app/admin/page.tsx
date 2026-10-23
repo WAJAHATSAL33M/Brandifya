@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import "../management.css";
 type Row = Record<string, any>;
@@ -31,7 +31,15 @@ const localDate = (v: string) =>
         .slice(0, 16)
     : "";
 export default function Admin() {
-  const [token, setToken] = useState(""),
+  const [username, setUsername] = useState(""),
+    [password, setPassword] = useState(""),
+    [confirmPassword, setConfirmPassword] = useState(""),
+    [setupCode, setSetupCode] = useState(""),
+    [setupRequired, setSetupRequired] = useState(false),
+    [setupAvailable, setSetupAvailable] = useState(false),
+    [checking, setChecking] = useState(true),
+    [identity, setIdentity] = useState<{username:string;role:string}|null>(null),
+    [securityOpen, setSecurityOpen] = useState(false),
     [logged, setLogged] = useState(false),
     [products, setProducts] = useState<Row[]>([]),
     [orders, setOrders] = useState<Row[]>([]),
@@ -53,14 +61,45 @@ export default function Admin() {
     const r = await fetch(url, {
       method,
       headers: {
-        Authorization: "Bearer " + token,
         ...(body ? { "Content-Type": "application/json" } : {}),
       },
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
     const d = await r.json();
+    if (r.status === 401 && url !== "/api/admin/session") { clearDashboard(); }
     if (!r.ok) throw Error(d.error || "Request failed.");
     return d;
+  }
+  function clearDashboard() {
+    setLogged(false);setIdentity(null);setProducts([]);setOrders([]);setCustomers([]);setSummary({});setDraft(null);setSecurityOpen(false);setImage("");setMedia([]);setAttributes([]);setQuery("");setPage(0);
+  }
+  useEffect(() => {
+    let active=true;
+    (async()=>{try{
+      const data=await api("/api/admin/session");if(!active)return;
+      setSetupRequired(data.setupRequired);setSetupAvailable(data.setupAvailable);setIdentity(data.user);
+      if(data.user)await load(0);
+    }catch(e){if(active)setError((e as Error).message)}finally{if(active)setChecking(false)}})();
+    return()=>{active=false};
+  },[]);
+  async function signIn(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();setBusy(true);setError("");setMessage("");
+    try {
+      if(setupRequired && password!==confirmPassword)throw Error("Passwords do not match.");
+      const data=await api("/api/admin/session","POST",{action:setupRequired?"setup":"login",username,password,setupCode:setupRequired?setupCode:undefined});
+      setIdentity(data.user);setSetupRequired(false);setPassword("");setConfirmPassword("");setSetupCode("");setLogged(true);await load(0);
+    }catch(e){setError((e as Error).message)}finally{setBusy(false)}
+  }
+  async function signOut() {
+    setBusy(true);setError("");try{await api("/api/admin/session","POST",{action:"logout"});clearDashboard();setMessage("You have signed out.");}catch(e){setError((e as Error).message)}finally{setBusy(false)}
+  }
+  async function changePassword(e:React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();const data=new FormData(e.currentTarget);setBusy(true);setError("");
+    try{
+      if(data.get("newPassword")!==data.get("confirmPassword"))throw Error("Passwords do not match.");
+      await api("/api/admin/session","POST",{action:"password",currentPassword:data.get("currentPassword"),newPassword:data.get("newPassword")});
+      clearDashboard();setMessage("Password updated. Sign in again with your new password.");
+    }catch(e){setError((e as Error).message)}finally{setBusy(false)}
   }
   async function load(next = page) {
     setBusy(true);
@@ -154,7 +193,6 @@ export default function Admin() {
       form.set("file", file);
       const r = await fetch("/api/admin/media", {
           method: "POST",
-          headers: { Authorization: "Bearer " + token },
           body: form,
         }),
         d = await r.json();
@@ -199,8 +237,12 @@ export default function Admin() {
           <div>
             <h1>Store management</h1>
             <p>Products, inventory, orders and customers.</p>
+            {identity && <p className="admin-signed-in">Signed in as <strong>{identity.username}</strong> · {identity.role}</p>}
           </div>
-          <Link href="/">View store ↗</Link>
+          <div className="admin-header-actions">
+            <Link href="/">View store ↗</Link>
+            {logged && <><button type="button" aria-expanded={securityOpen} onClick={()=>setSecurityOpen(!securityOpen)}>Account security</button><button type="button" onClick={signOut} disabled={busy}>Sign out</button></>}
+          </div>
         </div>
         {error && (
           <p className="management-alert" role="alert">
@@ -212,38 +254,30 @@ export default function Admin() {
             {message}
           </p>
         )}
-        {!logged ? (
-          <section className="management-panel account-login">
-            <h2>Merchant access</h2>
-            <p>
-              Use your private admin access token. It stays in memory for this
-              page only.
-            </p>
-            <form
-              className="management-form"
-              onSubmit={(e) => {
-                e.preventDefault();
-                load(0);
-              }}
-            >
-              <label>
-                Admin access token
-                <input
-                  type="password"
-                  required
-                  minLength={32}
-                  autoComplete="off"
-                  value={token}
-                  onChange={(e) => setToken(e.target.value)}
-                />
-              </label>
-              <button className="commerce-primary" disabled={busy}>
-                {busy ? "Loading…" : "Open dashboard"}
-              </button>
+        {checking ? <p role="status">Checking secure session…</p> : !logged ? (
+          <section className="management-panel account-login admin-sign-in">
+            <span className="admin-login-mark" aria-hidden="true">BE</span>
+            <h2>{setupRequired ? "Create your admin account" : "Admin sign in"}</h2>
+            <p>{setupRequired ? "Set up the first store owner account using your private setup code." : "Sign in to manage your store."}</p>
+            {setupRequired && !setupAvailable && <p className="management-alert">Add ADMIN_SETUP_TOKEN in Hostinger, then restart the app to enable initial setup.</p>}
+            <form className="management-form" onSubmit={signIn}>
+              {setupRequired && <label>Setup code<input type="password" required minLength={32} maxLength={256} autoComplete="off" value={setupCode} onChange={e=>setSetupCode(e.target.value)} /></label>}
+              <label>Username<input type="text" required minLength={3} maxLength={64} pattern="[a-zA-Z0-9][a-zA-Z0-9._\-]{2,63}" autoCapitalize="none" autoCorrect="off" autoComplete="username" value={username} onChange={e=>setUsername(e.target.value)} /></label>
+              <label>Password<input type="password" required minLength={setupRequired ? 12 : undefined} maxLength={128} autoComplete={setupRequired ? "new-password" : "current-password"} value={password} onChange={e=>setPassword(e.target.value)} /></label>
+              {setupRequired && <label>Confirm password<input type="password" required minLength={12} maxLength={128} autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} /></label>}
+              <button className="commerce-primary" disabled={busy || (setupRequired && !setupAvailable)}>{busy ? "Please wait…" : setupRequired ? "Create admin account" : "Sign in"}</button>
             </form>
           </section>
         ) : (
           <>
+            {securityOpen && <section className="management-panel admin-security-panel"><h2>Change password</h2><p>Changing your password signs out all admin sessions for this account.</p>
+              <form className="management-form" onSubmit={changePassword}>
+                <label>Current password<input name="currentPassword" type="password" required maxLength={128} autoComplete="current-password" /></label>
+                <label>New password<input name="newPassword" type="password" required minLength={12} maxLength={128} autoComplete="new-password" /></label>
+                <label>Confirm new password<input name="confirmPassword" type="password" required minLength={12} maxLength={128} autoComplete="new-password" /></label>
+                <button className="commerce-primary" disabled={busy}>{busy ? "Updating…" : "Update password"}</button>
+              </form>
+            </section>}
             <div className="management-stats">
               <div>
                 <small>Total orders</small>
@@ -291,21 +325,6 @@ export default function Admin() {
               </label>
               <button disabled={busy} onClick={() => load()}>
                 Refresh
-              </button>
-              <button
-                onClick={() => {
-                  setToken("");
-                  setLogged(false);
-                  setProducts([]);
-                  setOrders([]);
-                  setCustomers([]);
-                  setDraft(null);
-                  setSummary({});
-                  setMessage("");
-                  setError("");
-                }}
-              >
-                Sign out
               </button>
             </div>
             {tab === "products" && (

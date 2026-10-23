@@ -2,7 +2,7 @@ import { db } from "../../../../lib/db";
 import { adminAuthorized } from "../../../../lib/auth";
 import { safeMediaUrl } from "../../../../lib/auth-core";
 export async function GET(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const url = new URL(request.url),
@@ -32,7 +32,7 @@ export async function GET(request: Request) {
   }
 }
 export async function PATCH(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const b = await request.json();

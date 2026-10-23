@@ -2,7 +2,7 @@ import { db } from "../../../../lib/db";
 import { adminAuthorized } from "../../../../lib/auth";
 import { validateProduct } from "../../../../lib/product-input";
 export async function GET(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const rows = await db()`SELECT * FROM products ORDER BY id`;
@@ -18,7 +18,7 @@ export async function GET(request: Request) {
   }
 }
 export async function POST(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const text = await request.text();
@@ -62,7 +62,7 @@ ON DUPLICATE KEY UPDATE name=VALUES(name),price_minor=VALUES(price_minor),origin
   }
 }
 export async function DELETE(request: Request) {
-  if (!adminAuthorized(request))
+  if (!(await adminAuthorized(request)))
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   try {
     const { id } = await request.json();

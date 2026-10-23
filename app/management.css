@@ -357,3 +357,13 @@
   gap: 12px;
   margin-bottom: 12px;
 }
+.admin-header-actions { display:flex; align-items:center; justify-content:flex-end; flex-wrap:wrap; gap:10px; }
+.admin-header-actions > button { padding:10px 14px; border:1px solid #ffd6c2; background:#fff5ef; color:#b33900; font-size:12px; font-weight:600; }
+.admin-signed-in { font-size:12px!important; margin-top:8px; }
+.admin-sign-in { max-width:460px; margin:32px auto; padding:30px; }
+.admin-login-mark { display:grid; place-items:center; width:48px; height:48px; background:#ff5100; color:#fff; border-radius:10px; font-weight:800; margin-bottom:18px; }
+.admin-sign-in .management-form { margin-top:22px; }
+.admin-sign-in .management-form input { width:100%; min-width:0; }
+.admin-security-panel { margin-bottom:24px; max-width:700px; }
+.admin-sign-in button:focus-visible, .admin-header-actions button:focus-visible { outline:2px solid #ff5100; outline-offset:3px; }
+@media(max-width:600px) { .admin-sign-in { padding:22px 18px; margin:20px auto; }.admin-header-actions { justify-content:flex-start; gap:8px; }.admin-header-actions > button { padding:10px; } }

@@ -32,9 +32,9 @@ Enter private values in the app's hPanel environment settings. Never commit cred
 | `STORE_COUNTRY` | `PK` |
 | `SHIPPING_MINOR` | Shipping in paisa: `0` for free, `25000` for Rs 250 |
 | `ENABLE_COD` | `false` during setup; `true` to offer cash on delivery |
-| `ADMIN_API_TOKEN` | A unique random secret of at least 32 characters |
+| `ADMIN_SETUP_TOKEN` | A unique random secret of at least 32 characters |
 
-Generate an admin token locally with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`, store it privately, and enter it in hPanel. Open `/admin` and use that token to access the dashboard. The customer login does not grant admin access.
+Generate a one-time setup code locally with `node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"`, store it privately, and enter it in hPanel. Open `/admin`, enter that setup code, and create your owner username and password. Remove the setup variable after successful setup. Future sign-ins use your username and password. For an existing database, import `database/admin-access.sql` first. The customer login does not grant admin access.
 
 Individual `DB_*` values avoid password URL-encoding mistakes. As an alternative, set `DATABASE_URL=mysql://USER:URL_ENCODED_PASSWORD@127.0.0.1:3306/DATABASE`; leave it empty when using `DB_*`. If both are set, `DATABASE_URL` takes precedence. PostgreSQL URLs are intentionally rejected. Optional `DB_SSL_CA` accepts a PEM certificate for remote verified TLS. Certificate verification is never disabled.
 
@@ -46,13 +46,13 @@ Stripe card checkout requires `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET`; w
 
 Choose either method:
 
-**hPanel/phpMyAdmin:** Select your new database, open **Import**, and upload `database/schema.sql` from this repository. It creates all 13 tables. Do not select `database/schema.postgresql.sql`; that file is an archive of the former engine's schema, not a MySQL import.
+**hPanel/phpMyAdmin:** Select your new database, open **Import**, and upload `database/schema.sql` from this repository. It creates all 15 tables. Do not select `database/schema.postgresql.sql`; that file is an archive of the former engine's schema, not a MySQL import.
 
 **Node command:** With the database environment configured, run `npm run db:setup` from the project directory. `npm run build:hostinger` also runs this command. For local execution copy `.env.example` to `.env.local` and enter private test values there. `.env.local` is ignored by Git.
 
 The setup file uses `CREATE TABLE IF NOT EXISTS`: rerunning preserves existing records. It creates missing tables; it does not repair an incompatible pre-existing table or convert another application's schema. DDL is not transactional on MySQL. If setup is interrupted, fix the reported cause and rerun it. Use MySQL 8+ or MariaDB 10.6+ with InnoDB.
 
-Run `npm run db:check` to check connectivity and all 13 tables. If hPanel offers no shell, importing in phpMyAdmin and opening `/api/health` after deployment provides a second route. A successful health response is `{"ok":true,"database":"connected"}`. A 503 response means setup is not complete; it does not expose credentials.
+Run `npm run db:check` to check connectivity and all 15 tables. If hPanel offers no shell, importing in phpMyAdmin and opening `/api/health` after deployment provides a second route. A successful health response is `{"ok":true,"database":"connected"}`. A 503 response means setup is not complete; it does not expose credentials.
 
 ## 5. Deploy and enter inventory
 

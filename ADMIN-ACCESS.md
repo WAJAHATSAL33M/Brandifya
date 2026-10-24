@@ -53,3 +53,7 @@ Customers can use `/order-tracking` from the footer, order confirmation or accou
 In Admin → Orders, open an order, update its fulfillment status, and save the courier tracking number and HTTPS tracking URL. Customers see the actual order-event timeline and can open the carrier's tracking page. Active tracking results refresh every minute while visible, with a manual refresh option. No delivery date or courier scan is invented. Automatic courier scan synchronization requires a separate carrier integration.
 
 Tracking does not return customer addresses, phone numbers, email addresses, payment credentials, private confirmation keys, or internal admin notes. Lookups are limited to prevent repeated guessing. No new database tables are needed when `database/schema.sql` is already imported; the feature uses `orders`, `order_items`, `order_events`, `customer_sessions` and `auth_limits`.
+
+## Order processing upgrade
+
+Apply `database/order-processing.sql` or choose Settings → Finish database setup to add the order email queue. See `ORDER-PROCESSING.md` for checkout activation, fulfillment, card webhook requirements, receipts and notification retry setup.

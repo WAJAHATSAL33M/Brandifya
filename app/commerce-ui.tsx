@@ -31,12 +31,17 @@ export function CommerceHeader({ store }: { store: Store }) {
 }
 export function Breadcrumb({ label }: { label: string }) {
   return (
-    <nav className="commerce-breadcrumb commerce-breadcrumb-trail" aria-label="Breadcrumb">
+    <nav
+      className="commerce-breadcrumb commerce-breadcrumb-trail"
+      aria-label="Breadcrumb"
+    >
       <Link href="/">Home</Link>
       <ChevronRight size={13} aria-hidden="true" />
       <Link href="/shop">Shop</Link>
       <ChevronRight size={13} aria-hidden="true" />
-      <span aria-current="page" title={label}>{label}</span>
+      <span aria-current="page" title={label}>
+        {label}
+      </span>
     </nav>
   );
 }
@@ -224,7 +229,7 @@ export function Totals({ store }: { store: Store }) {
       <p>
         {store.config?.live
           ? "Prices and availability are checked when you place your order."
-          : "Sample prices. Ordering is not available yet."}
+          : "Your final price and delivery charge are confirmed at checkout."}
       </p>
     </div>
   );
@@ -268,7 +273,7 @@ export function CheckoutNote() {
   return (
     <p className="commerce-checkout-note">
       <LockKeyhole size={14} />
-      Card payment is handled by Stripe.
+      Card payments, when selected, are handled by the payment provider.
     </p>
   );
 }

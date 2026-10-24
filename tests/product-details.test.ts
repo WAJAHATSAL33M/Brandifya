@@ -41,12 +41,15 @@ test("product organization validates managed IDs, status, shipping and inventory
   );
 });
 test("authenticated setup uses only the reviewed additive SQL migrations", () => {
-  const statements = ["admin-workspace.sql", "admin-catalog.sql"].flatMap(
-    (name) =>
-      readFileSync(new URL("../database/" + name, import.meta.url), "utf8")
-        .split(";")
-        .map((s) => s.trim())
-        .filter(Boolean),
+  const statements = [
+    "admin-workspace.sql",
+    "admin-catalog.sql",
+    "order-processing.sql",
+  ].flatMap((name) =>
+    readFileSync(new URL("../database/" + name, import.meta.url), "utf8")
+      .split(";")
+      .map((s) => s.trim())
+      .filter(Boolean),
   );
   assert.deepEqual(adminSchemaStatements, statements);
   assert.ok(statements.every((s) => /^CREATE TABLE IF NOT EXISTS/im.test(s)));

@@ -108,8 +108,26 @@ const photo = (id: string, w = 800) =>
     ? id
     : `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=85`;
 export default function Store() {
-  const [journalPosts,setJournalPosts]=useState<typeof initialJournalPosts>([]);
-  useEffect(()=>{let active=true;fetch('/api/journal').then(r=>{if(!r.ok)throw Error();return r.json()}).then(d=>{if(active)setJournalPosts(d.posts)}).catch(()=>{if(active)setJournalPosts([])});return()=>{active=false}},[]);
+  const [journalPosts, setJournalPosts] = useState<typeof initialJournalPosts>(
+    [],
+  );
+  useEffect(() => {
+    let active = true;
+    fetch("/api/journal")
+      .then((r) => {
+        if (!r.ok) throw Error();
+        return r.json();
+      })
+      .then((d) => {
+        if (active) setJournalPosts(d.posts);
+      })
+      .catch(() => {
+        if (active) setJournalPosts([]);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
   const [catalog, setCatalog] = useState<Product[]>(products),
     [live, setLive] = useState(false),
     [managed, setManaged] = useState(false);
@@ -150,21 +168,43 @@ export default function Store() {
     const rail = exploreRef.current;
     if (!rail) return;
     const card = rail.firstElementChild as HTMLElement | null;
-    const step = (card?.getBoundingClientRect().width || 250) + parseFloat(getComputedStyle(rail).columnGap || "0");
-    rail.scrollBy({ left: direction * step, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+    const step =
+      (card?.getBoundingClientRect().width || 250) +
+      parseFloat(getComputedStyle(rail).columnGap || "0");
+    rail.scrollBy({
+      left: direction * step,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
+        ? "auto"
+        : "smooth",
+    });
   }
   useEffect(() => {
     const motion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const timer = window.setInterval(() => {
       const rail = exploreRef.current;
-      if (!rail || motion.matches || document.hidden || exploreInteracting.current || Date.now() < exploreResumeAt.current ||
-          rail.contains(document.activeElement) ||
-          (window.matchMedia("(hover: hover)").matches && rail.matches(":hover"))) return;
+      if (
+        !rail ||
+        motion.matches ||
+        document.hidden ||
+        exploreInteracting.current ||
+        Date.now() < exploreResumeAt.current ||
+        rail.contains(document.activeElement) ||
+        (window.matchMedia("(hover: hover)").matches && rail.matches(":hover"))
+      )
+        return;
       const max = rail.scrollWidth - rail.clientWidth;
       if (max < 2) return;
       const card = rail.firstElementChild as HTMLElement | null;
-      const step = (card?.getBoundingClientRect().width || 250) + parseFloat(getComputedStyle(rail).columnGap || "0");
-      rail.scrollTo({ left: rail.scrollLeft >= max - 2 ? 0 : Math.min(max, rail.scrollLeft + step), behavior: "smooth" });
+      const step =
+        (card?.getBoundingClientRect().width || 250) +
+        parseFloat(getComputedStyle(rail).columnGap || "0");
+      rail.scrollTo({
+        left:
+          rail.scrollLeft >= max - 2
+            ? 0
+            : Math.min(max, rail.scrollLeft + step),
+        behavior: "smooth",
+      });
     }, 3000);
     return () => window.clearInterval(timer);
   }, []);
@@ -339,13 +379,13 @@ export default function Store() {
     ...Object.fromEntries(
       [...dealProducts, ...bestProducts].map((p) => [
         p.name,
-        `${p.description} This product is shown as part of the supplied homepage design. Catalog availability is not configured yet.`,
+        `${p.description} Check the product page for current stock and product details.`,
       ]),
     ),
     ...Object.fromEntries(
       journalPosts.map((p) => [
         p.title,
-        "A preview article from the homepage design. The complete journal content will be added here.",
+        "Discover practical shopping ideas in our journal.",
       ]),
     ),
     "Track Order":
@@ -362,14 +402,14 @@ export default function Store() {
     "Make room for a simpler routine":
       "Keep your daily essentials easy to find and review what you use regularly. Store products according to their labels and check care instructions before buying. Start with a small, consistent routine that fits your time and preferences.",
     "About Brandifya":
-      "Brandifya is a general-store concept bringing home, style, tech, and everyday essentials together. This storefront currently uses sample products and prices.",
+      "Brand E brings home, style, tech, and everyday essentials together in one store.",
     "Shipping & returns":
-      "Delivery areas, shipping fees, timelines, and return terms will be published once the merchant confirms them. Products cannot currently be ordered.",
+      "Review delivery charges at checkout and visit Shipping and Returns for assistance with your order.",
     "Contact us": storeContactMessage,
     Privacy:
-      "Your cart and saved items are stored in this browser. When live checkout is enabled, delivery details are stored in the merchant database and card details are handled by Stripe. Newsletter signup stores your email with your consent. The merchant must publish a complete privacy policy and data retention terms before launch.",
+      "Your cart and Favorites are saved in this browser. Order and delivery details support checkout, delivery and customer service. Card details are handled by the payment provider. See our Privacy Policy for details.",
     Checkout:
-      "Checkout is not yet available. This is a sample catalog: no order has been placed and no payment has been collected. Live checkout requires verified products, shipping rules, and a payment provider.",
+      "Review your items, delivery details and available payment methods at checkout.",
   };
   return (
     <>
@@ -395,8 +435,14 @@ export default function Store() {
 
         <main>
           <HeroSlider />
-          <section className="hp-categories hp-container" aria-label="Shop by Category">
-            <SwipeLoop className="category-carousel-viewport" label="Shop by Category">
+          <section
+            className="hp-categories hp-container"
+            aria-label="Shop by Category"
+          >
+            <SwipeLoop
+              className="category-carousel-viewport"
+              label="Shop by Category"
+            >
               <div className="category-carousel-track">
                 {[0, 1].map((copy) => (
                   <div
@@ -431,7 +477,12 @@ export default function Store() {
               </div>
             </SwipeLoop>
           </section>
-          <SaleProducts catalog={catalog} saved={saved} onSave={favorite} live={live} />
+          <SaleProducts
+            catalog={catalog}
+            saved={saved}
+            onSave={favorite}
+            live={live}
+          />
           <section id="shop" className="hp-featured hp-container">
             <h2>
               {savedOnly
@@ -477,10 +528,18 @@ export default function Store() {
             {catalogError && (
               <p role="alert">Products could not be loaded. Please refresh.</p>
             )}
-            <SwipeLoop className="featured-carousel-viewport" label="Featured Products" advance="card">
+            <SwipeLoop
+              className="featured-carousel-viewport"
+              label="Featured Products"
+              advance="card"
+            >
               <div className="featured-carousel-track">
                 {(visible.length > 2 ? [0, 1] : [0]).map((copy) => (
-                  <div key={copy} className={`hp-featured-grid${copy ? " featured-carousel-copy" : ""}`} aria-hidden={copy ? true : undefined}>
+                  <div
+                    key={copy}
+                    className={`hp-featured-grid${copy ? " featured-carousel-copy" : ""}`}
+                    aria-hidden={copy ? true : undefined}
+                  >
                     {visible.map((p) => (
                       <ProductCard
                         key={p.id}
@@ -534,7 +593,10 @@ export default function Store() {
             <div className="hp-container">
               <div className="hp-deal-heading">
                 <h2>Everyday Finds</h2>
-                <button className="compact-view-all store-view-all" onClick={() => browse()}>
+                <button
+                  className="compact-view-all store-view-all"
+                  onClick={() => browse()}
+                >
                   View all
                   <ArrowRight size={16} />
                 </button>
@@ -567,13 +629,47 @@ export default function Store() {
             </div>
           </section>
           <section className="hp-promotions hp-container">
-            <h2>Style, Care &amp; Tech for a <span className="promo-heading-highlight">Brighter You</span></h2>
+            <h2>
+              Style, Care &amp; Tech for a{" "}
+              <span className="promo-heading-highlight">Brighter You</span>
+            </h2>
             <div className="hp-promo-grid compact-promos">
               {[
-                { name: "Fashion", description: "Everyday style, thoughtfully chosen.", images: ["/heroes/fashion.webp", "/promotions/fashion-2.webp", "/promotions/fashion-3.webp"] },
-                { name: "Beauty", description: "A little care for your daily routine.", images: ["/heroes/shop-beauty.webp", "/promotions/beauty-2.webp", "/promotions/beauty-3.webp"] },
-                { name: "Technology", description: "Smart essentials for everyday life.", images: ["/heroes/home-tech.webp", "/promotions/tech-2.webp", "/promotions/tech-3.webp"] },
-              ].map(c => <PromoBanner key={c.name} name={c.name} images={c.images} description={c.description} />)}
+                {
+                  name: "Fashion",
+                  description: "Everyday style, thoughtfully chosen.",
+                  images: [
+                    "/heroes/fashion.webp",
+                    "/promotions/fashion-2.webp",
+                    "/promotions/fashion-3.webp",
+                  ],
+                },
+                {
+                  name: "Beauty",
+                  description: "A little care for your daily routine.",
+                  images: [
+                    "/heroes/shop-beauty.webp",
+                    "/promotions/beauty-2.webp",
+                    "/promotions/beauty-3.webp",
+                  ],
+                },
+                {
+                  name: "Technology",
+                  description: "Smart essentials for everyday life.",
+                  images: [
+                    "/heroes/home-tech.webp",
+                    "/promotions/tech-2.webp",
+                    "/promotions/tech-3.webp",
+                  ],
+                },
+              ].map((c) => (
+                <PromoBanner
+                  key={c.name}
+                  name={c.name}
+                  images={c.images}
+                  description={c.description}
+                />
+              ))}
             </div>
           </section>
           <section className="hp-best hp-pattern">
@@ -583,7 +679,10 @@ export default function Store() {
                   More to <em>Explore</em>
                 </h2>
                 <p>Discover more everyday finds across the collection.</p>
-                <button className="hp-view-all store-view-all" onClick={() => browse()}>
+                <button
+                  className="hp-view-all store-view-all"
+                  onClick={() => browse()}
+                >
                   View All Products <ArrowRight size={16} />
                 </button>
               </div>
@@ -602,10 +701,22 @@ export default function Store() {
                   role="region"
                   aria-roledescription="carousel"
                   aria-label="More to Explore products"
-                  onPointerDown={() => { exploreInteracting.current = true; pauseExplore(); }}
-                  onPointerUp={() => { exploreInteracting.current = false; pauseExplore(); }}
-                  onPointerCancel={() => { exploreInteracting.current = false; pauseExplore(); }}
-                  onPointerLeave={() => { exploreInteracting.current = false; pauseExplore(); }}
+                  onPointerDown={() => {
+                    exploreInteracting.current = true;
+                    pauseExplore();
+                  }}
+                  onPointerUp={() => {
+                    exploreInteracting.current = false;
+                    pauseExplore();
+                  }}
+                  onPointerCancel={() => {
+                    exploreInteracting.current = false;
+                    pauseExplore();
+                  }}
+                  onPointerLeave={() => {
+                    exploreInteracting.current = false;
+                    pauseExplore();
+                  }}
                   onTouchStart={pauseExplore}
                   onTouchEnd={pauseExplore}
                   onWheel={pauseExplore}
@@ -659,7 +770,10 @@ export default function Store() {
                 >
                   <ChevronLeft />
                 </button>
-                <SwipeLoop className="brand-carousel-viewport" label="Shop by Brand">
+                <SwipeLoop
+                  className="brand-carousel-viewport"
+                  label="Shop by Brand"
+                >
                   <div className="brand-carousel-track">
                     {[0, 1].map((copy) => (
                       <div
@@ -678,7 +792,10 @@ export default function Store() {
                             tabIndex={copy ? -1 : undefined}
                             onClick={() => setInfo(name)}
                           >
-                            <Art name={`brand${brandNames.indexOf(name)}`} alt={`${name} logo`} />
+                            <Art
+                              name={`brand${brandNames.indexOf(name)}`}
+                              alt={`${name} logo`}
+                            />
                             <span>{name}</span>
                           </button>
                         ))}
@@ -901,8 +1018,8 @@ export default function Store() {
                     </div>
                     <p>
                       {live
-                        ? "Shipping is calculated at checkout. Prices include configured taxes."
-                        : "Sample prices. Shipping and taxes are not configured."}
+                        ? "Delivery is calculated at checkout."
+                        : "Your final total and delivery charge are confirmed at checkout."}
                     </p>
                     <button
                       className="primary"
@@ -988,11 +1105,16 @@ export default function Store() {
               </button>
               <span className="info-star">✳</span>
               <h2 id="info-title">{requestedBrand ? "Contact us" : info}</h2>
-              <p>{requestedBrand
-                ? `Looking for a product from ${requestedBrand}? Contact us directly with your desired product or quotation request, and we’ll help you source it.`
-                : policies[info!]}</p>
+              <p>
+                {requestedBrand
+                  ? `Looking for a product from ${requestedBrand}? Contact us directly with your desired product or quotation request, and we’ll help you source it.`
+                  : policies[info!]}
+              </p>
               {requestedBrand ? (
-                <Link className="primary" href={`/contact?brand=${encodeURIComponent(requestedBrand)}`}>
+                <Link
+                  className="primary"
+                  href={`/contact?brand=${encodeURIComponent(requestedBrand)}`}
+                >
                   Contact us <ArrowRight size={17} />
                 </Link>
               ) : (
@@ -1007,4 +1129,3 @@ export default function Store() {
     </>
   );
 }
-

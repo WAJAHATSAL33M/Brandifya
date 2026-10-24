@@ -816,3 +816,5 @@
 .management-admin ~ .site-footer {
   display: none;
 }
+
+.admin-order-notifications ul{padding-left:18px;display:grid;gap:10px;overflow-wrap:anywhere;font-size:12px;line-height:1.7}

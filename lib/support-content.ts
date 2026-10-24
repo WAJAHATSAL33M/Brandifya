@@ -20,8 +20,8 @@ export const supportPages: SupportPage[] = [
         text: "Product pages bring the price, available stock and product information together. Your cart keeps the items you select, while Favorites helps you return to products you like.",
       },
       {
-        title: "Our store today",
-        text: "This storefront is currently a design preview. Product prices, ratings and sales figures are sample content. Verified inventory, merchant details and final service policies will be supplied before live ordering.",
+        title: "Here when you need us",
+        text: "Shop by category, review product details, and follow your order from checkout to delivery. Contact our Islamabad team whenever you need help.",
       },
     ],
   },
@@ -54,7 +54,7 @@ export const supportPages: SupportPage[] = [
     sections: [
       {
         title: "Can I place an order now?",
-        text: "Live ordering is currently disabled while the store is being prepared. Adding items to your cart lets you explore the shopping experience without placing an order.",
+        text: "Add available products to your cart, enter your delivery details, choose a payment method shown at checkout and place your order. Keep the order reference from your confirmation page.",
       },
       {
         title: "How do Favorites work?",
@@ -65,12 +65,12 @@ export const supportPages: SupportPage[] = [
         text: "Buy Now adds the selected quantity and opens your cart. The cart icon adds the product without leaving the page and shows a Go to Cart link.",
       },
       {
-        title: "Are the ratings and prices final?",
-        text: "The preview includes sample prices, ratings and sales figures. They are not verified customer feedback or final offers.",
+        title: "Where can I check prices and product details?",
+        text: "Check each product page for its current price and available details. Stock and the final order total are checked again at checkout. Contact us if you need clarification before ordering.",
       },
       {
         title: "How can I check delivery or returns?",
-        text: "Visit Shipping Information and Return & Refund Policy. Final charges, delivery areas and return conditions will be confirmed before live ordering.",
+        text: "Visit Shipping Information and Return & Refund Policy. Your delivery charge is shown at checkout; contact our team for product-specific return questions.",
       },
       {
         title: "Can I use Favorites on another device?",
@@ -85,11 +85,11 @@ export const supportPages: SupportPage[] = [
     sections: [
       {
         title: "Delivery availability",
-        text: "Delivery countries, service areas and dispatch arrangements are awaiting merchant confirmation. Do not assume that every address is currently supported.",
+        text: "Checkout shows the supported delivery country. Enter a complete street address, city and reachable phone number so our team can process your delivery.",
       },
       {
         title: "Charges and timing",
-        text: "Final shipping charges will be shown during checkout when ordering is enabled. Dispatch times and estimated delivery windows will be published before launch; no delivery date is promised in this preview.",
+        text: "Delivery charges are shown before you place your order. Follow preparation and dispatch updates on Order Tracking. Any courier delivery estimate is provided through the carrier tracking link.",
       },
       {
         title: "Your delivery address",
@@ -107,8 +107,8 @@ export const supportPages: SupportPage[] = [
     description: "Know what to check before requesting a return.",
     sections: [
       {
-        title: "Policy status",
-        text: "This policy is a draft for the current store preview. The merchant must confirm the return window, eligible products, fees and refund arrangements before accepting live orders.",
+        title: "Returns and product support",
+        text: "Contact our team with your order reference to request a return or report a product issue. We will review the item and explain the applicable return instructions before you send it back.",
       },
       {
         title: "Requesting a return",
@@ -116,7 +116,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Product condition and eligibility",
-        text: "Keep the packaging, accessories and proof of purchase. Product-specific exclusions and any rules for opened, used or personalized items will be published with the final policy.",
+        text: "Keep the packaging, accessories and proof of purchase. Tell our team whether the item has been opened, used or personalized so they can advise on its eligibility.",
       },
       {
         title: "Damaged or incorrect items",
@@ -124,7 +124,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Refunds",
-        text: "The final policy will explain how returns are reviewed, which payment method is used for refunds, expected processing times and treatment of delivery charges. No refund timeframe is promised in this preview.",
+        text: "After reviewing your request, our team will explain the available resolution, applicable charges and refund arrangements. Payment-provider processing times may apply. Contact us for the status of an agreed refund.",
       },
     ],
   },
@@ -135,7 +135,7 @@ export const supportPages: SupportPage[] = [
     sections: [
       {
         title: "About this notice",
-        text: "This notice describes the current storefront implementation. The merchant’s legal identity, contact details, service providers and final retention rules must be confirmed before live launch.",
+        text: "Brand E uses the information you provide to operate your account, process orders, arrange delivery and respond to support requests. Contact us using the details on our Contact Us page with questions about your information.",
       },
       {
         title: "Cart and Favorites",
@@ -143,23 +143,23 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Orders and payments",
-        text: "When live checkout is enabled, delivery and order information is processed to manage orders. Card details are handled by the configured payment provider rather than entered into a store-managed card database. Payment logos in the footer do not mean every method is currently enabled.",
+        text: "Delivery and order information is used to process purchases and provide tracking. Card details are handled by the payment provider rather than stored in our order database. Available payment methods are shown at checkout.",
       },
       {
         title: "Newsletter",
-        text: "If newsletter signup is configured, the email address submitted with consent is stored for subscriptions. Contact the merchant through the verified support channel when available for subscription or data requests.",
+        text: "When you subscribe, your email address is stored for newsletter communications. Contact our team to request subscription or personal-data assistance.",
       },
       {
         title: "Service providers and retention",
-        text: "Hosting, database and payment services may process information needed to operate the store. The merchant must publish the relevant provider details, retention periods and any applicable international transfer information before launch.",
+        text: "Hosting, database, email and payment services process information needed to operate the store. Order records support delivery, customer service and transaction administration. Contact us to ask about the information held for your account or order.",
       },
       {
         title: "Your requests",
-        text: "For questions about access, correction or deletion, contact our support team. Applicable rights and any verification requirements depend on the final merchant setup and relevant law.",
+        text: "Contact our support team for questions about access, correction or deletion of your information. We may need to verify your identity before acting on a request.",
       },
       {
         title: "Customer accounts",
-        text: "When accounts are configured, we store your name, email, password hash, saved delivery profile and account-linked order history. Passwords are stored as hashes, not readable text. Only the signed-in account can access its linked orders. Changing profile details does not alter the delivery information recorded for past orders. Verification and recovery emails use the configured email service. Google or Facebook sign-in uses the identity and profile information shared by that provider.",
+        text: "When accounts are configured, we store your name, email, password hash, saved delivery profile and account-linked order history. Passwords are stored as hashes, not readable text. Only the signed-in account can access its linked orders. Changing profile details does not alter the delivery information recorded for past orders. Verification and recovery emails use the configured email service. Google, Apple or Facebook sign-in uses the identity and profile information shared by that provider.",
       },
     ],
   },
@@ -169,28 +169,28 @@ export const supportPages: SupportPage[] = [
     description: "Information about using and shopping with Brande.",
     sections: [
       {
-        title: "Store status",
-        text: "The website currently demonstrates a store design. Sample products, prices and ratings are illustrative. Live orders and payments are disabled until merchant setup is complete.",
+        title: "Shopping with Brand E",
+        text: "Browse available products, review the full order and enter accurate delivery details at checkout. A cart selection alone does not place an order. Your confirmation page shows the order reference and recorded status.",
       },
       {
         title: "Product information",
-        text: "Check product descriptions, variants, prices and availability before placing an order. The final merchant catalog must verify specifications and images. A cart selection alone does not create an accepted order.",
+        text: "Check product descriptions, prices and availability before ordering. Contact us about dimensions, compatibility or other details that matter to your purchase.",
       },
       {
         title: "Ordering and payment",
-        text: "Once enabled, checkout will show the order details and available payment methods. Final rules for acceptance, cancellations, pricing errors and payment confirmation must be supplied by the merchant.",
+        text: "Checkout shows your order total and available payment methods. Card orders require payment confirmation; cash-on-delivery orders are payable on delivery. Contact us promptly about a change or cancellation before dispatch.",
       },
       {
         title: "Shipping and returns",
-        text: "Read Shipping Information and the Return & Refund Policy before ordering. Final delivery commitments, return conditions and charges will be published before live sales.",
+        text: "Read Shipping Information and the Return & Refund Policy before ordering. Keep your order reference for delivery enquiries or return requests.",
       },
       {
         title: "Using the website",
         text: "Use the site for lawful shopping and browsing. Do not attempt to disrupt its operation, access other customers’ information or misuse checkout and subscription features.",
       },
       {
-        title: "Final terms",
-        text: "The merchant must confirm its legal identity, applicable jurisdiction, statutory customer protections and complete contractual terms before launch. This preview does not replace those final terms.",
+        title: "Questions about your purchase",
+        text: "Contact Brand E through the Contact Us page if you have a question about an order or these terms. We will explain the next steps for your enquiry.",
       },
     ],
   },
@@ -205,7 +205,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Cookies and other services",
-        text: "No optional analytics or advertising consent system has been configured in this preview. Hosting and payment integrations may introduce cookies or similar technologies when configured; the merchant must verify these before launch.",
+        text: "Essential cookies support account sign-in and social authentication. Payment-provider pages may use their own cookies while processing a payment. Cart items and Favorites use browser local storage.",
       },
       {
         title: "Managing your browser",
@@ -213,7 +213,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Future changes",
-        text: "Before adding optional tracking, the merchant must update this notice with the technologies, providers, purposes and durations actually used and implement any applicable consent controls.",
+        text: "This page is updated when the store’s use of cookies or browser storage changes. You can contact our team with questions about the services used on the website.",
       },
       {
         title: "Account sign-in cookies",
@@ -228,11 +228,11 @@ export const supportPages: SupportPage[] = [
     sections: [
       {
         title: "Current availability",
-        text: "Live payments are disabled in this preview. No payment is collected when you explore products or add them to the cart.",
+        text: "Choose from the methods shown at checkout. Browsing or adding a product to the cart does not collect payment. Review your order total before submitting.",
       },
       {
         title: "Payment brands",
-        text: "Visa, MasterCard, EasyPaisa, JazzCash and PayFast marks appear in the footer. The payment methods actually available for an order will be shown at checkout after configuration.",
+        text: "The methods available for your purchase are listed at checkout. Footer payment logos identify payment brands and do not guarantee that every method is offered for every order.",
       },
       {
         title: "Payment safety",
@@ -251,7 +251,7 @@ export const supportPages: SupportPage[] = [
     sections: [
       {
         title: "Use the product’s measurements",
-        text: "Check the measurements and sizing information on each product page. Final size charts have not yet been supplied for the sample catalog.",
+        text: "Check the measurements and sizing information on the product page. If a measurement you need is missing, contact our team before choosing your size.",
       },
       {
         title: "Clothing and footwear",
@@ -263,7 +263,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Need clarification?",
-        text: "Ask support about the product reference using the contact details on our Contact Us page. Do not assume a sample image confirms size or fit.",
+        text: "Ask our support team about the product reference whenever you need help with size or fit. Product images alone may not show an item’s scale.",
       },
     ],
   },
@@ -301,18 +301,18 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Report a difficulty",
-        text: "Once support details are confirmed, describe the page, device and task that caused difficulty. Accessibility improvements are an ongoing part of maintaining the store.",
+        text: "Contact our team and describe the page, device and task that caused difficulty. Accessibility improvements are an ongoing part of maintaining the store.",
       },
     ],
   },
   {
     slug: "disclaimer",
     title: "Website Disclaimer",
-    description: "About the information in this preview.",
+    description: "About product information and using this website.",
     sections: [
       {
-        title: "Sample content",
-        text: "Products, prices, promotional information, ratings and sales counts shown in the preview may be sample content. They should not be interpreted as verified offers or customer reviews.",
+        title: "Product information",
+        text: "Review product descriptions, current prices and availability before ordering. Contact us if you notice an inconsistency or need more information. Checkout validates stock and the final order total.",
       },
       {
         title: "Editorial information",
@@ -323,8 +323,8 @@ export const supportPages: SupportPage[] = [
         text: "Brand names and payment marks identify the displayed brands. Their appearance does not establish reseller authorization or confirm that a payment method is enabled.",
       },
       {
-        title: "Before launch",
-        text: "The merchant must review the final catalog, editorial information, contact details and policies before accepting orders.",
+        title: "Get in touch",
+        text: "For product, delivery or order enquiries, contact our team with the relevant product name or order reference.",
       },
     ],
   },
@@ -412,9 +412,8 @@ export const posts: JournalPost[] = [
       },
       {
         title: "Review the full order",
-        text: "When live ordering becomes available, review the product, quantity, delivery charges and return policy before submitting checkout. Choose around your routine and budget.",
+        text: "Review the product, quantity, delivery charges and return policy before submitting checkout. Choose around your routine and budget.",
       },
     ],
   },
 ];
-

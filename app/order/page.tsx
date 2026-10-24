@@ -13,6 +13,7 @@ import {
   Package,
   ReceiptText,
   Truck,
+  Printer,
   UserRound,
 } from "lucide-react";
 import { useStore } from "../use-store";
@@ -147,7 +148,7 @@ export default function Order() {
                       ? order.paymentMethod === "cod"
                         ? "Your order has been received. Payment is due on delivery."
                         : "Your payment is confirmed. Check the latest order status below."
-                      : "Your bag is kept until the order is confirmed. If you made a payment, keep your receipt and check again."}
+                      : "Your cart is kept until the order is confirmed. If you made a payment, keep your receipt and check again."}
                   </small>
                 </div>
               </div>
@@ -185,7 +186,7 @@ export default function Order() {
                         ? "Delivered"
                         : order.status === "shipped"
                           ? "Shipped"
-                          : "Timing not yet provided"}
+                          : "Follow order tracking for updates"}
                     </strong>
                   </span>
                 </div>
@@ -277,6 +278,12 @@ export default function Order() {
                 >
                   Track this order <Truck size={16} />
                 </Link>
+                <button
+                  className="commerce-secondary"
+                  onClick={() => window.print()}
+                >
+                  <Printer size={16} /> Print receipt
+                </button>
                 <button className="commerce-primary" onClick={verify}>
                   Refresh Order Status
                   <ArrowRight size={16} />

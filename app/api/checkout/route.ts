@@ -1,3 +1,8 @@
+import { after } from "next/server";
+import {
+  queueOrderNotification,
+  safelySendOrderNotifications,
+} from "../../../lib/order-notifications";
 import { NextResponse } from "next/server";
 import { randomUUID, createHash } from "node:crypto";
 import { sessionUser } from "../../../lib/auth";
@@ -14,7 +19,9 @@ export async function GET() {
     {
       live: process.env.STORE_LIVE === "true" && !!databaseConfigured(),
       cod: process.env.ENABLE_COD === "true",
-      stripe: !!process.env.STRIPE_SECRET_KEY,
+      stripe: !!(
+        process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET
+      ),
       currency: process.env.NEXT_PUBLIC_STORE_CURRENCY || "PKR",
       country: process.env.STORE_COUNTRY || "PK",
       shippingMinor: Number(process.env.SHIPPING_MINOR || 0),
@@ -27,7 +34,7 @@ export async function POST(request: Request) {
     return NextResponse.json(
       {
         error:
-          "The store is not accepting orders yet. Your cart is saved; no order or payment has been created.",
+          "Checkout is temporarily paused. Your cart is saved. Please try again later or contact us.",
       },
       { status: 503 },
     );
@@ -65,7 +72,8 @@ export async function POST(request: Request) {
   }
   if (
     (body.method === "cod" && process.env.ENABLE_COD !== "true") ||
-    (body.method === "stripe" && !process.env.STRIPE_SECRET_KEY)
+    (body.method === "stripe" &&
+      !(process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET))
   )
     return NextResponse.json(
       { error: "This payment method is unavailable." },
@@ -129,9 +137,16 @@ export async function POST(request: Request) {
       for (const line of lines) {
         await sql`INSERT INTO order_items (order_id,product_id,name,price_minor,quantity) VALUES (${id},${line.id},${line.name},${line.price_minor},${line.quantity})`;
         await sql`UPDATE products SET stock=stock-${line.quantity} WHERE id=${line.id}`;
-        const balance=await sql`SELECT stock FROM products WHERE id=${line.id}`;
+        const balance =
+          await sql`SELECT stock FROM products WHERE id=${line.id}`;
         await sql`INSERT INTO inventory_movements(product_id,delta,stock_after,reason,reference,actor) VALUES(${line.id},${-line.quantity},${balance[0].stock},'Order placed',${id},'checkout')`;
       }
+      await sql`INSERT INTO order_events(order_id,status) VALUES(${id},${body.method === "cod" ? "confirmed" : "awaiting_payment"})`;
+      await queueOrderNotification(
+        sql,
+        id,
+        body.method === "cod" ? "confirmed" : "awaiting_payment",
+      );
       return {
         order: {
           id,
@@ -146,8 +161,15 @@ export async function POST(request: Request) {
       };
     });
     id = result.order.id;
-    if (result.order.payment_method === "cod")
+    after(safelySendOrderNotifications);
+    if (result.order.payment_method === "cod") {
+      if (result.order.status === "cancelled")
+        return NextResponse.json(
+          { error: "This order was cancelled. Start a new checkout." },
+          { status: 409 },
+        );
       return NextResponse.json({ orderId: id, status: result.order.status });
+    }
     if (result.order.status !== "awaiting_payment")
       return NextResponse.json(
         {
@@ -195,7 +217,10 @@ export async function POST(request: Request) {
         result.order.currency.toLowerCase(),
       );
       form.set(`line_items[${i}][price_data][product_data][name]`, "Shipping");
-      form.set(`line_items[${i}][price_data][unit_amount]`, String(shipping));
+      form.set(
+        `line_items[${i}][price_data][unit_amount]`,
+        String(result.order.shipping_minor),
+      );
       form.set(`line_items[${i}][quantity]`, "1");
     }
     const response = await fetch(

@@ -14,7 +14,8 @@
     "test:database": "node --experimental-strip-types --test tests/database.integration.ts",
     "db:seed-demo": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/seed-demo.ts",
     "admin:reset": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/reset-admin.ts",
-    "test:workspace": "node --experimental-strip-types tests/integration/mysql-workspace.cjs"
+    "test:workspace": "node --experimental-strip-types tests/integration/mysql-workspace.cjs",
+    "orders:send": "node --env-file-if-exists=.env.local --experimental-strip-types scripts/send-order-notifications.ts"
   },
   "dependencies": {
     "@tiptap/extension-image": "^3.32.0",

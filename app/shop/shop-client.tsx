@@ -756,12 +756,7 @@ export default function Shop({
                 )}
               </>
             )}
-            {!category && !live && !loading && !error && (
-              <p className="shop-demo">
-                Sample catalog. Product details and availability require
-                merchant verification before sale.
-              </p>
-            )}
+
           </section>
         </div>
       </main>

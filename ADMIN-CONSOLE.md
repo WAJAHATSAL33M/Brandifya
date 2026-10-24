@@ -11,7 +11,7 @@ The admin session is checked independently of product/order queries. A missing m
 1. Back up the store database and deploy the latest GitHub `main` branch.
 2. Keep the existing private environment variables. `STORE_URL` must match the origin used to open the admin page.
 3. Open `/admin`. If the setup banner appears, choose **Finish database setup** while signed in as the owner. This authenticated action runs only the reviewed `CREATE TABLE IF NOT EXISTS` statements for inventory, blogs and catalog organization. It preserves existing rows and cannot run SQL supplied by the browser. It does not perform destructive migrations or rebuild incompatible existing tables.
-4. If the database user cannot create tables, import `database/admin-workspace.sql` and `database/admin-catalog.sql` into the existing database through phpMyAdmin, then choose **Check again** under Settings. The full schema has 24 tables. New installations can use `database/schema.sql` or the `build:hostinger` command.
+4. If the database user cannot create tables, import `database/admin-workspace.sql` and `database/admin-catalog.sql` into the existing database through phpMyAdmin, then choose **Check again** under Settings. The full schema has 25 tables. New installations can use `database/schema.sql` or the `build:hostinger` command.
 5. Under Categories, choose **Import existing categories** to make legacy category names editable. Under Blogs, choose **Import existing articles** to edit the existing journal stories. Both imports preserve existing managed records.
 
 No new environment secrets are required. If the live site still shows “Merchant access” or a scrolling “Journal” tab, it is running an earlier deployment.
@@ -49,3 +49,5 @@ This is a custom store-management console inspired by familiar commerce workflow
 - `npm test`: validation, stock/commerce/auth rules, rich-content sanitization and schema synchronization.
 - `npm run typecheck` and `npm run build`: TypeScript and production checks.
 - `npm run test:workspace`: full backend integration against a new empty `TEST_DATABASE_URL` ending in `_test`; never use production. Includes catalog assignment, atomic saves, duplicate-SKU rollback, bulk visibility, storefront metadata, category links and missing-table setup recovery.
+
+Order-processing upgrade: apply `database/order-processing.sql` or use Admin → Settings → Finish database setup. See `ORDER-PROCESSING.md` for order emails, receipts, fulfillment and launch settings.

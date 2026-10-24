@@ -1,3 +1,8 @@
+import { after } from "next/server";
+import {
+  queueOrderNotification,
+  safelySendOrderNotifications,
+} from "../../../../lib/order-notifications";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { db, cancelOrder } from "../../../../lib/db";
 export const runtime = "nodejs";
@@ -32,15 +37,25 @@ export async function POST(request: Request) {
       ].includes(event.type) &&
       session.payment_status === "paid"
     ) {
-      await db()`UPDATE orders SET status='paid',stripe_session_id=${session.id},updated_at=now() WHERE id=${id} AND payment_method='stripe' AND status='awaiting_payment' AND total_minor=${session.amount_total} AND lower(currency)=${session.currency}`;
+      await db().begin(async (sql) => {
+        const changed =
+          await sql`UPDATE orders SET status='paid',stripe_session_id=${session.id},updated_at=now() WHERE id=${id} AND payment_method='stripe' AND status='awaiting_payment' AND (stripe_session_id IS NULL OR stripe_session_id=${session.id}) AND total_minor=${session.amount_total} AND lower(currency)=${session.currency}`;
+        if (changed.count) {
+          await sql`INSERT INTO order_events(order_id,status) VALUES(${id},'paid')`;
+          await queueOrderNotification(sql, id, "paid");
+        }
+      });
     } else if (
       [
         "checkout.session.expired",
         "checkout.session.async_payment_failed",
       ].includes(event.type)
     ) {
-      await cancelOrder(id);
+      const matching =
+        await db()`SELECT id FROM orders WHERE id=${id} AND payment_method='stripe' AND stripe_session_id=${session.id}`;
+      if (matching.length) await cancelOrder(id);
     }
+    after(safelySendOrderNotifications);
     return new Response("OK");
   } catch {
     return new Response("Webhook processing failed", { status: 500 });

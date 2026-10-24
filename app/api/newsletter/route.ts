@@ -2,7 +2,10 @@ import { db, databaseConfigured } from "../../../lib/db";
 export async function POST(request: Request) {
   if (!databaseConfigured())
     return Response.json(
-      { error: "Newsletter signup is not yet available." },
+      {
+        error:
+          "Newsletter signup is temporarily unavailable. Please try again later.",
+      },
       { status: 503 },
     );
   const origin = process.env.STORE_URL;

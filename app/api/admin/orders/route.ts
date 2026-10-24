@@ -1,3 +1,9 @@
+import { after } from "next/server";
+import {
+  queueOrderNotification,
+  safelySendOrderNotifications,
+} from "../../../../lib/order-notifications";
+import { emailReady } from "../../../../lib/auth";
 import { db } from "../../../../lib/db";
 import { adminAuthorized, adminUser } from "../../../../lib/admin-auth";
 import { safeMediaUrl } from "../../../../lib/auth-core";
@@ -24,8 +30,10 @@ export async function GET(request: Request) {
           await db()`SELECT * FROM order_events WHERE order_id=${id} ORDER BY id`,
         notes =
           await db()`SELECT * FROM order_notes WHERE order_id=${id} ORDER BY id DESC`;
+      const notifications =
+        await db()`SELECT status,recipient,attempts,sent_at,last_error,created_at FROM order_notifications WHERE order_id=${id} ORDER BY created_at`;
       return Response.json(
-        { order: { ...rows[0], items }, events, notes },
+        { order: { ...rows[0], items }, events, notes, notifications },
         { headers: { "Cache-Control": "no-store" } },
       );
     }
@@ -56,6 +64,14 @@ export async function GET(request: Request) {
         total: counts[0].total,
         revenue,
         daily,
+        operations: {
+          checkoutOpen: process.env.STORE_LIVE === "true",
+          cod: process.env.ENABLE_COD === "true",
+          card: Boolean(
+            process.env.STRIPE_SECRET_KEY && process.env.STRIPE_WEBHOOK_SECRET,
+          ),
+          email: emailReady(),
+        },
       },
       { headers: { "Cache-Control": "no-store" } },
     );
@@ -127,7 +143,9 @@ export async function PATCH(request: Request) {
         await sql`UPDATE orders SET tracking_number=${b.trackingNumber},tracking_url=${b.trackingUrl || ""},updated_at=now() WHERE id=${b.id}`;
       if (b.note)
         await sql`INSERT INTO order_notes(order_id,note,actor) VALUES(${b.id},${b.note.trim()},${actor})`;
+      if (b.status) await queueOrderNotification(sql, b.id, b.status);
     });
+    after(safelySendOrderNotifications);
     return Response.json({ ok: true });
   } catch (e) {
     return Response.json(

@@ -24,6 +24,7 @@ async function readiness() {
         await db()`SELECT id FROM purchase_orders LIMIT 1`;
         await db()`SELECT purchase_id FROM purchase_order_items LIMIT 1`;
         await db()`SELECT id FROM order_notes LIMIT 1`;
+        await db()`SELECT id FROM order_notifications LIMIT 1`;
         return { name: "Inventory & orders", ready: true };
       } catch {
         return { name: "Inventory & orders", ready: false };
@@ -84,7 +85,7 @@ export async function POST(request: Request) {
     return Response.json(
       {
         error:
-          "Setup could not finish. Import database/admin-workspace.sql and database/admin-catalog.sql in phpMyAdmin, then check setup again.",
+          "Setup could not finish. Import database/admin-workspace.sql, database/admin-catalog.sql and database/order-processing.sql in phpMyAdmin, then check setup again.",
       },
       { status: 503 },
     );

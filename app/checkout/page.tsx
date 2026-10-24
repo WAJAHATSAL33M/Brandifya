@@ -152,8 +152,8 @@ export default function Checkout() {
         )}
         {store.config && !store.config.live && (
           <p className="commerce-notice" role="status">
-            Store setup is in progress. You can review the sample checkout;
-            orders and payments are not enabled yet.
+            Checkout is temporarily paused. Your cart is saved. Please try again
+            later or contact our team.
           </p>
         )}
         {store.loading ? (

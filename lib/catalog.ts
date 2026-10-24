@@ -36,7 +36,7 @@ export const products: Product[] = [
     image: "/products/featured0.webp",
     color: "Cognac",
     description:
-      "A leather backpack concept with a vintage silhouette. Dimensions and materials must be verified before sale.",
+      "A backpack with a vintage silhouette for everyday essentials. Check the product details for dimensions and care information.",
     stock: 8,
   },
   {
@@ -52,7 +52,7 @@ export const products: Product[] = [
     image: "/products/featured1.webp",
     color: "Natural",
     description:
-      "A ceramic diffuser concept for your home. Capacity, power requirements, and care instructions require merchant verification.",
+      "A ceramic diffuser for a comfortable home setting. Contact us for capacity and care information.",
     stock: 12,
   },
   {
@@ -64,7 +64,7 @@ export const products: Product[] = [
     image: "/products/featured2.webp",
     color: "Black",
     description:
-      "An everyday fitness band concept. Features, compatibility, and warranty must be confirmed before sale.",
+      "An everyday fitness band with a simple, wearable design. Check device compatibility before ordering.",
     stock: 6,
   },
   {
@@ -76,7 +76,7 @@ export const products: Product[] = [
     image: "/products/featured3.webp",
     color: "Cream",
     description:
-      "An everyday tote concept with a neutral finish. Size and material information must be confirmed before sale.",
+      "An everyday tote with a neutral finish. Contact our team for size and material details.",
     stock: 9,
   },
   {
@@ -88,7 +88,7 @@ export const products: Product[] = [
     image: "/products/featured4.webp",
     color: "Black",
     description:
-      "A countertop kettle concept. Capacity, voltage, safety certification, and warranty require merchant verification.",
+      "A countertop kettle for an everyday kitchen setup. Check the product details for capacity and voltage before ordering.",
     stock: 3,
   },
   {
@@ -104,7 +104,7 @@ export const products: Product[] = [
     image: "/products/featured5.webp",
     color: "Natural",
     description:
-      "A skincare set concept. Final ingredients, product labels, and suitability information must be supplied before sale.",
+      "A skincare collection for your daily routine. Check product labels, ingredients and suitability before use.",
     stock: 7,
   },
   {
@@ -119,7 +119,7 @@ export const products: Product[] = [
     image: "/products/featured6.webp",
     color: "Sand",
     description:
-      "A casual loafer concept in a neutral finish. Size variants, materials, and fit information must be supplied before sale.",
+      "A casual loafer with a neutral finish. Check the available size and fit details before ordering.",
     stock: 10,
   },
   {
@@ -131,7 +131,7 @@ export const products: Product[] = [
     image: "/products/featured7.webp",
     color: "Charcoal",
     description:
-      "A portable speaker concept. Battery life, compatibility, and warranty must be verified before sale.",
+      "A portable speaker for your everyday listening setup. Check compatibility and product specifications before ordering.",
     stock: 5,
   },
   {
@@ -143,7 +143,7 @@ export const products: Product[] = [
     image: "/products/best0.webp",
     color: "Black",
     description:
-      "Over-ear headphones with a clean, cushioned design for a personal listening setup. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "Over-ear headphones with a clean, cushioned design for a personal listening setup. Check the product page for available details, or contact us with a product question.",
     stock: 20,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -158,7 +158,7 @@ export const products: Product[] = [
     image: "/products/best1.webp",
     color: "Black",
     description:
-      "A square-face watch with a simple black strap for everyday styling. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A square-face watch with a simple black strap for everyday styling. Check the product page for available details, or contact us with a product question.",
     stock: 8,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -173,7 +173,7 @@ export const products: Product[] = [
     image: "/products/best2.webp",
     color: "Tan",
     description:
-      "A spacious tote silhouette with two handles and a warm tan finish. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A spacious tote silhouette with two handles and a warm tan finish. Check the product page for available details, or contact us with a product question.",
     stock: 11,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -188,7 +188,7 @@ export const products: Product[] = [
     image: "/products/best3.webp",
     color: "White",
     description:
-      "Low-profile white sneakers with a versatile lace-up design. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "Low-profile white sneakers with a versatile lace-up design. Check the product page for available details, or contact us with a product question.",
     stock: 14,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -203,7 +203,7 @@ export const products: Product[] = [
     image: "/products/best4.webp",
     color: "Natural",
     description:
-      "A rounded diffuser design for a bedside table or quiet corner. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A rounded diffuser design for a bedside table or quiet corner. Check the product page for available details, or contact us with a product question.",
     stock: 17,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -218,7 +218,7 @@ export const products: Product[] = [
     image: "/products/best5.webp",
     color: "Tortoiseshell",
     description:
-      "Round frames with a patterned finish for an everyday accessories collection. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "Round frames with a patterned finish for an everyday accessories collection. Check the product page for available details, or contact us with a product question.",
     stock: 20,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -233,7 +233,7 @@ export const products: Product[] = [
     image: "/products/deal0.webp",
     color: "Black",
     description:
-      "Simple black frames with a timeless everyday silhouette. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "Simple black frames with a timeless everyday silhouette. Check the product page for available details, or contact us with a product question.",
     stock: 8,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -248,7 +248,7 @@ export const products: Product[] = [
     image: "/products/deal1.webp",
     color: "Black",
     description:
-      "A wraparound frame design for a sporty accessories collection. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A wraparound frame design for a sporty accessories collection. Check the product page for available details, or contact us with a product question.",
     stock: 11,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -263,7 +263,7 @@ export const products: Product[] = [
     image: "/products/deal2.webp",
     color: "Tortoiseshell",
     description:
-      "A gently upswept cat-eye frame in a warm patterned finish. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A gently upswept cat-eye frame in a warm patterned finish. Check the product page for available details, or contact us with a product question.",
     stock: 14,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -278,7 +278,7 @@ export const products: Product[] = [
     image: "/products/deal3.webp",
     color: "Beige",
     description:
-      "Two zippered shoe organisers to separate footwear in your travel luggage. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "Two zippered shoe organisers to separate footwear in your travel luggage. Check the product page for available details, or contact us with a product question.",
     stock: 17,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -293,7 +293,7 @@ export const products: Product[] = [
     image: "/products/deal4.webp",
     color: "Natural",
     description:
-      "A shoe-care collection with a brush, cloth and cleaning bottle. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A shoe-care collection with a brush, cloth and cleaning bottle. Check the product page for available details, or contact us with a product question.",
     stock: 20,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",
@@ -308,7 +308,7 @@ export const products: Product[] = [
     image: "/products/deal5.webp",
     color: "Brass",
     description:
-      "A slim, long-handle shoehorn with a warm metallic finish for an organised entryway. Demo product; final materials, measurements, specifications and availability require merchant verification.",
+      "A slim, long-handle shoehorn with a warm metallic finish for an organised entryway. Check the product page for available details, or contact us with a product question.",
     stock: 8,
     promotionActive: true,
     promotionStartsAt: "2026-10-20T00:00:00Z",

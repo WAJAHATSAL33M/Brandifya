@@ -4,6 +4,7 @@ import type { AdminApi, Row } from "./workspace-utils";
 import { money, date, downloadCsv } from "./workspace-utils";
 export default function OrderWorkspace({ api }: { api: AdminApi }) {
   const [orders, setOrders] = useState<Row[]>([]),
+    [operations, setOperations] = useState<Row | null>(null),
     [q, setQ] = useState(""),
     [status, setStatus] = useState(""),
     [from, setFrom] = useState(""),
@@ -31,6 +32,7 @@ export default function OrderWorkspace({ api }: { api: AdminApi }) {
           if (active) {
             setOrders(d.orders);
             setTotal(d.total);
+            setOperations(d.operations);
           }
         })
         .catch((e) => {
@@ -113,6 +115,23 @@ export default function OrderWorkspace({ api }: { api: AdminApi }) {
         <p className="management-message" role="status">
           {message}
         </p>
+      )}
+      {operations && (
+        <div className="management-message">
+          <strong>Order operations</strong>
+          <p>
+            Checkout: {operations.checkoutOpen ? "Open" : "Paused"} · Cash on
+            delivery: {operations.cod ? "Enabled" : "Disabled"} · Card:{" "}
+            {operations.card ? "Enabled" : "Disabled"} · Order emails:{" "}
+            {operations.email ? "Configured" : "Configure sender in Hostinger"}
+          </p>
+          {!operations.checkoutOpen && (
+            <p>
+              Set STORE_LIVE=true in Hostinger to accept orders after reviewing
+              products, shipping and payment settings.
+            </p>
+          )}
+        </div>
       )}
       <div className="admin-filter-row">
         <label>
@@ -302,6 +321,55 @@ export default function OrderWorkspace({ api }: { api: AdminApi }) {
                   </button>
                 )}
             </div>
+            <section className="management-panel admin-order-notifications">
+              <div className="management-heading">
+                <h4>Customer email updates</h4>
+                <button
+                  disabled={busy}
+                  onClick={async () => {
+                    setBusy(true);
+                    setError("");
+                    try {
+                      const result = await api(
+                        "/api/admin/order-notifications",
+                        "POST",
+                        {},
+                      );
+                      setMessage(
+                        result.configured
+                          ? `${result.sent} emails sent; ${result.failed} need retry.`
+                          : "Set RESEND_API_KEY and AUTH_FROM_EMAIL in Hostinger to send queued order emails.",
+                      );
+                      await open(o.id);
+                    } catch (e) {
+                      setError((e as Error).message);
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  Process pending emails
+                </button>
+              </div>
+              {detail?.notifications?.length ? (
+                <ul>
+                  {detail.notifications.map((n: Row) => (
+                    <li key={n.status}>
+                      {n.status.replaceAll("_", " ")} → {n.recipient}:{" "}
+                      {n.sent_at
+                        ? "Sent " + date(n.sent_at)
+                        : n.last_error || "Queued"}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="management-muted">
+                  Email updates are queued when the checkout email is provided.
+                  Customers without email can use order tracking with their
+                  phone number.
+                </p>
+              )}
+            </section>
             <div className="admin-two-column">
               <form
                 className="management-form"
@@ -314,6 +382,11 @@ export default function OrderWorkspace({ api }: { api: AdminApi }) {
                 }}
               >
                 <h4>Shipment tracking</h4>
+                <p className="management-muted">
+                  Save the courier number and HTTPS tracking link, then mark
+                  this order shipped. Customers see these details on their
+                  tracking page.
+                </p>
                 <label>
                   Tracking number
                   <input

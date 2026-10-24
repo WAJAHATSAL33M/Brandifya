@@ -28,7 +28,7 @@ export default async function SupportPage({params, searchParams}:{params:Promise
     <nav className="commerce-breadcrumb" aria-label="Breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><span aria-current="page">{page.title}</span></nav>
     <header className={slug === "contact" ? "support-contact-heading" : "support-hero"}><h1>{page.title}</h1><p>{slug === "contact" ? "Get in touch with us. We’re here to help!" : page.description}</p></header>
     {brand && <section className="commerce-panel"><h2>{brand} product enquiry</h2><p>Send us the product name, model or details you need from {brand}, and request a quotation. Our team will help you source your desired product.</p></section>}
-    {policy&&<p className="support-note">Store preview · Policy details awaiting merchant confirmation.</p>}
+
     {slug === "contact" ? <section className="support-contact-cards" aria-label="Contact options">
       {contactCards.map(({ title, copy, href, icon: Icon, tone }) => <a key={title} className={`support-contact-card contact-${tone}`} href={href}>
         <span className="contact-card-icon"><Icon aria-hidden="true" /></span>

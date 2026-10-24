@@ -1,3 +1,4 @@
+import { storefrontDescription } from "./storefront-description";
 import { products, type Product } from "./catalog";
 import { referenceProducts } from "./reference-catalog";
 import { db, databaseConfigured } from "./db";
@@ -21,7 +22,7 @@ export async function findProduct(id: number): Promise<Product | undefined> {
         stock: p.stock,
         image: p.image,
         color: p.color,
-        description: p.description,
+        description: storefrontDescription(p.description),
         badge: p.badge || undefined,
         media: Array.isArray(p.media) ? p.media : [],
         attributes: p.attributes || {},

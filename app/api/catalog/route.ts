@@ -1,3 +1,4 @@
+import { storefrontDescription } from "../../../lib/storefront-description";
 import { products } from "../../../lib/catalog";
 import { db, databaseConfigured } from "../../../lib/db";
 export async function GET() {
@@ -31,7 +32,7 @@ export async function GET() {
           stock: p.stock,
           image: p.image,
           color: p.color,
-          description: p.description,
+          description: storefrontDescription(p.description),
           badge: p.badge || undefined,
           media: Array.isArray(p.media) ? p.media : [],
           attributes: p.attributes || {},

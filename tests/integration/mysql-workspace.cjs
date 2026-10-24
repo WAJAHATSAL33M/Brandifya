@@ -35,6 +35,11 @@ const project = process.cwd(),
     ["scripts/setup-db.mjs"],
     ["scripts/check-db.mjs"],
     ["--experimental-strip-types", "--test", "tests/database.integration.ts"],
+    [
+      "--experimental-strip-types",
+      "--test",
+      "tests/notification.integration.ts",
+    ],
   ]) {
     const r = spawnSync("node", cmd, { cwd: project, env, encoding: "utf8" });
     process.stdout.write(r.stdout);
@@ -52,6 +57,7 @@ const project = process.cwd(),
     SHIPPING_MINOR: "0",
     STORE_COUNTRY: "PK",
     ADMIN_SETUP_TOKEN: "qa-token-".repeat(8),
+    STRIPE_WEBHOOK_SECRET: "qa-processing-webhook-secret",
   };
   const app = spawn(
     "node",
@@ -383,6 +389,13 @@ const project = process.cwd(),
       origin,
       admin,
       conn,
+    );
+    await require(project + "/tests/integration/order-processing.cjs")(
+      origin,
+      conn,
+      admin,
+      product,
+      appEnv.STRIPE_WEBHOOK_SECRET,
     );
     const reset = spawnSync(
       "node",

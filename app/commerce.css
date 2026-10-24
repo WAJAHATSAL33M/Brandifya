@@ -1388,3 +1388,9 @@
   padding: 5px 7px;
   overflow-wrap: anywhere;
 }
+
+@media print {
+  .store-header,.hp-header,.site-footer,.hp-footer,.commerce-breadcrumb,.commerce-steps,.commerce-receipt-actions,.commerce-order-help,.store-mobile-bar,.hp-bottom-nav {display:none!important}
+  .hp.commerce,.commerce-container,.commerce-panel{background:white!important;color:black!important;box-shadow:none!important;padding:10px!important;margin:0!important;width:100%!important;max-width:none!important}
+  .commerce-layout{display:block!important}.commerce-panel{break-inside:avoid;border:0!important}.commerce-summary{position:static!important}.commerce-receipt-items article{break-inside:avoid}
+}

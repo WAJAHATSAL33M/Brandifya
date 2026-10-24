@@ -271,6 +271,12 @@ export default function Order() {
                 </ol>
               )}
               <div className="commerce-receipt-actions">
+                <Link
+                  className="commerce-primary"
+                  href={"/order-tracking?order=" + encodeURIComponent(order.id)}
+                >
+                  Track this order <Truck size={16} />
+                </Link>
                 <button className="commerce-primary" onClick={verify}>
                   Refresh Order Status
                   <ArrowRight size={16} />
@@ -333,4 +339,3 @@ export default function Order() {
     </div>
   );
 }
-

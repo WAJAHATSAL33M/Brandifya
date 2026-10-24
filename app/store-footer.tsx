@@ -7,7 +7,7 @@ const policies: Record<string,string> = {
   "Size Guide": "Product-specific measurements and fit guidance will be supplied with the final catalog.",
   "Gift Cards": "Gift cards are not currently available.",
   "Social profiles": "The store’s social profiles will be connected here.",
-  "Track Order": "Your order reference is available on the order confirmation page. Customer order tracking is being configured.",
+  "Track Order": "Track your order at /order-tracking using your full order reference and checkout phone number or email.",
   "Shipping & returns": "Delivery areas, shipping fees, timelines, and return terms will be published once the merchant confirms them. Products cannot currently be ordered.",
   "About Brandifya": "Brandifya is a general-store concept bringing home, style, tech, and everyday essentials together. This storefront currently uses sample products and prices.",
   "Contact us": storeContactMessage,

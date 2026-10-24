@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import SupportFrame from "../support-frame";
 import { supportPages } from "../../lib/support-content";
-export function generateStaticParams() { return supportPages.map(p=>({slug:p.slug})); }
+export function generateStaticParams() { return supportPages.filter(p=>p.slug!=="order-tracking").map(p=>({slug:p.slug})); }
 export async function generateMetadata({params}:{params:Promise<{slug:string}>}):Promise<Metadata> {
   const {slug}=await params;const p=supportPages.find(p=>p.slug===slug);
   return p ? {title:p.title+" | Brande",description:p.description} : {};

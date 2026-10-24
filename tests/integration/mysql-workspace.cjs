@@ -293,6 +293,14 @@ const project = process.cwd(),
         trackingNumber: "QA123",
       }),
     });
+    await require(project + "/tests/integration/order-tracking.cjs")(
+      origin,
+      conn,
+      admin,
+      userHeaders,
+      order,
+      checkout.requestKey,
+    );
     const form = new FormData();
     form.set(
       "file",

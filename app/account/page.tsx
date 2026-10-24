@@ -20,6 +20,7 @@ import {
   Truck,
   UserRound,
 } from "lucide-react";
+import OrderProgress from "../order-tracking/order-progress";
 import SupportFrame from "../support-frame";
 import "./account.css";
 type Profile = {
@@ -99,44 +100,6 @@ function GoogleMark() {
         d="M24 11.4c3 0 5.6 1 7.7 3l5.8-5.7A19.7 19.7 0 0 0 24 3.2 20.4 20.4 0 0 0 5.8 14.4l6.8 5.4C14.2 15 18.7 11.4 24 11.4Z"
       />
     </svg>
-  );
-}
-function Progress({ order }: { order: Order }) {
-  const steps = ["Order placed", "Preparing", "Shipped", "Delivered"],
-    index =
-      order.status === "delivered"
-        ? 3
-        : order.status === "shipped"
-          ? 2
-          : order.status === "processing"
-            ? 1
-            : 0;
-  if (order.status === "cancelled")
-    return (
-      <p className="customer-note">
-        This order was cancelled. Contact us if you need help.
-      </p>
-    );
-  if (order.status === "awaiting_payment")
-    return (
-      <p className="customer-note">
-        Payment is pending. Your order will be confirmed once payment is
-        received.
-      </p>
-    );
-  return (
-    <ol className="customer-progress" aria-label="Delivery progress">
-      {steps.map((step, i) => (
-        <li
-          key={step}
-          className={i <= index ? "complete" : ""}
-          aria-current={i === index ? "step" : undefined}
-        >
-          <span>{i < index ? <Check size={12} /> : i + 1}</span>
-          <small>{step}</small>
-        </li>
-      ))}
-    </ol>
   );
 }
 export default function Account() {
@@ -851,8 +814,18 @@ export default function Account() {
                                 {labels[o.status] || o.status}
                               </span>
                             </div>
-                            <Progress order={o} />
+                            <OrderProgress status={o.status} />
                             <div className="customer-order-bottom">
+                              <Link
+                                className="customer-secondary"
+                                href={
+                                  "/order-tracking?order=" +
+                                  encodeURIComponent(o.id) +
+                                  "&account=1"
+                                }
+                              >
+                                Track order <ArrowRight size={15} />
+                              </Link>
                               <span>
                                 {o.items.reduce((n, i) => n + i.quantity, 0)}{" "}
                                 items <b>{money(o.total_minor, o.currency)}</b>

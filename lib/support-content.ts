@@ -278,7 +278,7 @@ export const supportPages: SupportPage[] = [
       },
       {
         title: "Tracking availability",
-        text: "Courier tracking and a customer order lookup service have not yet been configured. This preview does not offer a live parcel tracker.",
+        text: "Use your order reference and checkout phone number or email to view store updates. Courier tracking details appear when our team assigns them to your order.",
       },
       {
         title: "Need help?",

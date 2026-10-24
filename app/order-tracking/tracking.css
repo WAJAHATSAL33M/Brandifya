@@ -1,0 +1,481 @@
+.tracking-heading {
+  background: transparent !important;
+  text-align: center;
+  margin: 10px auto 34px;
+  max-width: 650px;
+}
+.tracking-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 19px;
+  background: #fff0e6;
+  color: #aa3907;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 18px;
+}
+.tracking-heading h1 {
+  font-size: clamp(30px, 4vw, 44px);
+  letter-spacing: -1.2px;
+  line-height: 1.2;
+  margin: 0 0 12px;
+}
+.tracking-heading > p {
+  font-size: 14px;
+  color: var(--account-muted);
+  line-height: 1.7;
+  margin: 0;
+}
+.tracking-layout {
+  display: grid;
+  grid-template-columns: minmax(290px, 360px) minmax(0, 1fr);
+  gap: 26px;
+  align-items: start;
+}
+.tracking-lookup h2 {
+  font-size: 23px;
+  margin: 0 0 12px;
+  letter-spacing: -0.5px;
+}
+.tracking-lookup > p {
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--account-muted);
+  margin: 0 0 23px;
+}
+.tracking-lookup .customer-form > small {
+  font-size: 11px;
+  line-height: 1.6;
+  color: var(--account-muted);
+  margin-top: -12px;
+}
+.tracking-lookup #tracking-reference {
+  font-size: 13px;
+  letter-spacing: -0.15px;
+}
+.tracking-recent {
+  width: 100%;
+  margin-top: 12px;
+  font-size: 11px;
+}
+.tracking-lookup .tracking-privacy {
+  display: flex;
+  gap: 7px;
+  align-items: flex-start;
+  font-size: 10px;
+  margin: 18px 0 0;
+}
+.tracking-privacy svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.tracking-account {
+  border-top: 1px solid var(--account-border);
+  padding-top: 20px;
+  margin-top: 20px;
+}
+.tracking-account strong {
+  font-size: 13px;
+}
+.tracking-account p {
+  font-size: 12px;
+  color: var(--account-muted);
+  line-height: 1.7;
+}
+.tracking-account a,
+.tracking-help a {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  font-weight: 700;
+  color: #a73500;
+  text-decoration: none;
+}
+.tracking-results {
+  min-width: 0;
+  display: grid;
+  gap: 20px;
+}
+.tracking-results > .customer-alert {
+  margin: 0;
+}
+.tracking-empty {
+  text-align: center;
+  padding: 54px 30px;
+}
+.tracking-empty h2 {
+  font-size: 27px;
+  line-height: 1.3;
+  margin: 12px 0;
+}
+.tracking-empty p {
+  font-size: 14px;
+  color: var(--account-muted);
+  line-height: 1.8;
+  max-width: 380px;
+  margin: 0 auto 28px;
+}
+.tracking-empty > div {
+  display: grid;
+  gap: 17px;
+  justify-content: center;
+  text-align: left;
+}
+.tracking-empty > div span {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 12px;
+  color: #5d5850;
+}
+.tracking-empty > div svg {
+  color: #a73500;
+}
+.tracking-help {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 20px;
+  border: 1px solid var(--account-border);
+  border-radius: 12px;
+  background: #faf7f2;
+}
+.tracking-help > svg {
+  color: #a73500;
+  flex-shrink: 0;
+}
+.tracking-help > div {
+  flex: 1;
+}
+.tracking-help strong {
+  font-size: 12px;
+}
+.tracking-help p {
+  font-size: 11px;
+  color: var(--account-muted);
+  line-height: 1.6;
+  margin: 5px 0 0;
+}
+.tracking-result:focus {
+  outline: none;
+}
+.tracking-result-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+.tracking-result-top p {
+  font-size: 11px;
+  color: var(--account-muted);
+  margin: 0 0 10px;
+}
+.tracking-result-top h2 {
+  font-size: 27px;
+  line-height: 1.2;
+  letter-spacing: -0.6px;
+  margin: 0 0 9px;
+}
+.tracking-result-top > div > span {
+  font-size: 11px;
+  color: var(--account-muted);
+}
+.tracking-result-top > .customer-order-status {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  line-height: 1.5;
+}
+.tracking-announcement {
+  font-size: 11px;
+  color: var(--account-muted);
+  line-height: 1.7;
+  margin: 16px 0 0;
+}
+.tracking-result .customer-progress {
+  margin: 32px 0;
+}
+.tracking-shipment {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 18px;
+  background: #faf6ee;
+  border: 1px solid #eee4d5;
+  border-radius: 12px;
+}
+.tracking-shipment > svg {
+  flex-shrink: 0;
+  color: #aa3907;
+}
+.tracking-shipment > div {
+  flex: 1;
+  min-width: 0;
+}
+.tracking-shipment strong {
+  font-size: 13px;
+}
+.tracking-shipment p {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  overflow-wrap: anywhere;
+  font-size: 13px;
+  font-weight: 600;
+}
+.tracking-shipment p > span {
+  min-width: 0;
+}
+.tracking-shipment small {
+  font-size: 10px;
+  line-height: 1.6;
+  color: var(--account-muted);
+  display: block;
+}
+.tracking-shipment .customer-icon-button {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: transparent;
+}
+.tracking-shipment .customer-primary {
+  font-size: 11px;
+  padding: 10px 13px;
+}
+.tracking-detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  border-top: 1px solid var(--account-border);
+  margin-top: 26px;
+  padding-top: 24px;
+}
+.tracking-detail-grid h3 {
+  font-size: 16px;
+  margin: 0 0 20px;
+}
+.tracking-detail-grid p {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--account-muted);
+}
+.tracking-events {
+  display: grid;
+  gap: 0;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.tracking-events li {
+  position: relative;
+  display: flex;
+  gap: 13px;
+  padding-bottom: 22px;
+}
+.tracking-events li:before {
+  content: "";
+  position: absolute;
+  left: 5px;
+  top: 11px;
+  bottom: 0;
+  width: 1px;
+  background: #e7d9ca;
+}
+.tracking-events li:last-child:before {
+  display: none;
+}
+.tracking-events li > span {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5100;
+  position: relative;
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.tracking-events div {
+  display: grid;
+  gap: 7px;
+}
+.tracking-events strong {
+  font-size: 12px;
+  line-height: 1.5;
+}
+.tracking-events time {
+  font-size: 10px;
+  color: var(--account-muted);
+  line-height: 1.6;
+}
+.tracking-items {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 18px;
+}
+.tracking-items li {
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  line-height: 1.7;
+}
+.tracking-items svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+  color: #a73500;
+}
+.tracking-items li span {
+  overflow-wrap: anywhere;
+}
+.tracking-items small {
+  display: block;
+  font-size: 10px;
+  color: var(--account-muted);
+}
+.tracking-total {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  border-top: 1px solid var(--account-border);
+  padding-top: 14px;
+  margin-top: 20px;
+}
+.tracking-total strong {
+  color: #a73500;
+}
+.tracking-reference {
+  border-top: 1px solid var(--account-border);
+  padding: 16px 0;
+  margin-top: 18px;
+  font-size: 11px;
+}
+.tracking-reference summary {
+  cursor: pointer;
+  font-weight: 600;
+  min-height: 28px;
+}
+.tracking-reference p {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+.tracking-reference .customer-icon-button {
+  flex-shrink: 0;
+}
+.tracking-refresh {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  justify-content: space-between;
+  border-top: 1px solid var(--account-border);
+  padding-top: 18px;
+}
+.tracking-refresh p {
+  font-size: 10px;
+  color: var(--account-muted);
+  line-height: 1.8;
+  margin: 0;
+}
+.tracking-refresh small {
+  display: block;
+  font-size: 10px;
+}
+.tracking-refresh button {
+  font-size: 11px;
+  flex-shrink: 0;
+}
+.tracking-result > .customer-note {
+  margin-top: 22px;
+}
+@media (max-width: 900px) {
+  .tracking-layout {
+    grid-template-columns: minmax(260px, 300px) minmax(0, 1fr);
+    gap: 18px;
+  }
+  .tracking-result-top {
+    flex-wrap: wrap;
+  }
+  .tracking-shipment {
+    flex-wrap: wrap;
+  }
+  .tracking-shipment .customer-primary {
+    width: 100%;
+  }
+  .tracking-detail-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .tracking-help {
+    flex-wrap: wrap;
+  }
+  .tracking-help > a {
+    margin-left: 37px;
+  }
+  .tracking-refresh {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 700px) {
+  .tracking-heading {
+    margin: 14px auto 26px;
+  }
+  .tracking-heading h1 {
+    font-size: 30px;
+  }
+  .tracking-heading > p {
+    font-size: 13px;
+  }
+  .tracking-layout {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .tracking-lookup {
+    padding: 22px;
+  }
+  .tracking-results {
+    gap: 18px;
+  }
+  .tracking-empty {
+    padding: 32px 22px;
+  }
+  .tracking-empty h2 {
+    font-size: 24px;
+  }
+  .tracking-result-top h2 {
+    font-size: 25px;
+  }
+  .tracking-result {
+    padding: 20px;
+  }
+  .tracking-heading .tracking-icon {
+    width: 56px;
+    height: 56px;
+    margin-bottom: 15px;
+  }
+  .tracking-lookup #tracking-reference {
+    font-size: 16px;
+  }
+  .tracking-help {
+    padding: 17px;
+  }
+  .tracking-shipment {
+    padding: 14px;
+  }
+  .tracking-refresh > .customer-secondary {
+    width: 100%;
+  }
+  .tracking-reference p {
+    font-size: 10px;
+  }
+  .tracking-result .customer-progress small {
+    font-size: 10px;
+  }
+  .tracking-area .commerce-breadcrumb {
+    font-size: 11px;
+  }
+}

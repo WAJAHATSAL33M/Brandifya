@@ -45,3 +45,11 @@ Add these private environment values in Hostinger, never GitHub:
 Restart the app. Apple requires a real HTTPS hostname; localhost and IP callbacks are unsupported. The server generates short-lived client secrets automatically. Apple callbacks use POST, browser-bound single-use state, a nonce and Apple's signed identity tokens. No extra SQL tables are needed beyond the existing complete schema. For Hide My Email delivery, register the outgoing email source in Apple's Private Email Relay configuration. Existing accounts are not automatically linked solely because emails match.
 
 Reference: https://developer.apple.com/documentation/signinwithapplerestapi/request-an-authorization-to-the-sign-in-with-apple-server. and https://developer.apple.com/documentation/signinwithapple/verifying-a-user .
+
+## Order tracking
+
+Customers can use `/order-tracking` from the footer, order confirmation or account order cards. Guest lookup requires the full order UUID and the primary checkout phone or email. Pakistani local `03…` and international `+92…` formats match. The recent order saved in the same browser can also be verified using its private confirmation key; that key is sent in the request body, never in a tracking URL. Signed-in customers can open their own orders directly.
+
+In Admin → Orders, open an order, update its fulfillment status, and save the courier tracking number and HTTPS tracking URL. Customers see the actual order-event timeline and can open the carrier's tracking page. Active tracking results refresh every minute while visible, with a manual refresh option. No delivery date or courier scan is invented. Automatic courier scan synchronization requires a separate carrier integration.
+
+Tracking does not return customer addresses, phone numbers, email addresses, payment credentials, private confirmation keys, or internal admin notes. Lookups are limited to prevent repeated guessing. No new database tables are needed when `database/schema.sql` is already imported; the feature uses `orders`, `order_items`, `order_events`, `customer_sessions` and `auth_limits`.

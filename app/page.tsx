@@ -349,7 +349,7 @@ export default function Store() {
       ]),
     ),
     "Track Order":
-      "Your order reference is available on the order confirmation page. Customer order tracking is being configured.",
+      "Track your order at /order-tracking using your full order reference and checkout phone number or email.",
     "Size Guide":
       "Product-specific measurements and fit guidance will be supplied with the final catalog.",
     "Gift Cards": "Gift cards are not currently available.",
